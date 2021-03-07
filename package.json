@@ -1,0 +1,24 @@
+{
+  "name": "simple-game-server",
+  "version": "0.1.0",
+  "description": "A simple multi-player, turned-based game server written in JavaScript.",
+  "main": "./src/server.mjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BeefOnWeck/simple-game-server-js.git"
+  },
+  "keywords": [
+    "NodeJS",
+    "SocketIO",
+    "Games"
+  ],
+  "author": "BeefOnWeck",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/BeefOnWeck/simple-game-server-js/issues"
+  },
+  "homepage": "https://github.com/BeefOnWeck/simple-game-server-js#readme"
+}
