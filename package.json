@@ -4,6 +4,7 @@
   "description": "A simple multi-player, turned-based game server written in JavaScript.",
   "main": "./src/server.mjs",
   "scripts": {
+    "start": "node --experimental-modules src/server.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
