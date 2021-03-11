@@ -5,7 +5,7 @@ const initialGameShell = {
   currentPhase: 'boot',
   turn: 1,
   players: [],
-  numPlayers: 0,
+  numPlayers: 0, 
   state: {},
   actions: {}
 };
@@ -21,14 +21,14 @@ const coreCapabilities = g => {
       if (this.currentPhase === 'end') {
         return initialGameShell;
       }
-      switch(this.currentPhase) {
+      switch(this.currentPhase) { // These phases are really just for enabling and disabling functionality.
         case 'boot':
           theNextPhase = 'setup';
           break;
-        case 'setup':
+        case 'setup': // TODO: How to trigger setup effects? We don't, it happens in server.
           theNextPhase = 'play';
           break;
-        case 'play':
+        case 'play': // TODO: How to set play in motion? It happens in the server.
           theNextPhase = 'end';
           break; 
       }
@@ -58,6 +58,16 @@ const networking = g => {
     }
   };
 };
+
+// const coreActions = g => {
+  //
+  // }
+
+// TODO:
+// - Action: Player ends turn
+// - Action: Player leaves game
+// - State: Where to keep who the active player is?
+// - Set active player
 
 
 export const game = pipe(
