@@ -5,7 +5,7 @@
   "main": "./src/server.mjs",
   "scripts": {
     "start": "node --experimental-modules src/server.mjs",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --recursive"
   },
   "repository": {
     "type": "git",
@@ -25,5 +25,9 @@
   "dependencies": {
     "express": "^4.17.1",
     "socket.io": "^3.1.2"
+  },
+  "devDependencies": {
+    "chai": "^4.3.3",
+    "mocha": "^8.3.1"
   }
 }
