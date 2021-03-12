@@ -5,7 +5,8 @@
   "main": "./src/server.mjs",
   "scripts": {
     "start": "node --experimental-modules src/server.mjs",
-    "test": "mocha --recursive"
+    "test": "mocha --recursive",
+    "lint": "./node_modules/.bin/eslint src --ext .mjs"
   },
   "repository": {
     "type": "git",
@@ -28,6 +29,8 @@
   },
   "devDependencies": {
     "chai": "^4.3.3",
+    "eslint": "^7.21.0",
+    "eslint-config-google": "^0.14.0",
     "mocha": "^8.3.1"
   }
 }

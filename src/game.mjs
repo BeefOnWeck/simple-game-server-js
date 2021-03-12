@@ -60,19 +60,19 @@ const corePlayerLogic = g => {
 
     ...g,
 
-    addPlayer(username, socketId) {
-      let firstPlayerSocketId = this.players.length === 0 ? socketId : this.firstPlayerId;
+    addPlayer(username, id) {
+      let firstId = this.players.length === 0 ? id : this.firstPlayerId;
       return {
         ...this,
         players: [
           ...this.players, { 
             name: username,
-            id: socketId 
+            id: id 
           }
         ],
         numPlayers: this.numPlayers + 1, // TODO: test this
-        activePlayerId: firstPlayerSocketId,
-        firstPlayerId: firstPlayerSocketId
+        activePlayerId: firstId,
+        firstPlayerId: firstId
       }
     },
 
