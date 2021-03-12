@@ -6,15 +6,15 @@ chai.should();
 describe('Game', function() {
 
   it('Should keep track of the current phase', function() {
-    game.should.have.property('currentPhase').equal('boot');
+    game.should.have.property('phase').equal('boot');
     let game1 = game.nextPhase();
-    game1.should.have.property('currentPhase').equal('setup');
+    game1.should.have.property('phase').equal('setup');
     game1 = game1.nextPhase();
-    game1.should.have.property('currentPhase').equal('play');
+    game1.should.have.property('phase').equal('play');
     game1 = game1.nextPhase();
-    game1.should.have.property('currentPhase').equal('end');
+    game1.should.have.property('phase').equal('end');
     game1 = game1.nextPhase();
-    game1.should.have.property('currentPhase').equal('boot');
+    game1.should.have.property('phase').equal('boot');
   });
 
   it('Should clear the player, state, and actions properties on reset()', function() {
@@ -36,12 +36,21 @@ describe('Game', function() {
     game1.should.have.property('players').that.is.empty;
     game1 = game1.addPlayer('name', 'socket');
     game1.should.have.property('players').deep.equal([
-      {name: 'socket'}
+      {
+        name: 'name',
+        id: 'socket'
+      }
     ]);
     game1 = game1.addPlayer('other', 'player');
     game1.should.have.property('players').deep.equal([
-      {name: 'socket'},
-      {other: 'player'}
+      {
+        name: 'name',
+        id: 'socket'
+      },
+      {
+        name: 'other',
+        id: 'player'
+      }
     ]);
   });
 
