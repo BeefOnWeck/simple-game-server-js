@@ -1,20 +1,5 @@
 import { corePropsAtBoot, coreTransitionLogic, corePlayerLogic } from '../game.mjs';
 
-// If there are any top-level properties we want to define or overide
-const gameProps = g => {
-  return {
-    ...g,
-    mixins: {
-      addPlayer: (update) => ({
-        players: update.players.map((p,i) => ({
-          ...p,
-          mark: 'x'
-        }))
-      })
-    }
-  }
-}
-
 const initialState = {
   grid: Array.from({length:9}, (v,i) => {
     return {
@@ -32,6 +17,25 @@ const gameState = g => {
     ...g,
 
     state: initialState,
+
+  }
+}
+
+// If there are any top-level properties we want to define or overide
+const gameProps = g => {
+  return {
+    ...g,
+
+    decorators: {
+      addPlayer(gameToDecorate) {
+        return {
+          players: gameToDecorate.players.map((p,i) => ({
+            ...p,
+            mark: gameToDecorate.state.marks[i]
+          }))
+        };
+      }
+    }
 
   }
 }

@@ -16,14 +16,15 @@ describe('Tic Tac Toe', function() {
     });
   });
 
-  it('Should update state when a mark is added to the grid', function() {
+  it('Should update state when marks are added to the grid', function() {
     let game = {...game0}; // shallow copy
     game = game.addPlayer('First','1').addPlayer('Second','2');
     game = game.makeMark('1', 0, 0);
+    game = game.makeMark('2', 1, 1);
     game.should.have.property('state').deep.equal({
       grid: [
         { mark: 'x', row: 0, col: 0}, { mark: null, row: 0, col: 1}, { mark: null, row: 0, col: 2},
-        { mark: null, row: 1, col: 0}, { mark: null, row: 1, col: 1}, { mark: null, row: 1, col: 2},
+        { mark: null, row: 1, col: 0}, { mark: 'o', row: 1, col: 1}, { mark: null, row: 1, col: 2},
         { mark: null, row: 2, col: 0}, { mark: null, row: 2, col: 1}, { mark: null, row: 2, col: 2}
       ],
       marks: ['x','o']

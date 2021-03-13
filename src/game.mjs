@@ -7,18 +7,17 @@ export const corePropsAtBoot = {
   numPlayers: 0,
   activePlayerId: null,
   firstPlayerId: null,
-  mixins: {},
   state: {},
+  decorators: {},
   actions: {}
 };
 
 export const coreTransitionLogic = g => {
   return {
-
     ...g,
 
     reset() {
-      return corePropsAtBoot; // TODO: Handle functional mixins
+      return corePropsAtBoot; // TODO: Decorate this
     },
 
     nextRound() {
@@ -31,7 +30,7 @@ export const coreTransitionLogic = g => {
     nextPhase() { // TODO: Change so that we have to specify what phase to move to, with checks for allowable transition
       let theNextPhase;
       if (this.phase === 'end') {
-        return corePropsAtBoot; // TODO: Handle functional mixins
+        return corePropsAtBoot; // TODO: Handle functional decorators
       }
       switch(this.phase) { // These phases are really just for enabling and disabling functionality.
         case 'boot':
@@ -55,11 +54,13 @@ export const coreTransitionLogic = g => {
 
 export const corePlayerLogic = g => {
   return {
-
     ...g,
 
     addPlayer(username, id) {
-      const firstId = this.players.length === 0 ? id : this.firstPlayerId;
+      const firstId = this.players.length === 0 ? 
+        id : 
+        this.firstPlayerId;
+
       const updateWithNewPlayer = {
         players: [
           ...this.players, {
@@ -71,11 +72,19 @@ export const corePlayerLogic = g => {
         activePlayerId: firstId,
         firstPlayerId: firstId
       };
-      let playerMixins = this.mixins.hasOwnProperty('addPlayer') ? this.mixins['addPlayer'] : ()=>({});
-      return {
+
+      const decorators = this.decorators['addPlayer'] ? 
+        this.decorators['addPlayer'] : 
+        () => ({});
+
+      const returnObject = {
         ...this,
-        ...updateWithNewPlayer,
-        ...playerMixins(updateWithNewPlayer)
+        ...updateWithNewPlayer
+      };
+
+      return {
+        ...returnObject,
+        ...decorators(returnObject)
       };
     },
 
@@ -98,6 +107,7 @@ export const corePlayerLogic = g => {
         activePlayerId: this.players[nextPlayerIndex].id
       }
     }
+
   };
 };
 
