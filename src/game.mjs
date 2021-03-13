@@ -1,20 +1,18 @@
 
-// TODO: Describe functional approach to game composition
-const pipe = (...fns) => x => fns.reduce((y, f) => f(y), x);
-
 // These are the core properties available when the game is booted
-const corePropsAtBoot = {
+export const corePropsAtBoot = {
   phase: 'boot',
   round: 0,
   players: [],
   numPlayers: 0,
   activePlayerId: null,
   firstPlayerId: null,
+  mixins: {},
   state: {},
   actions: {}
 };
 
-const coreTransitionLogic = g => {
+export const coreTransitionLogic = g => {
   return {
 
     ...g,
@@ -55,25 +53,30 @@ const coreTransitionLogic = g => {
   }
 };
 
-const corePlayerLogic = g => {
+export const corePlayerLogic = g => {
   return {
 
     ...g,
 
     addPlayer(username, id) {
-      let firstId = this.players.length === 0 ? id : this.firstPlayerId;
-      return {
-        ...this,
+      const firstId = this.players.length === 0 ? id : this.firstPlayerId;
+      const updateWithNewPlayer = {
         players: [
-          ...this.players, { 
+          ...this.players, {
             name: username,
-            id: id 
+            id: id
           }
         ],
         numPlayers: this.numPlayers + 1, // TODO: test this
         activePlayerId: firstId,
         firstPlayerId: firstId
-      }
+      };
+      let playerMixins = this.mixins.hasOwnProperty('addPlayer') ? this.mixins['addPlayer'] : ()=>({});
+      return {
+        ...this,
+        ...updateWithNewPlayer,
+        ...playerMixins(updateWithNewPlayer)
+      };
     },
 
     setActivePlayer(id) { // TODO: Test
@@ -106,8 +109,10 @@ const corePlayerLogic = g => {
 // - Action: Player ends round
 // - Action: Player leaves game
 
+// TODO: Describe functional approach to game composition
+const pipe = (...fns) => x => fns.reduce((y, f) => f(y), x);
 
-export const game = pipe(
+export const gameCore = pipe(
   coreTransitionLogic,
   corePlayerLogic
 )(corePropsAtBoot);
