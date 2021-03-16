@@ -1,9 +1,9 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server as socketio } from 'socket.io';
-import { gameCore } from './game.mjs';
+import { game0 } from './games/tic-tac-toe.mjs';
 
-let game = gameCore; // Get a mutable reference to gameCore
+let game = game0; // Get a mutable reference to gameCore
 game = game.nextPhase(); // boot --> setup
 // TODO: Players can't join until setup phase begins
 
@@ -30,12 +30,18 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
   // After connecting, each player sends us their user name
   socket.on('send-user-name', username => {
     socket.username = username;
+    console.log('username', username);
     game = game.addPlayer(username, socket.id);
     if (game.numPlayers === MAX_PLAYERS) { // We have all the players, start the game
       // TODO: Once we enter the play phase, players can't join anymore
       game = game.nextPhase().nextRound(); // setup --> play (turn 1)
-      // TODO: Refactor and send complete state
-      io.emit('game-state', [game.phase, game.turn, game.activePlayerId]);
+      io.emit('game-state', { // TODO: Refactor this (lens?)
+        phase: game.phase, 
+        turn: game.turn,
+        activePlayer: game.activePlayerId,
+        players: game.players,
+        state: game.state
+      });
       // Tell player 1 it's their turn
       io.to(game.firstPlayerId).emit('start-your-turn', {}); // TODO: Consider sending list of actions here? Also send state
       // This is a point where things could break (if player 1 doesn't get the message, we're stuck)
@@ -49,10 +55,16 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
   // Broadcast state at the end of each player's turn
   socket.on('player-actions', actions =>{
     console.log('Player is done:', game.activePlayerId); // TODO: Confirm this message is actually from the active player
-    // TODO: Process the actiosn in a meaningful way
+    // TODO: Process the actions in a meaningful way
     // But first let's just go to the next player
     game = game.nextPlayer();
-    io.emit('game-state', [game.phase, game.round, game.activePlayerId]);
+    io.emit('game-state', { // TODO: Refactor this (lens?)
+      phase: game.phase, 
+      turn: game.turn,
+      activePlayer: game.activePlayerId,
+      players: game.players,
+      state: game.state
+    });
     io.to(game.activePlayerId).emit('start-your-turn', {});
   });
 });
