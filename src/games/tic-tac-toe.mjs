@@ -16,9 +16,9 @@ const initialState = {
 }
 
 // The game state is defined here
-const gameState = g => {
+const gameState = game => {
   return {
-    ...g,
+    ...game, // Copy game object and mixin (last in wins)
 
     state: initialState, // NOTE: Should we shallow copy?
 
@@ -26,9 +26,9 @@ const gameState = g => {
 }
 
 // If there are any game properties we want to define or overide
-const gameProps = g => {
+const gameProps = game => {
   return {
-    ...g,
+    ...game, // Copy game object and mixin (last in wins)
 
     theWinner: null,
 
@@ -47,14 +47,14 @@ const gameProps = g => {
 }
 
 // The game actions are defined here
-const gameActions = g => {
+const gameActions = game => {
   return {
-    ...g,
+    ...game, // Copy game object and mixin (last in wins)
 
-    makeMark(playerId, row, col) {
-      const playerMark = this.players.filter(p => p.id === playerId).map(p => p.mark)[0];
+    makeMark(playerId, row, col, game = this) {
+      const playerMark = game.players.filter(p => p.id === playerId).map(p => p.mark)[0];
 
-      const updatedGrid = this.state.grid.map(grd => {
+      const updatedGrid = game.state.grid.map(grd => {
         if (grd.row === row && grd.col === col) {
           grd.mark = playerMark;
         }
@@ -62,15 +62,15 @@ const gameActions = g => {
       });
 
       return {
-        ...this,
+        ...game, // NOTE: game = this (the object calling this method)
         state: {
-          ...this.state,
+          ...game.state,
           grid: updatedGrid
         }
       }
     },
 
-    findTheWinner() {
+    findTheWinner(game = this) {
       const possibleThreeInARows = [
         [0, 1, 2], [3, 4, 5], [6, 7, 8],
         [0, 3, 6], [1, 4, 7], [2, 5, 8],
@@ -78,7 +78,7 @@ const gameActions = g => {
       ];
 
       const winningCells = possibleThreeInARows.reduce((acc,p3r) => {
-        const possibleCells = this.state.grid.reduce((pc,cc,ci) => {
+        const possibleCells = game.state.grid.reduce((pc,cc,ci) => {
           if (ci === p3r[0] || ci === p3r[1] || ci === p3r[2]) {
             return pc.length === 0 ?
               [cc] :
@@ -98,16 +98,16 @@ const gameActions = g => {
         winningCells[0].mark :
         null;
 
-      const winningPlayer = this.players.filter(p => p.mark === winningMark).map(p => p.id)[0];
+      const winningPlayer = game.players.filter(p => p.mark === winningMark).map(p => p.id)[0];
 
       return {
-        ...this,
+        ...game, // NOTE: game = this (the object calling this method)
         theWinner: winningPlayer
       }
     },
 
     decorators: {
-      ...g.decorators,
+      ...game.decorators,
 
       processActions(gameToDecorate) { // TODO: Should this be under gameActions?
         // TODO: Handle multiple actions

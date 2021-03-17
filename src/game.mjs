@@ -1,5 +1,6 @@
 
-// These are the core properties available when the game is booted
+// These are the core properties that the game starts with.
+// Additional properties and functionality are added by mixing them in.
 export const corePropsAtBoot = {
   phase: 'boot',
   round: 0,
@@ -12,27 +13,27 @@ export const corePropsAtBoot = {
   actions: {}
 };
 
-export const coreTransitionLogic = g => {
+export const coreTransitionLogic = gameObj => {
   return {
-    ...g,
+    ...gameObj, // Copy game object and mixin (last in wins)
 
     reset() {
       return corePropsAtBoot; // TODO: Decorate this
     },
 
-    nextRound() {
+    nextRound(game = this) {
       return {
-        ...this,
-        round: this.round + 1 // TODO: test this
+        ...game, // NOTE: game = this (the object calling this method)
+        round: game.round + 1 // TODO: test this
       };
     },
 
-    nextPhase() { // TODO: Change so that we have to specify what phase to move to, with checks for allowable transition
+    nextPhase(game = this) { // TODO: Change so that we have to specify what phase to move to, with checks for allowable transition
       let theNextPhase;
-      if (this.phase === 'end') {
+      if (game.phase === 'end') {
         return corePropsAtBoot; // TODO: Handle functional decorators
       }
-      switch(this.phase) { // These phases are really just for enabling and disabling functionality.
+      switch(game.phase) { // These phases are really just for enabling and disabling functionality.
         case 'boot':
           theNextPhase = 'setup';
           break;
@@ -44,7 +45,7 @@ export const coreTransitionLogic = g => {
           break; 
       }
       return {
-        ...this,
+        ...game, // NOTE: game = this (the object calling this method)
         phase: theNextPhase
       };
     }
@@ -52,33 +53,33 @@ export const coreTransitionLogic = g => {
   }
 };
 
-export const corePlayerLogic = g => {
+export const corePlayerLogic = gameObj => {
   return {
-    ...g,
+    ...gameObj, // Copy game object and mixin (last in wins)
 
-    addPlayer(username, id) {
-      const firstId = this.players.length === 0 ? 
+    addPlayer(username, id, game = this) {
+      const firstId = game.players.length === 0 ? 
         id : 
-        this.firstPlayerId;
+        game.firstPlayerId;
 
       const updateWithNewPlayer = {
         players: [
-          ...this.players, {
+          ...game.players, {
             name: username,
             id: id
           }
         ],
-        numPlayers: this.numPlayers + 1, // TODO: test this
+        numPlayers: game.numPlayers + 1, // TODO: test this
         activePlayerId: firstId,
         firstPlayerId: firstId
       };
 
-      const decorators = this.decorators['addPlayer'] ? 
-        this.decorators['addPlayer'] : 
+      const decorators = game.decorators['addPlayer'] ? 
+        game.decorators['addPlayer'] : 
         () => ({});
 
       const returnObject = {
-        ...this,
+        ...game, // NOTE: game = this (the object calling this method)
         ...updateWithNewPlayer
       };
 
@@ -88,52 +89,44 @@ export const corePlayerLogic = g => {
       };
     },
 
-    setActivePlayer(id) { // TODO: Test
+    setActivePlayer(id, game = this) { // TODO: Test
       return {
-        ...this,
+        ...game, // NOTE: game = this (the object calling this method)
         activePlayerId: id // TODO: Check that we're in the play phase (how to make sure things are couopled?)
       }
     },
 
-    nextPlayer() { // TODO: Test
+    nextPlayer(game = this) { // TODO: Test
       // TODO: Error out if there is not active player
       // TODO: Check that we're in the play phase (how to make sure things are coupled?)
       // NOTE: This assumes players go once per round (may need to relax in the future)
-      let activePlayerIndex = this.players.findIndex(p => p.id === this.activePlayerId);
-      let nextPlayerIndex = (activePlayerIndex + 1) % this.numPlayers;
+      let activePlayerIndex = game.players.findIndex(p => p.id === game.activePlayerId);
+      let nextPlayerIndex = (activePlayerIndex + 1) % game.numPlayers;
       return {
-        ...this,
-        round: nextPlayerIndex === 0 ? this.round + 1 : this.round, // increment the round if we're back to the first player
-        activePlayerId: this.players[nextPlayerIndex].id
+        ...game, // NOTE: game = this (the object calling this method)
+        round: nextPlayerIndex === 0 ? game.round + 1 : game.round, // increment the round if we're back to the first player
+        activePlayerId: game.players[nextPlayerIndex].id
       }
     },
 
-    processActions(actions) {
-      const decorators = this.decorators['processActions'] ? 
-        this.decorators['processActions'] : 
+    processActions(actions, game = this) {
+      const decorators = game.decorators['processActions'] ? 
+        game.decorators['processActions'] : 
         () => ({});
 
       const returnObject = {
-        ...this,
+        ...game, // NOTE: game = this (the object calling this method)
         actions: actions
       };
 
       return {
-        ...this,
+        ...game, // NOTE: game = this (the object calling this method)
         ...decorators(returnObject)
       };
     }
 
   };
 };
-
-// const coreActions = g => {
-  //
-  // }
-
-// TODO:
-// - Action: Player ends round
-// - Action: Player leaves game
 
 // TODO: Describe functional approach to game composition
 const pipe = (...fns) => x => fns.reduce((y, f) => f(y), x);
@@ -142,4 +135,3 @@ export const gameCore = pipe(
   coreTransitionLogic,
   corePlayerLogic
 )(corePropsAtBoot);
-
