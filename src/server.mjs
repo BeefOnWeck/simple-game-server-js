@@ -51,9 +51,13 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
   });
 
   // Respond to player actions here
+  socket.on('player-actions', actions => {
+    game = game.processActions(actions);
+  });
+
   // When a player ends their turn, tell the next player it's their turn
   // Broadcast state at the end of each player's turn
-  socket.on('player-actions', actions =>{
+  socket.on('end-my-turn', () => {
     console.log('Player is done:', game.activePlayerId); // TODO: Confirm this message is actually from the active player
     // TODO: Process the actions in a meaningful way
     // But first let's just go to the next player

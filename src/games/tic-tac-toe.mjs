@@ -32,8 +32,6 @@ const gameProps = g => {
 
     theWinner: null,
 
-    // NOTE: We don't have to just ammend the players property.
-    // We could also, for instance, 
     decorators: {
       addPlayer(gameToDecorate) {
         return {
@@ -56,11 +54,11 @@ const gameActions = g => {
     makeMark(playerId, row, col) {
       const playerMark = this.players.filter(p => p.id === playerId).map(p => p.mark)[0];
 
-      const updatedGrid = this.state.grid.map(g => {
-        if (g.row === row && g.col === col) {
-          g.mark = playerMark;
+      const updatedGrid = this.state.grid.map(grd => {
+        if (grd.row === row && grd.col === col) {
+          grd.mark = playerMark;
         }
-        return g;
+        return grd;
       });
 
       return {
@@ -105,6 +103,21 @@ const gameActions = g => {
       return {
         ...this,
         theWinner: winningPlayer
+      }
+    },
+
+    decorators: {
+      ...g.decorators,
+
+      processActions(gameToDecorate) { // TODO: Should this be under gameActions?
+        // TODO: Handle multiple actions
+        if ('make-mark' in gameToDecorate.actions) {
+          let pid = gameToDecorate.actions['make-mark'].pid;
+          let ind = gameToDecorate.actions['make-mark'].ind;
+          let row = Math.floor(ind / 3);
+          let col = ind % 3;
+          return gameToDecorate.makeMark(pid, row, col);
+        }
       }
     }
   }

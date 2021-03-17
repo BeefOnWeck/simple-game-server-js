@@ -106,6 +106,22 @@ export const corePlayerLogic = g => {
         round: nextPlayerIndex === 0 ? this.round + 1 : this.round, // increment the round if we're back to the first player
         activePlayerId: this.players[nextPlayerIndex].id
       }
+    },
+
+    processActions(actions) {
+      const decorators = this.decorators['processActions'] ? 
+        this.decorators['processActions'] : 
+        () => ({});
+
+      const returnObject = {
+        ...this,
+        actions: actions
+      };
+
+      return {
+        ...this,
+        ...decorators(returnObject)
+      };
     }
 
   };
