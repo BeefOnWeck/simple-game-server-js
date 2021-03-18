@@ -1,7 +1,7 @@
 
 // These are the core properties that the game starts with.
 // Additional properties and functionality are added by mixing them in.
-export const corePropsAtBoot = {
+const corePropsAndState = {
   phase: 'boot',
   round: 0,
   players: [],
@@ -13,12 +13,13 @@ export const corePropsAtBoot = {
   actions: {}
 };
 
-export const coreTransitionLogic = gameObj => {
+// This is the logic for handling phases and rounds.
+const coreTransitionLogic = (game = corePropsAndState) => {
   return {
-    ...gameObj, // Copy game object and mixin (last in wins)
+    ...game, // Copy game object and mixin (last in wins)
 
     reset() {
-      return corePropsAtBoot; // TODO: Decorate this
+      return corePropsAndState; // TODO: Decorate this
     },
 
     nextRound(game = this) {
@@ -31,7 +32,7 @@ export const coreTransitionLogic = gameObj => {
     nextPhase(game = this) { // TODO: Change so that we have to specify what phase to move to, with checks for allowable transition
       let theNextPhase;
       if (game.phase === 'end') {
-        return corePropsAtBoot; // TODO: Handle functional decorators
+        return corePropsAndState; // TODO: Handle functional decorators
       }
       switch(game.phase) { // These phases are really just for enabling and disabling functionality.
         case 'boot':
@@ -53,9 +54,10 @@ export const coreTransitionLogic = gameObj => {
   }
 };
 
-export const corePlayerLogic = gameObj => {
+// This is the logic for handling player actions and turns.
+const corePlayerLogic = (game = coreTransitionLogic) => {
   return {
-    ...gameObj, // Copy game object and mixin (last in wins)
+    ...game, // Copy game object and mixin (last in wins)
 
     addPlayer(username, id, game = this) {
       const firstId = game.players.length === 0 ? 
@@ -131,7 +133,9 @@ export const corePlayerLogic = gameObj => {
 // TODO: Describe functional approach to game composition
 const pipe = (...fns) => x => fns.reduce((y, f) => f(y), x);
 
+// This function composition goes from top to bottom.
+// It is then applied to `corePropsAndState`.
 export const gameCore = pipe(
   coreTransitionLogic,
   corePlayerLogic
-)(corePropsAtBoot);
+)(corePropsAndState);

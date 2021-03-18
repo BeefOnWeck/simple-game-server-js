@@ -35,7 +35,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     if (game.numPlayers === MAX_PLAYERS) { // We have all the players, start the game
       // TODO: Once we enter the play phase, players can't join anymore
       game = game.nextPhase().nextRound(); // setup --> play (turn 1)
-      io.emit('game-state', { // TODO: Refactor this (lens?)
+      io.emit('game-state', { // TODO: Refactor this so games can decide what gets sent
         phase: game.phase, 
         turn: game.turn,
         activePlayer: game.activePlayerId,
@@ -62,12 +62,13 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     // TODO: Process the actions in a meaningful way
     // But first let's just go to the next player
     game = game.nextPlayer();
-    io.emit('game-state', { // TODO: Refactor this (lens?)
+    io.emit('game-state', { // TODO: Refactor this so games can decide what gets sent
       phase: game.phase, 
       turn: game.turn,
       activePlayer: game.activePlayerId,
       players: game.players,
-      state: game.state
+      state: game.state,
+      winner: game.theWinner
     });
     io.to(game.activePlayerId).emit('start-your-turn', {});
   });
