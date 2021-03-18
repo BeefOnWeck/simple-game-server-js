@@ -1,7 +1,11 @@
 import express from 'express';
 import { createServer } from 'http';
 import { Server as socketio } from 'socket.io';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { game0 } from './games/tic-tac-toe.mjs';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 let game = game0; // Get a mutable reference to gameCore
 game = game.nextPhase(); // boot --> setup
@@ -12,6 +16,16 @@ const MAX_PLAYERS = 2;
 const MAX_NUM_ROUNDS = 10;
 
 const app = express();
+
+// Configuration page
+app.use('/css', express.static(__dirname + '/../public/css'));
+app.use('/js', express.static(__dirname + '/../node_modules/micromodal/dist'));
+console.log(__dirname + '/../node_modules/micromodal/dist');
+app.set('view engine', 'ejs');
+app.get('/', (req, res) => {
+  res.render('hello', {});
+});
+
 const httpServer = createServer(app);
 
 const io = new socketio(httpServer, {
