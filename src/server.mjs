@@ -23,7 +23,7 @@ app.use('/js', express.static(__dirname + '/../node_modules/micromodal/dist'));
 console.log(__dirname + '/../node_modules/micromodal/dist');
 app.set('view engine', 'ejs');
 app.get('/', (req, res) => {
-  res.render('hello', {});
+  res.render('configuration-page', {});
 });
 
 const httpServer = createServer(app);
