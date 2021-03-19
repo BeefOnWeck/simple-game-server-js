@@ -7,7 +7,7 @@ import { selectGame } from './games/gameSelector.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-let game = selectGame('tic-tac-toe'); // Get a mutable reference to gameCore
+let game = selectGame('Tic Tac Toe'); // Get a mutable reference to gameCore
 game = game.nextPhase(); // boot --> setup
 // TODO: Players can't join until setup phase begins
 
@@ -24,7 +24,7 @@ app.use('/js', express.static(__dirname + '/../node_modules/micromodal/dist'));
 console.log(__dirname + '/../node_modules/micromodal/dist');
 app.set('view engine', 'ejs');
 app.get('/', (req, res) => {
-  res.render('configuration-page', {});
+  res.render('configuration-page', {}); // TODO: Send meta and config to ejs
 });
 
 // TODO: Add a route for accessing current game state

@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { gameCore } from '../../src/game.mjs';
+import { gameCore } from '../../src/games/gameCore.mjs';
 
 chai.should();
 

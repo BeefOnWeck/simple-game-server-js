@@ -2,6 +2,11 @@
 // These are the core properties that the game starts with.
 // Additional properties and functionality are added by mixing them in.
 const corePropsAndState = {
+  meta: {
+    name: 'Game Core',
+    avatar: null
+  },
+  config: {},
   phase: 'boot',
   round: 0,
   players: [],

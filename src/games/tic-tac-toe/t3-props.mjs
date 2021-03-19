@@ -5,6 +5,15 @@ export const gameProps = (game = gameState) => {
   return {
     ...game, // Copy game object and mixin (last in wins)
 
+    meta: {
+      name: 'Tic Tac Toe',
+      avatar: 't3.png'
+    },
+
+    config: {
+      maxTurns: 10
+    },
+
     theWinner: null,
 
     decorators: {

@@ -3,15 +3,19 @@ import cloneDeep from 'lodash.clonedeep';
 // import all games here
 import { game0 } from './tic-tac-toe/tic-tac-toe.mjs';
 
-export const selectGame = function(name) {
-  let game = null;
-  switch(name) {
-    case 'tic-tac-toe':
-      game = cloneDeep(game0);
-      break;
-    default:
-      game = cloneDeep(game0);
-  }
+const games = [
+  game0
+];
 
-  return game;
+export const selectGame = function(name) {
+  // TODO: Check for valid key and throw error if necessary
+  return cloneDeep(games.filter(g => g.meta.name === name)[0]);
+}
+
+export const getMeta = function() {
+  return games.map(g => g.meta);
+}
+
+export const getConfig = function() {
+  return games.map(g => g.config);
 }

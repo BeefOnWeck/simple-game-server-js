@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { game0 } from '../../src/games/tic-tac-toe.mjs';
+import { game0 } from '../../src/games/tic-tac-toe/tic-tac-toe.mjs';
 
 chai.should();
 
