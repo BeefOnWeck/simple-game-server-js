@@ -1,4 +1,4 @@
-import { gameCore } from '../game.mjs';
+import { gameCore } from '../gameCore.mjs';
 
 // NOTE: This is pulled out in case we want to refer to it later.
 // E.g., an updated reset() method.

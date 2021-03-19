@@ -1,4 +1,4 @@
-import { gameCore } from '../game.mjs';
+import { gameCore } from '../gameCore.mjs';
 import { gameState } from './t3-state.mjs';
 import { gameProps } from './t3-props.mjs';
 import { gameActions } from './t3-actions.mjs';
