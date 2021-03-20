@@ -7,8 +7,9 @@ import { selectGame, getMeta, getConfig } from './games/gameSelector.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-let game = selectGame('Tic Tac Toe'); // Get a mutable reference to gameCore
-game = game.nextPhase(); // boot --> setup
+// Initialize empty game object
+let game = {};
+
 // TODO: Players can't join until setup phase begins
 
 // TODO: This will eventually be defined via a configuration page.
@@ -34,6 +35,13 @@ app.get('/', (req, res) => {
 // TODO: Add a route for accessing current game state
 
 // TODO: Add a POST route for starting a new game
+app.use(express.json());
+app.post('/start', (req, res) => {
+  console.log(req.body);
+  let selectedGame = req.body.selectedGame; // TODO: Validate!!!
+  game = selectGame(selectedGame); // Get a mutable reference to gameCore
+  game = game.nextPhase(); // boot --> setup
+});
 
 const httpServer = createServer(app);
 
