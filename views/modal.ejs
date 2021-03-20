@@ -3,13 +3,24 @@
     <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
       <header class="modal__header">
         <h2 class="modal__title">
-          Micromodal
+          Select Game
         </h2>
         <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
       </header>
       <div class="modal-content-content">
         <div class="modal__content">
-          Modal content
+          <div id="ms1">
+            <!-- TODO: Loop over all games -->
+            <img src="/assets/<%= meta[0].avatar %>" alt="<%= meta[0].name %>">
+            <%= meta[0].name %>
+          </div>
+          <div id="ms2">
+            <!-- TODO: Loop over all games -->
+            <%= config[0].name %>
+            <% for (let [key, value] of Object.entries(config[0].conf)) { %>
+              <%= key %>: <%= value %>
+            <% } %>
+          </div>
         </div>
         <footer class="modal__footer">
           <button class="modal__btn" data-micromodal-close aria-label="Close this dialog window">Close</button>
@@ -19,4 +30,4 @@
   </div>
 </div>
 
-<a data-micromodal-trigger="modal-1" href='javascript:void(0);'>Open Modal Dialog</a>
+<a data-micromodal-trigger="modal-1" href='javascript:void(0);'>Start new game</a>

@@ -17,5 +17,5 @@ export const getMeta = function() {
 }
 
 export const getConfig = function() {
-  return games.map(g => g.config);
+  return games.map(g => ({name: g.meta.name, conf: g.config}));
 }

@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { Server as socketio } from 'socket.io';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { selectGame } from './games/gameSelector.mjs';
+import { selectGame, getMeta, getConfig } from './games/gameSelector.mjs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -19,12 +19,16 @@ const app = express();
 
 // Configuration page
 // TODO: Protect this with basic auth
-app.use('/css', express.static(__dirname + '/../public/css'));
-app.use('/js', express.static(__dirname + '/../node_modules/micromodal/dist'));
-console.log(__dirname + '/../node_modules/micromodal/dist');
+app.use('/assets', express.static(__dirname + '/../views/assets'));
+app.use('/css', express.static(__dirname + '/../views/css'));
+app.use('/js/third', express.static(__dirname + '/../node_modules/micromodal/dist'));
+app.use('/js', express.static(__dirname + '/../views/js'));
 app.set('view engine', 'ejs');
 app.get('/', (req, res) => {
-  res.render('configuration-page', {}); // TODO: Send meta and config to ejs
+  res.render('configuration-page', {
+    meta: getMeta(),
+    config: getConfig()
+  });
 });
 
 // TODO: Add a route for accessing current game state
