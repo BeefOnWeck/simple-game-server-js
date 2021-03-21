@@ -1,5 +1,36 @@
 (function() {
 
+  // Get handles for the status span elements
+  var phaseSpan = document.getElementById('phase');
+  var roundSpan = document.getElementById('round');
+  var playerSpan = document.getElementById('player');
+
+  // Asynchronously get the game status every 5 seconds
+  var sleep = time => new Promise(resolve => setTimeout(resolve, time));
+  var poll = (promiseFn, time) => promiseFn().then(
+    sleep(time).then(() => poll(promiseFn, time)));
+  poll(() => 
+    new Promise(() => {
+      fetch('http://localhost:3000/status').then(response => {
+        return response.json();
+      }).then(data => {
+        while( phaseSpan.firstChild ) {
+          phaseSpan.removeChild( phaseSpan.firstChild );
+        }
+        phaseSpan.appendChild( document.createTextNode(data.phase));
+
+        while( roundSpan.firstChild ) {
+          roundSpan.removeChild( roundSpan.firstChild );
+        }
+        roundSpan.appendChild( document.createTextNode(data.round));
+        
+        while( playerSpan.firstChild ) {
+          playerSpan.removeChild( playerSpan.firstChild );
+        }
+        playerSpan.appendChild( document.createTextNode(data.activePlayer));
+      });
+    }), 5000);
+
   // Get the two screens for the modal window
   let modalScreen1 = document.getElementById('ms1');
   let modalScreen2 = document.getElementById('ms2');

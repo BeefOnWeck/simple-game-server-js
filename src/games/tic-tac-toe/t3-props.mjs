@@ -21,7 +21,7 @@ export const gameProps = (game = gameState) => {
       // Add `theWinner` to the list of game stats
       getGameStatus(gameToDecorate) {
         return {
-          theWinner: gameToDecorate.theWinner
+          theWinner: gameToDecorate.theWinner ? gameToDecorate.theWinner : null
         };
       },
       // When adding a player, assign them a mark to use ('x' or 'o')

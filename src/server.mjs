@@ -35,9 +35,12 @@ app.get('/', (req, res) => {
 // Add a route for accessing current game stats
 app.get('/status', (req, res) => {
   // TODO: Don't respond until game is actually started
-  res.json(game.getGameStatus());
-})
-
+  let jsonResp = {};
+  if ('getGameStatus' in game) {
+    jsonResp = game.getGameStatus();
+  }
+  res.json(jsonResp);
+});
 
 // Add a POST route for starting a new game
 app.use(express.json());

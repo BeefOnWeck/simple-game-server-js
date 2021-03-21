@@ -31,7 +31,7 @@ const coreTransitionLogic = (game = corePropsAndState) => {
       // The basic information meant to summarize a game in progress:
       const gameStatus =  {
         phase: game.phase, 
-        turn: game.turn,
+        round: game.round,
         activePlayer: game.activePlayerId,
         players: game.players,
         state: game.state
