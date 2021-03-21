@@ -32,9 +32,14 @@ app.get('/', (req, res) => {
   });
 });
 
-// TODO: Add a route for accessing current game state
+// Add a route for accessing current game stats
+app.get('/status', (req, res) => {
+  // TODO: Don't respond until game is actually started
+  res.json(game.getGameStatus());
+})
 
-// TODO: Add a POST route for starting a new game
+
+// Add a POST route for starting a new game
 app.use(express.json());
 app.post('/start', (req, res) => {
   console.log(req.body);
@@ -66,13 +71,9 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     if (game.numPlayers === MAX_PLAYERS) { // We have all the players, start the game
       // TODO: Once we enter the play phase, players can't join anymore
       game = game.nextPhase().nextRound(); // setup --> play (turn 1)
-      io.emit('game-state', { // TODO: Refactor this so games can decide what gets sent
-        phase: game.phase, 
-        turn: game.turn,
-        activePlayer: game.activePlayerId,
-        players: game.players,
-        state: game.state
-      });
+      io.emit('game-state', // TODO: Rename message to 'game-status'
+        game.getGameStatus()
+      );
       // Tell player 1 it's their turn
       io.to(game.firstPlayerId).emit('start-your-turn', {}); // TODO: Consider sending list of actions here? Also send state
       // This is a point where things could break (if player 1 doesn't get the message, we're stuck)
@@ -93,14 +94,9 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     // TODO: Process the actions in a meaningful way
     // But first let's just go to the next player
     game = game.nextPlayer();
-    io.emit('game-state', { // TODO: Refactor this so games can decide what gets sent
-      phase: game.phase, 
-      turn: game.turn,
-      activePlayer: game.activePlayerId,
-      players: game.players,
-      state: game.state,
-      winner: game.theWinner
-    });
+    io.emit('game-state', // TODO: Rename message to 'game-status'
+      game.getGameStatus()
+    );
     io.to(game.activePlayerId).emit('start-your-turn', {});
   });
 });

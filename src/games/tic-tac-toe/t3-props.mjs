@@ -5,9 +5,10 @@ export const gameProps = (game = gameState) => {
   return {
     ...game, // Copy game object and mixin (last in wins)
 
+    // Metadata should include at least a name and avatar
     meta: {
       name: 'Tic Tac Toe',
-      avatar: 't3.png'
+      avatar: 't3.png' // Filename for a 100x100 png
     },
 
     config: {
@@ -17,6 +18,13 @@ export const gameProps = (game = gameState) => {
     theWinner: null,
 
     decorators: {
+      // Add `theWinner` to the list of game stats
+      getGameStatus(gameToDecorate) {
+        return {
+          theWinner: gameToDecorate.theWinner
+        };
+      },
+      // When adding a player, assign them a mark to use ('x' or 'o')
       addPlayer(gameToDecorate) {
         return {
           players: gameToDecorate.players.map((p,i) => ({

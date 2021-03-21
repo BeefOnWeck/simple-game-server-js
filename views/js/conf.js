@@ -12,7 +12,9 @@
     modalScreen2.classList.remove('hidden');
   };
 
-  function startMessage() {
+  let startButton = document.getElementById('start-btn');
+  startButton.onclick = function() {
+    console.log('Starting game!');
     fetch('http://localhost:3000/start', { // TODO: Parameterize this (env var)
       method: 'POST',
       headers: {
@@ -23,9 +25,6 @@
       })
     });
   }
-
-  let startButton = document.getElementById('start-btn');
-  startButton.onclick = startMessage();
 
 
 

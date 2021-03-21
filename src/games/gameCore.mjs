@@ -27,6 +27,27 @@ const coreTransitionLogic = (game = corePropsAndState) => {
       return corePropsAndState; // TODO: Decorate this
     },
 
+    getGameStatus(game = this) {
+      // The basic information meant to summarize a game in progress:
+      const gameStatus =  {
+        phase: game.phase, 
+        turn: game.turn,
+        activePlayer: game.activePlayerId,
+        players: game.players,
+        state: game.state
+      };
+
+      // Games can define a decorator to augment/overide the game status:
+      const decorators = game.decorators['getGameStatus'] ? 
+        game.decorators['getGameStatus'] : 
+        () => ({});
+
+      return {
+        ...gameStatus,
+        ...decorators(game)
+      };
+    },
+
     nextRound(game = this) {
       return {
         ...game, // NOTE: game = this (the object calling this method)
