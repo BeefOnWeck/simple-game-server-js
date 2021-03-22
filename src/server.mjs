@@ -83,8 +83,6 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     // TODO: Test on more than 2 players
     game = game.addPlayer(username, socket.id);
 
-    console.log(game.players);
-
     // Check the criteria for starting play
     if (game.phase === 'play') { // We have all the players, start the game
       

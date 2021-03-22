@@ -35,11 +35,9 @@ export const gameProps = (game = gameState) => {
         let updatedPlayerList = gameToDecorate.numPlayers <= 2 ?
           gameToDecorate.players.map((p,i) => ({
             ...p,
-            mark: gameToDecorate.state.marks[i] // TODO: Throw error when i > 1
+            mark: gameToDecorate.state.marks[i]
           })) : 
           gameToDecorate.players.slice(0,1);
-
-        console.log(updatedPlayerList);
 
         return {
           ...updatedGame,

@@ -14,7 +14,7 @@ describe('Game Core', function() {
     game = game.nextPhase();
     game.should.have.property('phase').equal('end');
     game = game.nextPhase();
-    game.should.have.property('phase').equal('boot');
+    game.should.have.property('phase').equal('end');
   });
 
   it('Should clear the player, state, and actions properties on reset()', function() {

@@ -1,167 +1,28 @@
+import {corePropsAndState} from './corePropsAndState.mjs';
+import {coreTransitionLogic} from './coreTransitionLogic.mjs';
+import {corePlayerLogic} from './corePlayerLogic.mjs';
 
-// These are the core properties that the game starts with.
-// Additional properties and functionality are added by mixing them in.
-const corePropsAndState = {
-  meta: {
-    name: 'Game Core',
-    avatar: null
-  },
-  config: {},
-  phase: 'boot',
-  round: 0,
-  players: [],
-  numPlayers: 0,
-  activePlayerId: null,
-  firstPlayerId: null,
-  state: {},
-  decorators: {},
-  actions: {}
-};
+// The game object is created using a composition of functions we call 
+// a "pipeline."
+// Each function in the composition takes the game object as input and returns 
+// a new game object with additional and/or modified properties and methods.
+// For more information, see: 
+// https://medium.com/javascript-scene/composing-software-an-introduction-27b72500d6ea
 
-// This is the logic for handling phases and rounds.
-const coreTransitionLogic = (game = corePropsAndState) => {
-  return {
-    ...game, // Copy game object and mixin (last in wins)
-
-    reset() {
-      return corePropsAndState; // TODO: Decorate this
-    },
-
-    getGameStatus(game = this) {
-      // The basic information meant to summarize a game in progress:
-      const gameStatus =  {
-        phase: game.phase, 
-        round: game.round,
-        activePlayer: game.activePlayerId,
-        players: game.players,
-        state: game.state
-      };
-
-      // Games can define a decorator to augment/overide the game status:
-      const decorators = game.decorators['getGameStatus'] ? 
-        game.decorators['getGameStatus'] : 
-        () => ({});
-
-      return {
-        ...gameStatus,
-        ...decorators(game)
-      };
-    },
-
-    nextRound(game = this) {
-      return {
-        ...game, // NOTE: game = this (the object calling this method)
-        round: game.round + 1 // TODO: test this
-      };
-    },
-
-    nextPhase(game = this) { // TODO: Change so that we have to specify what phase to move to, with checks for allowable transition
-      let theNextPhase;
-      if (game.phase === 'end') {
-        return corePropsAndState; // TODO: Handle functional decorators
-      }
-      switch(game.phase) { // These phases are really just for enabling and disabling functionality.
-        case 'boot':
-          theNextPhase = 'setup';
-          break;
-        case 'setup': // TODO: How to trigger setup effects? We don't, it happens in server.
-          theNextPhase = 'play';
-          break;
-        case 'play': // TODO: How to set play in motion? It happens in the server.
-          theNextPhase = 'end';
-          break; 
-      }
-      return {
-        ...game, // NOTE: game = this (the object calling this method)
-        phase: theNextPhase
-      };
-    }
-
-  }
-};
-
-// This is the logic for handling player actions and turns.
-const corePlayerLogic = (game = coreTransitionLogic) => {
-  return {
-    ...game, // Copy game object and mixin (last in wins)
-
-    addPlayer(username, id, game = this) {
-      const firstId = game.players.length === 0 ? 
-        id : 
-        game.firstPlayerId;
-
-      const updateWithNewPlayer = {
-        players: [
-          ...game.players, {
-            name: username,
-            id: id
-          }
-        ],
-        numPlayers: game.numPlayers + 1, // TODO: test this
-        activePlayerId: firstId,
-        firstPlayerId: firstId
-      };
-
-      const decorators = game.decorators['addPlayer'] ? 
-        game.decorators['addPlayer'] : 
-        () => ({});
-
-      const returnObject = {
-        ...game, // NOTE: game = this (the object calling this method)
-        ...updateWithNewPlayer
-      };
-
-      return {
-        ...returnObject,
-        ...decorators(returnObject)
-      };
-    },
-
-    setActivePlayer(id, game = this) { // TODO: Test
-      return {
-        ...game, // NOTE: game = this (the object calling this method)
-        activePlayerId: id // TODO: Check that we're in the play phase (how to make sure things are couopled?)
-      }
-    },
-
-    nextPlayer(game = this) { // TODO: Test
-      // TODO: Error out if there is not active player
-      // TODO: Check that we're in the play phase (how to make sure things are coupled?)
-      // NOTE: This assumes players go once per round (may need to relax in the future)
-      let activePlayerIndex = game.players.findIndex(p => p.id === game.activePlayerId);
-      let nextPlayerIndex = (activePlayerIndex + 1) % game.numPlayers;
-      return {
-        ...game, // NOTE: game = this (the object calling this method)
-        round: nextPlayerIndex === 0 ? game.round + 1 : game.round, // increment the round if we're back to the first player
-        activePlayerId: game.players[nextPlayerIndex].id
-      }
-    },
-
-    processActions(actions, game = this) {
-      const decorators = game.decorators['processActions'] ? 
-        game.decorators['processActions'] : 
-        () => ({});
-
-      const returnObject = {
-        ...game, // NOTE: game = this (the object calling this method)
-        actions: actions
-      };
-
-      return {
-        ...game, // NOTE: game = this (the object calling this method)
-        ...decorators(returnObject)
-      };
-    }
-
-  };
-};
-
-// TODO: Describe functional approach to game composition
+// `pipe` is a function that allows us to form the composition.
+// `pipe` returns a function which is then applied to another object.
 const pipe = (...fns) => x => fns.reduce((y, f) => f(y), x);
 
-// This function composition goes from top to bottom.
-// It is then applied to `corePropsAndState`.
+// The function composition or "pipeline" is read from top to bottom.
+// That is, the first function is applied first, the second function is then 
+// applied to the output of the first function, and so on.
+// Remember that `pipe` is a function that returns another function, which must 
+// be then applied to something.
+
+// Our core game object.
 export const gameCore = pipe(
   coreTransitionLogic,
   corePlayerLogic
 )(corePropsAndState);
+// NOTE: This could also be written as:
+// gameCore = corePlayerLogic(coreTransitionLogic(corePropsAndState))
