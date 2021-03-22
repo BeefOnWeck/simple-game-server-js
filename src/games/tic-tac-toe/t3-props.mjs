@@ -18,19 +18,32 @@ export const gameProps = (game = gameState) => {
     theWinner: null,
 
     decorators: {
+
       // Add `theWinner` to the list of game stats
       getGameStatus(gameToDecorate) {
         return {
           theWinner: gameToDecorate.theWinner ? gameToDecorate.theWinner : null
         };
       },
+
       // When adding a player, assign them a mark to use ('x' or 'o')
       addPlayer(gameToDecorate) {
-        return {
-          players: gameToDecorate.players.map((p,i) => ({
+        let updatedGame = gameToDecorate.numPlayers == 2 ?
+          gameToDecorate.nextPhase().nextRound() :
+          gameToDecorate;
+
+        let updatedPlayerList = gameToDecorate.numPlayers <= 2 ?
+          gameToDecorate.players.map((p,i) => ({
             ...p,
             mark: gameToDecorate.state.marks[i] // TODO: Throw error when i > 1
-          }))
+          })) : 
+          gameToDecorate.players.slice(0,1);
+
+        console.log(updatedPlayerList);
+
+        return {
+          ...updatedGame,
+          players: updatedPlayerList
         };
       }
     }
