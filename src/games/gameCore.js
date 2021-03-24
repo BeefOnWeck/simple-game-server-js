@@ -25,4 +25,4 @@ export const gameCore = pipe(
   corePlayerLogic
 )(corePropsAndState);
 // NOTE: This could also be written as:
-// export const gameCore = corePlayerLogic(coreTransitionLogic(corePropsAndState));
+// export const gameCoreAlt = corePlayerLogic(coreTransitionLogic(corePropsAndState));
