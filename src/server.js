@@ -3,7 +3,7 @@ import { createServer } from 'http';
 import { Server as socketio } from 'socket.io';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
-import { selectGame, getMeta, getConfig } from './games/gameSelector.mjs';
+import { selectGame, getMeta, getConfig } from './games/gameSelector.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

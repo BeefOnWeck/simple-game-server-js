@@ -1,13 +1,14 @@
 {
   "name": "simple-game-server",
   "version": "0.1.0",
+  "type": "module",
   "description": "A simple multi-player, turned-based game server written in JavaScript.",
-  "main": "./src/server.mjs",
+  "main": "./src/server.js",
   "scripts": {
-    "start": "node --experimental-modules src/server.mjs",
+    "start": "node --experimental-modules src/server.js",
     "test": "mocha --recursive",
     "coverage": "nyc --all npm run test",
-    "lint": "./node_modules/.bin/eslint src --ext .mjs"
+    "lint": "./node_modules/.bin/eslint src"
   },
   "repository": {
     "type": "git",

@@ -1,10 +1,11 @@
-import {corePropsAndState} from './corePropsAndState.mjs';
+import {corePropsAndState} from './corePropsAndState.js';
 
 // This module defines the core logic for transitioning between 
 // phases and rounds in the game.
 
 // The default argument is just there to explicitly show the dependency; 
 // it is expected that this function will be applied to a game object.
+
 export const coreTransitionLogic = (game = corePropsAndState) => {
   return {
     ...game, // Copy input game object and mixin changes (last in wins)

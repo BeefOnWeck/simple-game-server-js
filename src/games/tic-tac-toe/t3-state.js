@@ -1,4 +1,4 @@
-import { gameCore } from '../gameCore.mjs';
+import { gameCore } from '../gameCore.js';
 
 
 // The game state is defined here

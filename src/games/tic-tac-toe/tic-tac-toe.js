@@ -1,7 +1,7 @@
-import { gameCore } from '../gameCore.mjs';
-import { gameState } from './t3-state.mjs';
-import { gameProps } from './t3-props.mjs';
-import { gameActions } from './t3-actions.mjs';
+import { gameCore } from '../gameCore.js';
+import { gameState } from './t3-state.js';
+import { gameProps } from './t3-props.js';
+import { gameActions } from './t3-actions.js';
 
 // The game object is created using a composition of functions we call 
 // a "pipeline."

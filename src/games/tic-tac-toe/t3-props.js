@@ -1,4 +1,4 @@
-import { gameState } from './t3-state.mjs';
+import { gameState } from './t3-state.js';
 
 // If there are any game properties we want to define or overide
 export const gameProps = (game = gameState) => {

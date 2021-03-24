@@ -1,9 +1,13 @@
-import {coreTransitionLogic} from './coreTransitionLogic.mjs';
+import {coreTransitionLogic} from './coreTransitionLogic.js';
 
 // This module defines the logic for handling player actions and turns.
 
 // The default argument is just there to explicitly show the dependency; 
 // it is expected that this function will be applied to a game object.
+/**
+ * @mixin
+ * @mixes coreTransitionLogic
+ */
 export const corePlayerLogic = (game = coreTransitionLogic) => {
   return {
     ...game, // Copy input game object and mixin changes (last in wins)

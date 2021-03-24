@@ -1,10 +1,18 @@
-import { gameProps } from './t3-props.mjs';
+import { gameProps } from './t3-props.js';
 
 // The game actions are defined here
 export const gameActions = (game = gameProps) => {
   return {
     ...game, // Copy game object and mixin (last in wins)
 
+    /**
+     * 
+     * @param {*} playerId 
+     * @param {*} row 
+     * @param {*} col 
+     * @param {*} game 
+     * @returns 
+     */
     makeMark(playerId, row, col, game = this) {
       const playerMark = game.players.filter(p => p.id === playerId).map(p => p.mark)[0];
 

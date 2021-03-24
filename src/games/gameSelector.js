@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash.clonedeep';
 
 // import all games here
-import { game0 } from './tic-tac-toe/tic-tac-toe.mjs';
+import { game0 } from './tic-tac-toe/tic-tac-toe.js';
 
 const games = [
   game0

@@ -1,6 +1,6 @@
-import {corePropsAndState} from './corePropsAndState.mjs';
-import {coreTransitionLogic} from './coreTransitionLogic.mjs';
-import {corePlayerLogic} from './corePlayerLogic.mjs';
+import {corePropsAndState} from './corePropsAndState.js';
+import {coreTransitionLogic} from './coreTransitionLogic.js';
+import {corePlayerLogic} from './corePlayerLogic.js';
 
 // The game object is created using a composition of functions we call 
 // a "pipeline."
@@ -25,4 +25,4 @@ export const gameCore = pipe(
   corePlayerLogic
 )(corePropsAndState);
 // NOTE: This could also be written as:
-// gameCore = corePlayerLogic(coreTransitionLogic(corePropsAndState))
+// export const gameCore = corePlayerLogic(coreTransitionLogic(corePropsAndState));

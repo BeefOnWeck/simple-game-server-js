@@ -7,6 +7,7 @@
 // This object literal is the basis for our final game object.
 // Most of the values below are going to be overwritten by the pipeline 
 // of functions defined by a game implementation.
+
 export const corePropsAndState = {
   // Metadata for describing a particular game
   meta: {
