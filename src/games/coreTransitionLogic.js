@@ -1,5 +1,4 @@
 import {corePropsAndState} from './corePropsAndState.js';
-import './types.js';
 
 // This module defines the core logic for transitioning between 
 // phases and rounds in the game.
@@ -7,7 +6,6 @@ import './types.js';
 // The default argument is just there to explicitly show the dependency; 
 // it is expected that this function will be applied to a game object.
 
-/** @returns {CC} */
 export const coreTransitionLogic = (game = corePropsAndState) => {
   return {
     ...game, // Copy input game object and mixin changes (last in wins)
@@ -17,8 +15,9 @@ export const coreTransitionLogic = (game = corePropsAndState) => {
       return game;
     },
 
+    // Return information meant to summarize a game in progress
     getGameStatus(game = this) {
-      // The basic information meant to summarize a game in progress:
+      // Core game status
       const gameStatus =  {
         phase: game.phase, // NOTE: game = this (object calling this method)
         round: game.round,
@@ -38,6 +37,7 @@ export const coreTransitionLogic = (game = corePropsAndState) => {
       };
     },
 
+    // Moves the game to the next round
     nextRound(game = this) {
       return {
         ...game, // NOTE: game = this (object calling this method)
@@ -45,6 +45,7 @@ export const coreTransitionLogic = (game = corePropsAndState) => {
       };
     },
 
+    // Moves the game to the next phase
     nextPhase(game = this) { // TODO: Change so that we have to specify what phase to move to, with checks for allowable transition
       let theNextPhase;
       if (game.phase === 'end') {
