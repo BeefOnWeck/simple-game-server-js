@@ -6,6 +6,7 @@ export const gameState = (game = gameCore) => {
   return {
     ...game, // Copy game object and mixin (last in wins)
 
+    // Mix in the initial state for the game.
     state: {
       // A 3x3 grid with cell capable of holding a mark from a player.
       grid: Array.from({length:9}, (v,i) => {

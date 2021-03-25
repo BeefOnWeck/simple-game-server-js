@@ -36,9 +36,12 @@ describe('Tic Tac Toe', function() {
   it('Should find the winner if there is a three-in-a-row', function() {
     let game = {...game0}; // shallow copy
     game = game.addPlayer('First','1').addPlayer('Second','2');
-    game = game.makeMark('1', 0, 0).makeMark('2', 1, 1).
-      makeMark('1', 0, 1).makeMark('2', 1, 0).
-      makeMark('1', 0, 2).findTheWinner();
+    game = game.makeMark('1', 0, 0)
+      .makeMark('2', 1, 1)
+      .makeMark('1', 0, 1)
+      .makeMark('2', 1, 0)
+      .makeMark('1', 0, 2)
+      .findTheWinner();
 
     game.should.have.property('state').deep.equal({
       grid: [
