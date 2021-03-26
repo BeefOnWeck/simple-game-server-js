@@ -1,28 +1,232 @@
-import {corePropsAndState} from './corePropsAndState.js';
-import {coreTransitionLogic} from './coreTransitionLogic.js';
-import {corePlayerLogic} from './corePlayerLogic.js';
 
-// The game object is created using a composition of functions we call 
-// a "pipeline."
-// Each function in the composition takes the game object as input and returns 
-// a new game object with additional and/or modified properties and methods.
-// For more information, see: 
-// https://medium.com/javascript-scene/composing-software-an-introduction-27b72500d6ea
+/** @typedef {object} game */
 
-// `pipe` is a function that allows us to form the composition.
-// `pipe` returns a function which is then applied to another object.
-const pipe = (...fns) => x => fns.reduce((y, f) => f(y), x);
+export const gameCore = {
 
-// The function composition or "pipeline" is read from top to bottom.
-// That is, the first function is applied first, the second function is then 
-// applied to the output of the first function, and so on.
-// Remember that `pipe` is a function that returns another function, which must 
-// be then applied to something.
+  /** Metadata for describing a particular game */
+  meta: {
+    name: 'Game Core',
+    /** @type {string} */
+    avatar: null
+  },
 
-// Our core game object.
-export const gameCore = pipe(
-  coreTransitionLogic,
-  corePlayerLogic
-)(corePropsAndState);
-// NOTE: This could also be written as:
-// export const gameCoreAlt = corePlayerLogic(coreTransitionLogic(corePropsAndState));
+  /** Game-specific configuration */
+  config: {},
+
+  /** 
+   * The phase of the game.
+   * Can take on four values: boot, setup, play, and end.
+   */
+  phase: 'boot',
+
+  /** Once game enters 'play' phase, this will start incrementing. */
+  round: 0,
+
+  /** An array of objects describing each player. */
+  players: [],
+
+  /** This will increment as players are added. */
+  numPlayers: 0,
+
+  /**
+   * The socket ID of the active player.
+   * @type {string}
+   */
+  activePlayerId: null,
+
+  /**
+   * The socket ID of the first player.
+   * @type {string}
+   */
+  firstPlayerId: null,
+
+  /** 
+   * Game-specific state information.
+   * Changes via player actions.
+   */
+  state: {},
+
+  /** Decorators are used overide core game properties and methods. */
+  decorators: {},
+
+  /** Game-specific actions players can take. */
+  actions: {},
+
+  /**
+   * Reset the game.
+   * @function
+   * @returns {game}
+   * @deprecated There is a better way to do this.
+   */
+  reset(game = this) {
+    return {
+      ...game,
+      phase: 'boot',
+      round: 0,
+      players: [],
+      state: {},
+      actions: {}
+    };
+  },
+
+  /** Return information meant to summarize a game in progress. */
+  getGameStatus(game = this) {
+    // Core game status
+    const gameStatus =  {
+      phase: game.phase, // NOTE: game = this (object calling this method)
+      round: game.round,
+      activePlayer: game.activePlayerId,
+      players: game.players,
+      state: game.state
+    };
+
+    // Games can define a decorator to augment/overide the game status
+    const decorators = game.decorators['getGameStatus'] ? 
+      game.decorators['getGameStatus'] : 
+      () => ({});
+
+    return {
+      ...gameStatus,
+      ...decorators(game)
+    };
+  },
+
+  /** 
+   * Moves the game to the next round.
+   * @returns {game} 
+   */
+  nextRound(game = this) {
+    return {
+      ...game, // NOTE: game = this (object calling this method)
+      round: game.round + 1 // TODO: test this
+    };
+  },
+
+  /** 
+   * Moves the game to the next phase.
+   * @returns {game} 
+   */
+  nextPhase(game = this) { // TODO: Change so that we have to specify what phase to move to, with checks for allowable transition
+    let theNextPhase;
+    if (game.phase === 'end') {
+      return game; // TODO: Throw error? Reset the game?
+    }
+    // These phases are really just for enabling and disabling functionality.
+    switch(game.phase) {
+      case 'boot': // Boot is when players can join the game
+        theNextPhase = 'setup';
+        break;
+      case 'setup': // Setup is where players take any setup actions
+        theNextPhase = 'play';
+        break;
+      case 'play': // Play is the actual game
+        theNextPhase = 'end';
+        break; 
+    }
+    return {
+      ...game, // NOTE: game = this (object calling this method)
+      phase: theNextPhase
+    };
+  },
+
+  /**
+   * Add a player to the game.
+   * @function
+   * @param {string} username - The name to the player being added
+   * @param {string} id - The socket ID of the player being added
+   * @returns {game}
+   */
+  addPlayer(username, id, game = this) {
+    // If this is the first player, grab their id
+    // Otherwise grab the id of the first player
+    const firstId = game.players.length === 0 ? 
+      id : 
+      game.firstPlayerId;
+
+    // Form an update to the core properties
+    const updateWithNewPlayer = {
+      players: [
+        ...game.players, {
+          name: username,
+          id: id
+        }
+      ],
+      numPlayers: game.numPlayers + 1, // TODO: test this
+      activePlayerId: firstId,
+      firstPlayerId: firstId
+    };
+
+    // Games can define a decorator to augment/overide what happens when 
+    // players are added.
+    const decorators = game.decorators['addPlayer'] ? 
+      game.decorators['addPlayer'] : 
+      () => ({});
+
+    // Return a copy of the game with our updates mixed in
+    const returnObject = {
+      ...game, // NOTE: game = this (object calling this method)
+      ...updateWithNewPlayer
+    };
+
+    return {
+      ...returnObject,
+      ...decorators(returnObject)
+    };
+  },
+
+  /**
+   * Set the active player by socket ID.
+   * @function
+   * @param {string} id - The socket ID of the player being added
+   * @returns {game}
+   */
+  setActivePlayer(id, game = this) { // TODO: Test
+    return {
+      ...game, // NOTE: game = this (object calling this method)
+      activePlayerId: id // TODO: Check that we're in the play phase (how to make sure things are couopled?)
+    }
+  },
+
+  /**
+   * Go to the next player.
+   * This may increment the round.
+   * @returns {game}
+   */
+  nextPlayer(game = this) { // TODO: Test
+    // TODO: Error out if there is not active player
+    // TODO: Check that we're in the play phase (how to make sure things are coupled?)
+    // NOTE: This assumes players go once per round (may need to relax in the future)
+    let activePlayerIndex = game.players.findIndex(p => p.id === game.activePlayerId);
+    let nextPlayerIndex = (activePlayerIndex + 1) % game.numPlayers;
+    return {
+      ...game, // NOTE: game = this (object calling this method)
+      round: nextPlayerIndex === 0 ? game.round + 1 : game.round, // increment the round if we're back to the first player
+      activePlayerId: game.players[nextPlayerIndex].id
+    }
+  },
+
+  /** 
+   * For handling actions defined as a key:value dictionary.
+   * @function
+   * @param {object} actions - Actions defined by key:value pairs.
+   * @returns {game}
+   */
+  processActions(actions, game = this) {
+    // Games must define a decorator to implement player actions.
+    const decorators = game.decorators['processActions'] ? 
+      game.decorators['processActions'] : 
+      () => ({});
+
+    // If a game does not define any processAction decorators, 
+    const returnObject = {
+      ...game, // NOTE: game = this (object calling this method)
+      actions: actions
+    };
+
+    return {
+      ...game, // NOTE: game = this (object calling this method)
+      ...decorators(returnObject)
+    };
+  }
+  
+};
