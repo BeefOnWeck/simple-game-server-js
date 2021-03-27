@@ -106,7 +106,7 @@ export const gameCore = {
    * Moves the game to the next phase.
    * @returns {game} 
    */
-  nextPhase(game = this) { // TODO: Change so that we have to specify what phase to move to, with checks for allowable transition
+  nextPhase(game = this) { // TODO: Refactor with phase array
     let theNextPhase;
     if (game.phase === 'end') {
       return game; // TODO: Throw error? Reset the game?
@@ -176,14 +176,20 @@ export const gameCore = {
 
   /**
    * Set the active player by socket ID.
+   * This is not needed if you are using `nextPlayer()`.
    * @function
    * @param {string} id - The socket ID of the player being added
    * @returns {game}
    */
   setActivePlayer(id, game = this) { // TODO: Test
-    return {
-      ...game, // NOTE: game = this (object calling this method)
-      activePlayerId: id // TODO: Check that we're in the play phase (how to make sure things are couopled?)
+    // First check that id is valid
+    if (game.players.map(p => p.id).includes(id)) {
+      return {
+        ...game, // NOTE: game = this (object calling this method)
+        activePlayerId: id // TODO: Check that we're in the play phase (how to make sure things are couopled?)
+      }
+    } else {
+      throw new Error('Cannot set an invalid ID as the active player.');
     }
   },
 

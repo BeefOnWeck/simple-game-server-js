@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node --experimental-modules src/server.js",
     "test": "mocha --recursive",
-    "coverage": "nyc --all npm run test",
+    "coverage": "c8 --all npm run test",
     "lint": "./node_modules/.bin/eslint src"
   },
   "repository": {
@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/BeefOnWeck/simple-game-server-js#readme",
   "dependencies": {
+    "c8": "^7.6.0",
     "ejs": "^3.1.6",
     "express": "^4.17.1",
     "lodash.clonedeep": "^4.5.0",
@@ -37,7 +38,6 @@
     "eslint": "^7.21.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-functional": "^3.2.1",
-    "mocha": "^8.3.1",
-    "nyc": "^15.1.0"
+    "mocha": "^8.3.1"
   }
 }
