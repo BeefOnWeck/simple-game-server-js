@@ -130,20 +130,22 @@ export const game0 = {
 
     /** When adding a player, assign them a mark to use ('x' or 'o') */
     addPlayer(gameToDecorate) {
+
+      if (gameToDecorate.numPlayers > 2) {
+        throw new Error('Cannot add player; exceeds maximum number of players.');
+      }
+
       // Do we have two players yet?
       // If so, move to the next phase and the first round.
       let updatedGame = gameToDecorate.numPlayers == 2 ?
         gameToDecorate.nextPhase().nextRound() :
         gameToDecorate;
 
-      // If we somehow have more than two players, remove the extra.
-      // Otherwise, assign each player a mark.
-      let updatedPlayerList = gameToDecorate.numPlayers <= 2 ?
-        gameToDecorate.players.map((p,i) => ({
+      let updatedPlayerList = gameToDecorate.players
+        .map((p,i) => ({
           ...p,
           mark: gameToDecorate.state.marks[i]
-        })) : 
-        gameToDecorate.players.slice(0,1);
+        }));
 
       // Return the updated game with the updated players mixed in.
       return {

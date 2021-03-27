@@ -83,9 +83,12 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
       callback({status: 'Setup has not started yet'});
     } else if (game.phase && game.phase == 'setup') {
       // Add them to the game
-      // TODO: Test on more than 2 players
-      game = game.addPlayer(username, socket.id);
-      callback({status: 'You have been added'});
+      try {
+        game = game.addPlayer(username, socket.id);
+        callback({status: 'You have been added'});
+      } catch (e) {
+        callback({status: e.message});
+      }
     
       if (game.phase === 'play') {
         // TODO: Also announce start of game?

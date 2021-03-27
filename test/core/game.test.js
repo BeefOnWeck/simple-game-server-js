@@ -104,4 +104,44 @@ describe('Game Core', function() {
     game.should.have.property('round').equal(1);
   });
 
+  it('Should return the correct game status.', function() {
+    let game = {...gameCore}; // shallow copy
+    game = game.nextPhase();
+    game = game.addPlayer('name1', 'id1').addPlayer('name2', 'id2')
+      .addPlayer('name3', 'id3').addPlayer('name4', 'id4');
+    game = game.nextPhase().nextRound();
+    game = game.nextPlayer();
+    let gameStatus = game.getGameStatus();
+    gameStatus.should.deep.equal({
+      phase: 'play',
+      round: 1,
+      activePlayer: 'id2',
+      players: [
+        {
+          name: 'name1',
+          id: 'id1'
+        },
+        {
+          name: 'name2',
+          id: 'id2'
+        },
+        {
+          name: 'name3',
+          id: 'id3'
+        },
+        {
+          name: 'name4',
+          id: 'id4'
+        }
+      ],
+      state: {}
+    });
+  });
+
+  it('Should allow processActions to be called without decorators', function() {
+    let game = {...gameCore}; // shallow copy
+    game = game.processActions({test: 'action'});
+    game.should.have.property('actions').deep.equal({});
+  });
+
 });

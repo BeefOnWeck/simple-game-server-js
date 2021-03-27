@@ -226,7 +226,7 @@ export const gameCore = {
     // If a game does not define any processAction decorators, 
     const returnObject = {
       ...game, // NOTE: game = this (object calling this method)
-      actions: actions
+      actions: actions // This is how actions are passed to decorator
     };
 
     return {
