@@ -42,7 +42,7 @@ app.use(express.json());
 app.post('/start', (req, res) => {
   console.log(req.body);
   let selectedGame = req.body.selectedGame; // TODO: Validate!!!
-  let gameConfiguration = req.body.configuration;
+  let gameConfiguration = req.body.configuration; // TODO: Validate!!!
   game = selectGame(selectedGame, gameConfiguration); // Get a mutable reference to gameCore
   game = game.nextPhase(); // boot --> setup
   res.send('Game started');

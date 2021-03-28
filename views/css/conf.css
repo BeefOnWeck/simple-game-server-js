@@ -2,3 +2,7 @@
 .hidden {
   display: none;
 }
+
+input.config-input {
+  width: 30px;
+}

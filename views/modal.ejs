@@ -5,7 +5,7 @@
         <h2 class="modal__title">
           Select Game
         </h2>
-        <button class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+        <!-- <button class="modal__close" aria-label="Close modal" data-micromodal-close></button> -->
       </header>
       <div class="modal-content-content">
         <div class="modal__content">
@@ -29,7 +29,7 @@
                   <%= key %>: 
                   <% if (!Array.isArray(value)) { value = [value] } %>
                   <% value.forEach( element => { %>
-                    <input value=<%= element %>></input>
+                    <input class="config-input" value=<%= element %>></input>
                   <% }) %>
                 </div>
               <% } %>

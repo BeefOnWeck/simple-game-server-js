@@ -59,6 +59,10 @@
     modalScreen2.classList.remove('hidden');
   };
 
+  // Pressing the start button does the following:
+  //  1. Sends a POST request to the server to start the game
+  //  2. Closes the modal window (implemented via class="data-micromodal-close")
+  //  3. Resets the modal screen visibility
   let startButton = document.getElementById('start-btn');
   startButton.onclick = function() {
     console.log('Starting game!');
@@ -94,5 +98,14 @@
       modalScreen2.classList.add('hidden');
     });
   }
+
+  // Closing the modal window resets the modal screen visibility
+  var buttonElements = document.getElementsByClassName('modal__btn');
+  Array.from(buttonElements).forEach((el) => {
+    el.onclick = function() {
+      modalScreen1.classList.remove('hidden');
+      modalScreen2.classList.add('hidden');
+    }
+  });
 
 })();
