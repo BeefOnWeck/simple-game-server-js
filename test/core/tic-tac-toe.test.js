@@ -12,8 +12,7 @@ describe('Tic Tac Toe', function() {
         { mark: null, row: 0, col: 0}, { mark: null, row: 0, col: 1}, { mark: null, row: 0, col: 2},
         { mark: null, row: 1, col: 0}, { mark: null, row: 1, col: 1}, { mark: null, row: 1, col: 2},
         { mark: null, row: 2, col: 0}, { mark: null, row: 2, col: 1}, { mark: null, row: 2, col: 2}
-      ],
-      marks: ['x','o']
+      ]
     });
   });
 
@@ -30,8 +29,7 @@ describe('Tic Tac Toe', function() {
         { mark: 'x', row: 0, col: 0}, { mark: null, row: 0, col: 1}, { mark: null, row: 0, col: 2},
         { mark: null, row: 1, col: 0}, { mark: 'o', row: 1, col: 1}, { mark: null, row: 1, col: 2},
         { mark: null, row: 2, col: 0}, { mark: null, row: 2, col: 1}, { mark: null, row: 2, col: 2}
-      ],
-      marks: ['x','o']
+      ]
     });
   });
 
@@ -50,8 +48,7 @@ describe('Tic Tac Toe', function() {
         { mark: 'x', row: 0, col: 0}, { mark: 'x', row: 0, col: 1}, { mark: 'x', row: 0, col: 2},
         { mark: 'o', row: 1, col: 0}, { mark: 'o', row: 1, col: 1}, { mark: null, row: 1, col: 2},
         { mark: null, row: 2, col: 0}, { mark: null, row: 2, col: 1}, { mark: null, row: 2, col: 2}
-      ],
-      marks: ['x','o']
+      ]
     });
     game.should.have.property('theWinner').equal('1');
   });
@@ -71,8 +68,7 @@ describe('Tic Tac Toe', function() {
         { mark: 'x', row: 0, col: 0}, { mark: null, row: 0, col: 1}, { mark: null, row: 0, col: 2},
         { mark: null, row: 1, col: 0}, { mark: null, row: 1, col: 1}, { mark: null, row: 1, col: 2},
         { mark: null, row: 2, col: 0}, { mark: null, row: 2, col: 1}, { mark: null, row: 2, col: 2}
-      ],
-      marks: ['x','o']
+      ]
     });
   });
 
@@ -84,6 +80,7 @@ describe('Tic Tac Toe', function() {
     // First check the beginning game status
     let gameStatus = game.getGameStatus();
     gameStatus.should.deep.equal({
+      name: 'Tic Tac Toe',
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
@@ -104,8 +101,7 @@ describe('Tic Tac Toe', function() {
           { mark: null, row: 0, col: 0}, { mark: null, row: 0, col: 1}, { mark: null, row: 0, col: 2},
           { mark: null, row: 1, col: 0}, { mark: null, row: 1, col: 1}, { mark: null, row: 1, col: 2},
           { mark: null, row: 2, col: 0}, { mark: null, row: 2, col: 1}, { mark: null, row: 2, col: 2}
-        ],
-        marks: ['x','o']
+        ]
       },
       theWinner: null // indicates there is no winner yet
     });
@@ -120,6 +116,7 @@ describe('Tic Tac Toe', function() {
 
     gameStatus = game.getGameStatus();
     gameStatus.should.deep.equal({
+      name: 'Tic Tac Toe',
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
@@ -140,8 +137,7 @@ describe('Tic Tac Toe', function() {
           { mark: 'x', row: 0, col: 0}, { mark: 'x', row: 0, col: 1}, { mark: 'x', row: 0, col: 2},
           { mark: 'o', row: 1, col: 0}, { mark: 'o', row: 1, col: 1}, { mark: null, row: 1, col: 2},
           { mark: null, row: 2, col: 0}, { mark: null, row: 2, col: 1}, { mark: null, row: 2, col: 2}
-        ],
-        marks: ['x','o']
+        ]
       },
       theWinner: 'id1' // lists the id of the winner
     });

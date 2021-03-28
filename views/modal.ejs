@@ -11,16 +11,32 @@
         <div class="modal__content">
           <div id="ms1">
             <!-- TODO: Loop over all games -->
-            <img src="/assets/<%= meta[0].avatar %>" alt="<%= meta[0].name %>">
-            <%= meta[0].name %>
+            <div>
+              <img src="/assets/<%= meta[0].avatar %>" alt="<%= meta[0].name %>">
+            </div>
+            <div>
+              <%= meta[0].name %>
+            </div>
           </div>
           <div id="ms2">
-            <!-- TODO: Loop over all games -->
-            <%= config[0].name %>
-            <% for (let [key, value] of Object.entries(config[0].conf)) { %>
-              <%= key %>: <%= value %>
-            <% } %>
-            <button id="start-btn">Start</button>
+            <!-- TODO: Only show config for selected game -->
+            <div>
+              <%= config[0].name %>
+            </div>
+            <div id="configs">
+              <% for (let [key, value] of Object.entries(config[0].conf)) { %>
+                <div id=<%= key %>>
+                  <%= key %>: 
+                  <% if (!Array.isArray(value)) { value = [value] } %>
+                  <% value.forEach( element => { %>
+                    <input value=<%= element %>></input>
+                  <% }) %>
+                </div>
+              <% } %>
+            </div>
+            <div>
+              <button id="start-btn" data-micromodal-close>Start</button>
+            </div>
           </div>
         </div>
         <footer class="modal__footer">

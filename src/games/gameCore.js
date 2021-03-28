@@ -73,6 +73,7 @@ export const gameCore = {
   getGameStatus(game = this) {
     // Core game status
     const gameStatus =  {
+      name: game.meta.name,
       phase: game.phase, // NOTE: game = this (object calling this method)
       round: game.round,
       activePlayer: game.activePlayerId,

@@ -10,10 +10,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 // Initialize empty game object
 let game = {};
 
-// TODO: This will eventually be defined via a configuration page.
-const MAX_PLAYERS = 2;
-const MAX_NUM_ROUNDS = 10;
-
 // Our express application handles all incoming requests
 const app = express();
 
@@ -46,8 +42,10 @@ app.use(express.json());
 app.post('/start', (req, res) => {
   console.log(req.body);
   let selectedGame = req.body.selectedGame; // TODO: Validate!!!
-  game = selectGame(selectedGame); // Get a mutable reference to gameCore
+  let gameConfiguration = req.body.configuration;
+  game = selectGame(selectedGame, gameConfiguration); // Get a mutable reference to gameCore
   game = game.nextPhase(); // boot --> setup
+  res.send('Game started');
 });
 
 // Create an HTTP server using our app

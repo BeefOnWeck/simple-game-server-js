@@ -14,7 +14,8 @@ export const game0 = {
 
   /** Game-specific configuration */
   config: {
-    maxTurns: 10 // TODO: Implement
+    /** Only two possile marks in this two player game. */
+    marks: ['x','o']
   },
 
   /**
@@ -36,9 +37,7 @@ export const game0 = {
         row: Math.floor(i / 3),
         col: i % 3
       }
-    }),
-    /** Only two possile marks in this two player game. */
-    marks: ['x','o']
+    })
   },
 
   /**
@@ -144,7 +143,7 @@ export const game0 = {
       let updatedPlayerList = gameToDecorate.players
         .map((p,i) => ({
           ...p,
-          mark: gameToDecorate.state.marks[i]
+          mark: gameToDecorate.config.marks[i]
         }));
 
       // Return the updated game with the updated players mixed in.

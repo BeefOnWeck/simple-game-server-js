@@ -113,6 +113,7 @@ describe('Game Core', function() {
     game = game.nextPlayer();
     let gameStatus = game.getGameStatus();
     gameStatus.should.deep.equal({
+      name: 'Game Core',
       phase: 'play',
       round: 1,
       activePlayer: 'id2',
