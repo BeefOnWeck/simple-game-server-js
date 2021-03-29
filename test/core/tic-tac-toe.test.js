@@ -16,7 +16,38 @@ describe('Tic Tac Toe', function() {
     });
   });
 
-  // TODO: Should assign a player a mark when they join the game.
+  it('Should assign player a mark when they join', function() {
+    let game = selectGame('Tic Tac Toe');
+    game = game.addPlayer('name1', 'id1');
+    game.should.have.property('players').deep.equal([
+      {
+        name: 'name1',
+        id: 'id1',
+        mark: 'x'
+      }
+    ]);
+  });
+
+  it('Should allow player marks to be configured', function() {
+    let game = selectGame('Tic Tac Toe');
+    game = game.configureGame({
+      marks: ['😱', '🎉']
+    });
+    game = game.addPlayer('name1', 'id1');
+    game = game.addPlayer('name2', 'id2');
+    game.should.have.property('players').deep.equal([
+      {
+        name: 'name1',
+        id: 'id1',
+        mark: '😱'
+      },
+      {
+        name: 'name2',
+        id: 'id2',
+        mark: '🎉'
+      }
+    ]);
+  });
 
   it('Should update state when marks are added to the grid', function() {
     let game = selectGame('Tic Tac Toe');

@@ -92,6 +92,24 @@ export const gameCore = {
     };
   },
 
+  /**
+   * Sets game configuration.
+   * @returns {game}
+   */
+  configureGame(config, game = this) {
+    // You can only configure during the boot phase
+    if (game.phase == 'boot') {
+      let newGame = {...game}; // shallow copy
+      // TODO: Check for valid configuration keys
+      for (const cfg in config) {
+        newGame.config[cfg] = config[cfg];
+      }
+      return newGame;
+    } else {
+      throw new Error('Cannot set configuration outside of boot phase.');
+    }
+  },
+
   /** 
    * Moves the game to the next round.
    * @returns {game} 

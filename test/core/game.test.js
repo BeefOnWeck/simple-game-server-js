@@ -145,4 +145,11 @@ describe('Game Core', function() {
     game.should.have.property('actions').deep.equal({});
   });
 
+  it('Should throw an error if configureGame() is called outside of boot phase', function() {
+    let game = {...gameCore}; // shallow copy
+    game = game.nextPhase(); // boot --> setup
+    game.configureGame.bind(game, {my: 'configuration'})
+      .should.throw(Error, 'Cannot set configuration outside of boot phase.');
+  });
+
 });
