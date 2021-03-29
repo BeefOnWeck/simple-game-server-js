@@ -106,6 +106,10 @@ export const game0 = {
       p => p.id
     )[0];
 
+    if (winningPlayer) {
+      game = game.nextPhase(); // play --> end
+    }
+
     return {
       ...game, // NOTE: game = this (the object calling this method)
       theWinner: winningPlayer
@@ -135,9 +139,9 @@ export const game0 = {
       }
 
       // Do we have two players yet?
-      // If so, move to the next phase and the first round.
+      // Skip setup and move directly to the play phase and the first round.
       let updatedGame = gameToDecorate.numPlayers == 2 ?
-        gameToDecorate.nextPhase().nextRound() :
+        gameToDecorate.nextPhase().nextPhase().nextRound() :
         gameToDecorate;
 
       let updatedPlayerList = gameToDecorate.players

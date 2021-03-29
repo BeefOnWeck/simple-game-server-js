@@ -51,6 +51,7 @@ describe('Tic Tac Toe', function() {
       ]
     });
     game.should.have.property('theWinner').equal('1');
+    game.should.have.property('phase').equal('end');
   });
 
   it('Should decorate processActions().', function() {
@@ -74,7 +75,6 @@ describe('Tic Tac Toe', function() {
 
   it('Should decorate getGameStatus().', function() {
     let game = selectGame('Tic Tac Toe');
-    game = game.nextPhase();
     game = game.addPlayer('name1', 'id1').addPlayer('name2', 'id2');
 
     // First check the beginning game status
@@ -117,7 +117,7 @@ describe('Tic Tac Toe', function() {
     gameStatus = game.getGameStatus();
     gameStatus.should.deep.equal({
       name: 'Tic Tac Toe',
-      phase: 'play',
+      phase: 'end',
       round: 1,
       activePlayer: 'id1',
       players: [
@@ -147,7 +147,6 @@ describe('Tic Tac Toe', function() {
   // Can't add more than 2 players
   it('Should not allow more than two players to join.', function() {
     let game = selectGame('Tic Tac Toe');
-    game = game.nextPhase();
     game = game.addPlayer('name1', 'id1').addPlayer('name2', 'id2');
     game.addPlayer.bind(game, 'name3', 'id3')
       .should.throw(Error, 'Cannot add player; exceeds maximum number of players.');

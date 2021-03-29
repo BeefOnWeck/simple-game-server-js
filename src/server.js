@@ -44,7 +44,6 @@ app.post('/start', (req, res) => {
   let selectedGame = req.body.selectedGame; // TODO: Validate!!!
   let gameConfiguration = req.body.configuration; // TODO: Validate!!!
   game = selectGame(selectedGame, gameConfiguration); // Get a mutable reference to gameCore
-  game = game.nextPhase(); // boot --> setup
   res.send('Game started');
 });
 
@@ -76,10 +75,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     socket.username = username === null ? '' : username;
     console.log('username', username);
 
-    // TODO: Upgrade to Node 14 so we can use nullish coalescing
-    if (game.phase && game.phase === 'boot') {
-      callback({status: 'Setup has not started yet'});
-    } else if (game.phase && game.phase == 'setup') {
+    if (game.phase && game.phase == 'boot') {
       // Add them to the game
       try {
         game = game.addPlayer(username, socket.id);
@@ -88,7 +84,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
         callback({status: e.message});
       }
     
-      if (game.phase === 'play') {
+      if (game.phase == 'play') {
         // TODO: Also announce start of game?
         io.emit('game-state', // TODO: Rename message to 'game-status'
           game.getGameStatus()
@@ -101,8 +97,8 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
         // Send with acknowledgement: https://socket.io/docs/v3/emitting-events/
       }
 
-    } else if (game.phase && game.phase == 'play') {
-      callback({status: 'Game has already started'});
+    } else if (game.phase && (game.phase == 'setup' || game.phase == 'play')) {
+      callback({status: 'Game has already booted'});
     } else {
       callback({status: 'Game has not booted yet'});
     }
