@@ -1,10 +1,12 @@
 import cloneDeep from 'lodash.clonedeep';
 
 // import all games here
-import { game0 } from './tic-tac-toe/tic-tac-toe.js';
+import { game0 as t3 } from './tic-tac-toe/tic-tac-toe.js';
+import { game0 as blackjack } from './blackjack/blackjack.js';
 
 const games = [
-  game0
+  t3,
+  blackjack
 ];
 
 export const selectGame = function(name, config = {}) {
