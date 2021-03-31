@@ -1,5 +1,5 @@
 import { gameCore } from '../gameCore.js';
-import { standardDeck52 } from './standardDeck52.js'
+import { standardDeck52, shuffle } from './standardDeck52.js'
 
 /** @typedef {object} game */
 
@@ -25,6 +25,19 @@ export const game0 = {
   state: {
 
     deck: standardDeck52
+  },
+
+  shuffleDeck(game = this) {
+
+    const shuffledDeck = shuffle(game.state.deck);
+
+    return {
+      ...game,
+      state: {
+        ...game.state,
+        deck: shuffledDeck
+      }
+    };
   }
 
 };

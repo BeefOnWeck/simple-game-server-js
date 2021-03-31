@@ -70,4 +70,43 @@ describe('Blackjack', function() {
     });
   });
 
+  it('Should shuffle the deck of cards pseudorandomly', function() {
+    let game = selectGame('Blackjack');
+
+    const N = 10000;
+    // let counts = Array.from({length: game.state.deck.length}, () => {
+    //   return game.state.deck.map(v => ({...v, count: 0}));
+    // });
+    let counts = game.state.deck.map(v => {
+      return {
+        ...v,
+        hist: Array.from({length: game.state.deck.length}, h => 0)
+      }
+    });
+
+    for (let i = 0; i < N; i++) {
+      game = game.shuffleDeck();
+      game.state.deck.forEach((card, cardIndex) => {
+        const countIndex = counts.findIndex(c => {
+          return c.suit === card.suit 
+              && c.rank === card.rank;
+        });
+        counts[countIndex].hist[cardIndex]++;
+      });
+    }
+
+    console.log(counts[1].hist.map(h => h));
+
+    // TODO: What is the expected value and variance for each histogram bin?
+    // Assume card distribution is supposed to be uniformly distributed.
+    // Then each bin should be identically distributed as binomial(N,1/52).
+    // Expected value for each bin is just N/52.
+    // Variance is just N*(1/52)*(51/52).
+    // For N = 10000, these are E[X] = 192.31 and var[X] = 188.61.
+    // The standard deviation is sqrt(188.61) = 13.73.
+    // Really should calculate tail probabilities via the CDF, but a really 
+    // loose estimate would be to expect each bin to be 192 +/- 42 = [150, 234].
+    // Maybe not such a bad approximation since N is large.
+  });
+
 });
