@@ -87,6 +87,8 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
       if (game.phase == 'play') {
         // TODO: Also announce start of game?
         io.emit('game-state', // TODO: Rename message to 'game-status'
+          // TODO: Should take the playerId as a parameter and not 
+          // send private state for other players
           game.getGameStatus()
         );
         // Tell player 1 it's their turn
@@ -126,6 +128,8 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
         // But first let's just go to the next player
         game = game.nextPlayer();
         io.emit('game-state', // TODO: Rename message to 'game-status'
+          // TODO: Should take the playerId as a parameter and not 
+          // send private state for other players
           game.getGameStatus()
         );
         io.to(game.activePlayerId).emit('start-your-turn', {});

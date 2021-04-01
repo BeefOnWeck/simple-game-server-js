@@ -40,4 +40,6 @@ export const game0 = {
     };
   }
 
+  // TODO: Consider allowing the first player to cut the deck at a specified position.
+
 };

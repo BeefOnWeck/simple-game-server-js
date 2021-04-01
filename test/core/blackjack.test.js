@@ -141,6 +141,9 @@ describe('Blackjack', function() {
     // 52*52 = 2704 bins, we don't expect any outliers (most of the time).
     numberOfOutliers.should.equal(0);
 
+    // TODO: Consider averaging across cards, which should reduce the 
+    // variance of the estimate and allow for tighter confidence intervals.
+
   });
 
 });
