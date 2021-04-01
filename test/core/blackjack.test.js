@@ -71,12 +71,32 @@ describe('Blackjack', function() {
   });
 
   it('Should shuffle the deck of cards pseudorandomly', function() {
+    // If shuffling results in the position of each card being identically 
+    // distributed as uniform(0,51), then we can perform an experiment 
+    // where we repeatedly shuffle the deck and look at how often each 
+    // card ends up in each position. If the assumption is true, then 
+    // the counts for each card in each position should be binomial(N,p), 
+    // where N = number of trials and p = 1/52.
+    //
+    // Based on the above, there are a lot of ways we could check to see 
+    // how well randomized the deck is after shuffling:
+    // 1. Perform a hypothesis test on the histogram bin for every 
+    //    card/position pair, checking that it is indeed binomial(N,p).
+    // 2. Generate an empirical CDF from all histogram bins and compare this 
+    //    to the theoretical binomial(N,1/52) CDF via something like K-L 
+    //    divergence.
+    // 3. Make a normal approximation and check to ensure that all histogram 
+    //    bin count values fall within +/- four standard deviations (99.99%).
+    //
+    // This test implements approach #3, since the normal approximation is 
+    // expected to be pretty good if N is large and p is not too close to 
+    // 0 or 1.
+
     let game = selectGame('Blackjack');
 
-    const N = 10000;
-    // let counts = Array.from({length: game.state.deck.length}, () => {
-    //   return game.state.deck.map(v => ({...v, count: 0}));
-    // });
+    const N = 10000; // Number of trials
+
+    // Create an unshuffled copy of the deck and add a histogram for each card
     let counts = game.state.deck.map(v => {
       return {
         ...v,
@@ -84,29 +104,43 @@ describe('Blackjack', function() {
       }
     });
 
+    // For each trial:
     for (let i = 0; i < N; i++) {
+      // 1. Get a fresh deck
+      game = selectGame('Blackjack');
+      // 2. Shuffle it once
       game = game.shuffleDeck();
+      // 3. Loop over shuffled deck
       game.state.deck.forEach((card, cardIndex) => {
+        // 3.a. Find corresponding index in the unshuffled deck
         const countIndex = counts.findIndex(c => {
           return c.suit === card.suit 
               && c.rank === card.rank;
         });
+        // 3.b. Increment the histogram bin for these indices
         counts[countIndex].hist[cardIndex]++;
       });
     }
 
-    console.log(counts[1].hist.map(h => h));
+    // Define the expected upper and lower bounds
+    const mu = N/52;
+    const sigma = Math.sqrt(N*51/52/52);
+    const lowerBound = mu - 4*sigma;
+    const upperBound = mu + 4*sigma;
 
-    // TODO: What is the expected value and variance for each histogram bin?
-    // Assume card distribution is supposed to be uniformly distributed.
-    // Then each bin should be identically distributed as binomial(N,1/52).
-    // Expected value for each bin is just N/52.
-    // Variance is just N*(1/52)*(51/52).
-    // For N = 10000, these are E[X] = 192.31 and var[X] = 188.61.
-    // The standard deviation is sqrt(188.61) = 13.73.
-    // Really should calculate tail probabilities via the CDF, but a really 
-    // loose estimate would be to expect each bin to be 192 +/- 42 = [150, 234].
-    // Maybe not such a bad approximation since N is large.
+    // Now loop over all histogram bins and check for outliers
+    let numberOfOutliers = 0;
+    counts.forEach(card => {
+      card.hist.forEach(hits => {
+        if (hits < lowerBound || hits > upperBound) numberOfOutliers++;
+      });
+    });
+
+    // Since we're checking for mu +/- 4*sigma, we expect to have only about 
+    // 1/15787 of our histogram counts be outliers. Since there are only 
+    // 52*52 = 2704 bins, we don't expect any outliers (most of the time).
+    numberOfOutliers.should.equal(0);
+
   });
 
 });
