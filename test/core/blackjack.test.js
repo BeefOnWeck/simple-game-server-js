@@ -146,4 +146,12 @@ describe('Blackjack', function() {
 
   });
 
+  it('Should remove a card from the deck when the card is drawn.', function() {
+    let game = selectGame('Blackjack');
+    game = game.shuffleDeck();
+    game.state.deck.should.have.length(52);
+    game = game.drawCard();
+    game.state.deck.should.have.length(51);
+  });
+
 });

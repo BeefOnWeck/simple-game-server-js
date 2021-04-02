@@ -38,8 +38,22 @@ export const game0 = {
         deck: shuffledDeck
       }
     };
-  }
+  },
 
   // TODO: Consider allowing the first player to cut the deck at a specified position.
+
+  drawCard(playerId, game = this) {
+    let deck = game.state.deck;
+    const card = deck.shift();
+    // TODO: Add the card to a player's hand
+
+    return {
+      ...game,
+      state: {
+        ...game.state,
+        deck
+      }
+    }
+  }
 
 };
