@@ -24,7 +24,11 @@ export const game0 = {
    */
   state: {
 
-    deck: standardDeck52
+    deck: standardDeck52,
+
+    playerHands: {},
+
+    discardPile: []
   },
 
   shuffleDeck(game = this) {
@@ -42,18 +46,67 @@ export const game0 = {
 
   // TODO: Consider allowing the first player to cut the deck at a specified position.
 
-  drawCard(playerId, game = this) {
+  drawCard(playerId, faceUpOrDown = 'faceDown', game = this) {
     let deck = game.state.deck;
-    const card = deck.shift();
-    // TODO: Add the card to a player's hand
+    const card = deck.shift(); // Remove top card
+    
+    let playerHands = game.state.playerHands;
+    let discardPile = game.state.discardPile;
+    // TODO: Throw errors for failed checks
+    if (playerId) {
+      if (playerId in playerHands) {
+        // Add card to player hand (faceDown by default)
+        playerHands[playerId][faceUpOrDown].unshift(card);
+      }
+    } else {
+      // Add card to discard pile
+      discardPile.unshift(card);
+    }
 
     return {
       ...game,
       state: {
         ...game.state,
-        deck
+        deck: deck,
+        playerHands: playerHands,
+        discardPile: discardPile
       }
     }
+  },
+
+  /** 
+   * Decorators allow methods defined in gameCore to be modified.
+   * NOTE: These are called from gameCore.
+   * Alternatively you can overwrite gameCore methods, but that usually 
+   * requires more code.
+   */
+   decorators: {
+
+    /** When adding a player, initialize their hand. */
+    addPlayer(gameToDecorate) {
+
+      let playerList = gameToDecorate.players;
+
+      let playerHands = playerList.reduce((acc, cv, ci) => {
+        return {
+          ...acc,
+          [cv.id]: {
+            faceDown: [],
+            faceUp: []
+          }
+        }
+      }, {});
+
+      // Return the updated game with the updated players mixed in.
+      return {
+        ...gameToDecorate,
+        state: {
+          ...gameToDecorate.state,
+          playerHands: playerHands
+        }
+      };
+    },
+
   }
 
 };

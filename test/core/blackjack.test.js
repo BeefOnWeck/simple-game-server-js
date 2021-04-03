@@ -66,7 +66,12 @@ describe('Blackjack', function() {
         { suit: 'Spades', rank: 'King' }, 
         { suit: 'Spades', rank: 'Ace' }
         
-      ]
+      ],
+
+      playerHands: {},
+
+      discardPile: []
+
     });
   });
 
@@ -150,8 +155,19 @@ describe('Blackjack', function() {
     let game = selectGame('Blackjack');
     game = game.shuffleDeck();
     game.state.deck.should.have.length(52);
-    game = game.drawCard();
+    game = game.drawCard(); // no argument means card goes in the discard pile
     game.state.deck.should.have.length(51);
+    game.state.discardPile.should.have.length(1);
+  });
+
+  it('Should add a card to a player hand when they draw a card.', function() {
+    let game = selectGame('Blackjack');
+    game = game.shuffleDeck();
+    game = game.addPlayer('player1','id1');
+    game = game.drawCard('id1');
+    game.state.playerHands['id1']['faceDown'].should.have.length(1);
+    game.state.deck.should.have.length(51);
+    game.state.discardPile.should.have.length(0);
   });
 
 });
