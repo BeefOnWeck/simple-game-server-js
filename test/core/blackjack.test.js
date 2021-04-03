@@ -170,4 +170,76 @@ describe('Blackjack', function() {
     game.state.discardPile.should.have.length(0);
   });
 
+  it('Should hide facedown cards from other players.', function() {
+    let game = selectGame('Blackjack');
+    game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
+    game = game.drawCard('id1').drawCard('id1', 'faceUp');
+    game = game.drawCard('id2').drawCard('id2', 'faceUp');
+
+    let status1 = game.getGameStatus('id1');
+    status1.should.deep.equal({
+      name: 'Blackjack',
+      phase: 'boot',
+      round: 0,
+      activePlayer: 'id1',
+      players: [
+        {
+          name: 'player1',
+          id: 'id1'
+        },
+        {
+          name: 'player2',
+          id: 'id2'
+        }
+      ],
+      state: {
+        deck: 48,
+        discardPile: 0,
+        playerHands: {
+          id1: {
+            faceUp: game.state.playerHands['id1']['faceUp'],
+            faceDown: game.state.playerHands['id1']['faceDown']
+          },
+          id2: {
+            faceUp: game.state.playerHands['id2']['faceUp'],
+            faceDown: 1
+          }
+        }
+      }
+    });
+    
+    let status2 = game.getGameStatus('id2');
+    status2.should.deep.equal({
+      name: 'Blackjack',
+      phase: 'boot',
+      round: 0,
+      activePlayer: 'id1',
+      players: [
+        {
+          name: 'player1',
+          id: 'id1'
+        },
+        {
+          name: 'player2',
+          id: 'id2'
+        }
+      ],
+      state: {
+        deck: 48,
+        discardPile: 0,
+        playerHands: {
+          id1: {
+            faceUp: game.state.playerHands['id1']['faceUp'],
+            faceDown: 1
+          },
+          id2: {
+            faceUp: game.state.playerHands['id2']['faceUp'],
+            faceDown: game.state.playerHands['id2']['faceDown']
+          }
+        }
+      }
+    });
+
+  });
+
 });

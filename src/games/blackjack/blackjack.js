@@ -107,6 +107,43 @@ export const game0 = {
       };
     },
 
+    /** 
+     * Replaces game.state with a sanitized version where other player 
+     * faceDown cards are replaced with just the number of cards they 
+     * have facedown. The deck and discard pile are similarly sanitized.
+     */
+    getGameStatus(playerId, gameToDecorate) {
+
+      // Get a reference to playerHands
+      const playerHands = gameToDecorate.state.playerHands;
+
+      // Make a copy, but protect the faceDown cards in other player hands
+      let privatePlayerHands = {};
+      for (const pid in playerHands) {
+        let faceUp = playerHands[pid]['faceUp'];
+        let faceDown = pid == playerId ?
+          playerHands[pid]['faceDown'] :
+          playerHands[pid]['faceDown'].length;
+
+        privatePlayerHands[pid] = {
+          faceUp: faceUp,
+          faceDown: faceDown
+        };
+      }
+
+      // Return the player hands, with other player faceDown cards replaced 
+      // with the number of cards face down.
+      // Also just return the number of cards in the deck and discard pile.
+      return {
+        state: {
+          ...gameToDecorate.state,
+          deck: gameToDecorate.state.deck.length,
+          discardPile: gameToDecorate.state.discardPile.length,
+          playerHands: privatePlayerHands
+        }
+      };
+    },
+
   }
 
 };

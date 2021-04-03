@@ -69,8 +69,12 @@ export const gameCore = {
     };
   },
 
-  /** Return information meant to summarize a game in progress. */
-  getGameStatus(game = this) {
+  /** 
+   * Return information meant to summarize a game in progress. 
+   * @param {string} playerId - The ID of player this summary is meant for.
+   * @returns {object} gameStatus - The status of the game
+   * */
+  getGameStatus(playerId = null, game = this) {
     // Core game status
     const gameStatus =  {
       name: game.meta.name,
@@ -82,13 +86,11 @@ export const gameCore = {
     };
 
     // Games can define a decorator to augment/overide the game status
-    const decorators = game.decorators['getGameStatus'] ? 
-      game.decorators['getGameStatus'] : 
-      () => ({});
+    const decorators = game.decorators['getGameStatus'] ?? function(){};
 
     return {
       ...gameStatus,
-      ...decorators(game)
+      ...decorators(playerId, game)
     };
   },
 
@@ -177,9 +179,7 @@ export const gameCore = {
 
     // Games can define a decorator to augment/overide what happens when 
     // players are added.
-    const decorators = game.decorators['addPlayer'] ? 
-      game.decorators['addPlayer'] : 
-      () => ({});
+    const decorators = game.decorators['addPlayer'] ?? function(){};
 
     // Return a copy of the game with our updates mixed in
     const returnObject = {
@@ -238,9 +238,7 @@ export const gameCore = {
    */
   processActions(actions, game = this) {
     // Games must define a decorator to implement player actions.
-    const decorators = game.decorators['processActions'] ? 
-      game.decorators['processActions'] : 
-      () => ({});
+    const decorators = game.decorators['processActions'] ?? function(){};
 
     // If a game does not define any processAction decorators, 
     const returnObject = {

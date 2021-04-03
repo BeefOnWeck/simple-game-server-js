@@ -125,9 +125,9 @@ export const game0 = {
   decorators: {
 
     /** Add `theWinner` to the list of game stats */
-    getGameStatus(gameToDecorate) {
+    getGameStatus(_playerId, gameToDecorate) {
       return {
-        theWinner: gameToDecorate.theWinner ? gameToDecorate.theWinner : null
+        theWinner: gameToDecorate.theWinner ?? null
       };
     },
 
