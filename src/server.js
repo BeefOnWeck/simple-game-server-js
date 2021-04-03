@@ -72,7 +72,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
   //       in the game?
   socket.on('send-user-name', (username, callback) => {
     // TODO: Throw error on null or empty name?
-    socket.username = username === null ? '' : username;
+    socket.username = username ?? '';
     console.log('username', username);
 
     if (game.phase && game.phase == 'boot') {
@@ -86,11 +86,12 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     
       if (game.phase == 'play') {
         // TODO: Also announce start of game?
-        io.emit('game-state', // TODO: Rename message to 'game-status'
-          // TODO: Should take the playerId as a parameter and not 
-          // send private state for other players
-          game.getGameStatus()
-        );
+        // Send game status to each player
+        game.players.forEach(player => {
+          io.to(player.id).emit('game-state',
+            game.getGameStatus(player.id)
+          );
+        });
         // Tell player 1 it's their turn
         io.to(game.firstPlayerId).emit('start-your-turn', {});
 
@@ -127,11 +128,12 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
         console.log('Player is done:', game.activePlayerId);
         // But first let's just go to the next player
         game = game.nextPlayer();
-        io.emit('game-state', // TODO: Rename message to 'game-status'
-          // TODO: Should take the playerId as a parameter and not 
-          // send private state for other players
-          game.getGameStatus()
-        );
+        // Send game status to each player
+        game.players.forEach(player => {
+          io.to(player.id).emit('game-state',
+            game.getGameStatus(player.id)
+          );
+        });
         io.to(game.activePlayerId).emit('start-your-turn', {});
       } else {
         socket.emit('It is not your turn', {});
