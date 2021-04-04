@@ -223,10 +223,20 @@ export const gameCore = {
     // NOTE: This assumes players go once per round (may need to relax in the future)
     let activePlayerIndex = game.players.findIndex(p => p.id === game.activePlayerId);
     let nextPlayerIndex = (activePlayerIndex + 1) % game.numPlayers;
-    return {
+
+    // Games can define a decorator to augment/overide what happens when play 
+    // transitions to the next player.
+    const decorators = game.decorators['nextPlayer'] ?? function(){};
+
+    // Return a copy of the game with our updates mixed in
+    const returnObject = {
       ...game, // NOTE: game = this (object calling this method)
-      round: nextPlayerIndex === 0 ? game.round + 1 : game.round, // increment the round if we're back to the first player
       activePlayerId: game.players[nextPlayerIndex].id
+    };
+
+    return {
+      ...returnObject,
+      ...decorators(returnObject)
     }
   },
 

@@ -157,6 +157,20 @@ export const game0 = {
       };
     },
 
+    /** Auto-increment the round when going back to the first player. */
+    nextPlayer(gameToDecorate) {
+      // Note this is the next player set in gameCore.nextPlayer().
+      let activePlayerIndex = gameToDecorate.players.findIndex(p => {
+        return p.id === gameToDecorate.activePlayerId
+      });
+      // Increment the round if we're back to the first player
+      return {
+        round: activePlayerIndex === 0 ? 
+          gameToDecorate.round + 1 : 
+          gameToDecorate.round,
+      }
+    },
+
     /** Handle make-mark action */
     processActions(gameToDecorate) {
       // TODO: Handle multiple actions

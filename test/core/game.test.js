@@ -101,7 +101,10 @@ describe('Game Core', function() {
     game.should.have.property('round').equal(0);
     game = game.nextPlayer();
     game.should.have.property('activePlayerId').equal('id1');
-    game.should.have.property('round').equal(1);
+    // NOTE: gameCore will not automatically increment the round when you 
+    // return to the first player. This behavior must be implemented via 
+    // a decorator on nextPlayer().
+    game.should.have.property('round').equal(0);
   });
 
   it('Should return the correct game status.', function() {

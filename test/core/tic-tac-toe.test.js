@@ -183,4 +183,24 @@ describe('Tic Tac Toe', function() {
       .should.throw(Error, 'Cannot add player; exceeds maximum number of players.');
   });
 
+  it('Should auto-increment the round when going back to the first player', function() {
+    let game = selectGame('Tic Tac Toe');
+    game = game.addPlayer('name1', 'id1').addPlayer('name2', 'id2');
+    game.should.have.property('activePlayerId').equal('id1');
+    game.should.have.property('round').equal(1);
+    game.should.have.property('numPlayers').equal(2);
+    game = game.nextPlayer();
+    game.should.have.property('activePlayerId').equal('id2');
+    game.should.have.property('round').equal(1);
+    game = game.nextPlayer();
+    game.should.have.property('activePlayerId').equal('id1');
+    game.should.have.property('round').equal(2);
+    game = game.nextPlayer();
+    game.should.have.property('activePlayerId').equal('id2');
+    game.should.have.property('round').equal(2);
+    game = game.nextPlayer();
+    game.should.have.property('activePlayerId').equal('id1');
+    game.should.have.property('round').equal(3);
+  });
+
 });
