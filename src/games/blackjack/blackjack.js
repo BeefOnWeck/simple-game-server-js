@@ -16,6 +16,10 @@ export const game0 = {
   /** Game-specific configuration */
   config: {
 
+    maxNumPlayers: 2,
+
+    maxRounds: 10
+
   },
 
   /** 
@@ -27,6 +31,8 @@ export const game0 = {
     deck: standardDeck52,
 
     playerFunds: [],
+
+    playerBets: [],
 
     playerHands: {},
 
@@ -53,6 +59,9 @@ export const game0 = {
 
   // TODO: Consider allowing the first player to cut the deck at a specified position.
 
+  /**
+   * 
+   */
   drawCard(playerId, faceUpOrDown = 'faceDown', game = this) {
     let deck = game.state.deck;
     const card = deck.shift(); // Remove top card
@@ -81,6 +90,29 @@ export const game0 = {
     }
   },
 
+  /**
+   * 
+   */
+  makeBet(playerId, betAmount, game = this) {
+
+    let updatedPlayerBets = [
+      ...game.state.playerBets,
+      {
+        id: playerId,
+        amount: betAmount
+      }
+    ];
+    
+    return {
+      ...game,
+      state: {
+        ...game.state,
+        playerBets: updatedPlayerBets
+      }
+    }
+  },
+
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
@@ -92,7 +124,19 @@ export const game0 = {
     /** When adding a player, initialize their hand. */
     addPlayer(gameToDecorate) {
 
-      let playerList = gameToDecorate.players;
+      const maxNumPlayers = gameToDecorate.config.maxNumPlayers;
+
+      if (gameToDecorate.numPlayers > maxNumPlayers) {
+        throw new Error('Cannot add player; exceeds maximum number of players.');
+      }
+
+      // Do we have two players yet?
+      // Skip setup and move directly to the play phase and the first round.
+      let updatedGame = gameToDecorate.numPlayers == maxNumPlayers ?
+        gameToDecorate.nextPhase().nextPhase().nextRound() :
+        gameToDecorate;
+
+      let playerList = updatedGame.players;
 
       let playerHands = playerList.reduce((acc, cv, ci) => {
         return {
@@ -113,9 +157,9 @@ export const game0 = {
 
       // Return the updated game with the updated players mixed in.
       return {
-        ...gameToDecorate,
+        ...updatedGame,
         state: {
-          ...gameToDecorate.state,
+          ...updatedGame.state,
           playerHands: playerHands,
           playerFunds: playerFunds
         }

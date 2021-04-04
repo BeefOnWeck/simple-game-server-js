@@ -70,6 +70,8 @@ describe('Blackjack', function() {
 
       playerFunds: [],
 
+      playerBets: [],
+
       playerHands: {},
 
       dealerHand: {
@@ -186,8 +188,8 @@ describe('Blackjack', function() {
     let status1 = game.getGameStatus('id1');
     status1.should.deep.equal({
       name: 'Blackjack',
-      phase: 'boot',
-      round: 0,
+      phase: 'play',
+      round: 1,
       activePlayer: 'id1',
       players: [
         {
@@ -209,6 +211,7 @@ describe('Blackjack', function() {
           { id: 'id1', amount: 100 },
           { id: 'id2', amount: 100 }
         ],
+        playerBets: [],
         discardPile: 0,
         playerHands: {
           id1: {
@@ -226,8 +229,8 @@ describe('Blackjack', function() {
     let status2 = game.getGameStatus('id2');
     status2.should.deep.equal({
       name: 'Blackjack',
-      phase: 'boot',
-      round: 0,
+      phase: 'play',
+      round: 1,
       activePlayer: 'id1',
       players: [
         {
@@ -249,6 +252,7 @@ describe('Blackjack', function() {
           { id: 'id1', amount: 100 },
           { id: 'id2', amount: 100 }
         ],
+        playerBets: [],
         discardPile: 0,
         playerHands: {
           id1: {
@@ -262,7 +266,16 @@ describe('Blackjack', function() {
         }
       }
     });
+  });
 
+  it('Should allow players to make bets.', function() {
+    let game = selectGame('Blackjack');
+    game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
+    game = game.makeBet('id1', 10).makeBet('id2', 10);
+    game.state.playerBets.should.deep.equal([
+      { id: 'id1', amount: 10 },
+      { id: 'id2', amount: 10 }
+    ]);
   });
 
 });
