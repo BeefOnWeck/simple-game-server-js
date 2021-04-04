@@ -68,7 +68,14 @@ describe('Blackjack', function() {
         
       ],
 
+      playerFunds: [],
+
       playerHands: {},
+
+      dealerHand: {
+        faceDown: [],
+        faceUp: []
+      },
 
       discardPile: []
 
@@ -194,6 +201,14 @@ describe('Blackjack', function() {
       ],
       state: {
         deck: 48,
+        dealerHand: {
+          faceDown: [],
+          faceUp: []
+        },
+        playerFunds: [
+          { id: 'id1', amount: 100 },
+          { id: 'id2', amount: 100 }
+        ],
         discardPile: 0,
         playerHands: {
           id1: {
@@ -226,6 +241,14 @@ describe('Blackjack', function() {
       ],
       state: {
         deck: 48,
+        dealerHand: {
+          faceDown: [],
+          faceUp: []
+        },
+        playerFunds: [
+          { id: 'id1', amount: 100 },
+          { id: 'id2', amount: 100 }
+        ],
         discardPile: 0,
         playerHands: {
           id1: {

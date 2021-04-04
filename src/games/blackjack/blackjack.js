@@ -26,7 +26,14 @@ export const game0 = {
 
     deck: standardDeck52,
 
+    playerFunds: [],
+
     playerHands: {},
+
+    dealerHand: {
+      faceDown: [],
+      faceUp: []
+    },
 
     discardPile: []
   },
@@ -97,12 +104,20 @@ export const game0 = {
         }
       }, {});
 
+      let playerFunds = playerList.map((cv, ci) => {
+        return {
+          id: cv.id,
+          amount: 100 // TODO: Should this be configurable?
+        }
+      });
+
       // Return the updated game with the updated players mixed in.
       return {
         ...gameToDecorate,
         state: {
           ...gameToDecorate.state,
-          playerHands: playerHands
+          playerHands: playerHands,
+          playerFunds: playerFunds
         }
       };
     },
