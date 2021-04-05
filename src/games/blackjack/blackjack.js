@@ -67,12 +67,15 @@ export const game0 = {
     const card = deck.shift(); // Remove top card
     
     let playerHands = game.state.playerHands;
+    let dealerHand = game.state.dealerHand;
     let discardPile = game.state.discardPile;
     // TODO: Throw errors for failed checks
     if (playerId) {
       if (playerId in playerHands) {
         // Add card to player hand (faceDown by default)
         playerHands[playerId][faceUpOrDown].unshift(card);
+      } else if (playerId == 'DEALER') {
+        dealerHand[faceUpOrDown].unshift(card);
       }
     } else {
       // Add card to discard pile
@@ -202,6 +205,45 @@ export const game0 = {
         }
       };
     },
+
+    /**  */
+    nextPlayer(gameToDecorate) {
+
+      let updatedGame = gameToDecorate;
+
+      // Note this is the next player set in gameCore.nextPlayer().
+      let activePlayerIndex = updatedGame.players.findIndex(p => {
+        return p.id === updatedGame.activePlayerId
+      });
+
+      if (activePlayerIndex == 0) {
+        if (updatedGame.state.playerBets.length == updatedGame.numPlayers) {
+          updatedGame = updatedGame.drawCard('DEALER').drawCard('DEALER', 'faceUp');
+        }
+      }
+
+      // Increment the round if we're back to the first player
+      return {
+        ...updatedGame
+      }
+    },
+
+    /**  */
+    processActions(gameToDecorate) {
+      // TODO: Handle multiple actions
+      let actions = gameToDecorate.actions;
+      let actionName = Object.keys(actions)[0];
+      let action = actions[actionName];
+
+      if (actionName == 'make-initial-bet') {
+        let pid = action.pid;
+        let amount = action.amount;
+        return gameToDecorate
+          .makeBet(pid, amount)
+          .drawCard(pid)
+          .drawCard(pid, 'faceUp');
+      }
+    }
 
   }
 

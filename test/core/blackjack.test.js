@@ -278,4 +278,49 @@ describe('Blackjack', function() {
     ]);
   });
 
+  it('Should deal a player two cards after they submit a bet action.', function() {
+    let game = selectGame('Blackjack');
+    game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
+    game = game.processActions({
+      'make-initial-bet': {
+        pid: 'id1',
+        amount: 10
+      }
+    });
+    game.state.playerBets.should.deep.equal([
+      { id: 'id1', amount: 10 }
+    ]);
+    game.state.playerHands['id1']['faceDown'].should.have.length(1);
+    game.state.playerHands['id1']['faceUp'].should.have.length(1);
+    game.state.deck.should.have.length(50);
+    game.state.discardPile.should.have.length(0);
+  });
+
+  it('Should deal the dealer after dealing the last player.', function() {
+    let game = selectGame('Blackjack');
+    game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
+    game = game.processActions({
+      'make-initial-bet': {
+        pid: 'id1',
+        amount: 10
+      }
+    });
+    game = game.nextPlayer();
+    game = game.processActions({
+      'make-initial-bet': {
+        pid: 'id2',
+        amount: 5
+      }
+    });
+    game = game.nextPlayer();
+    game.state.playerBets.should.deep.equal([
+      { id: 'id1', amount: 10 },
+      { id: 'id2', amount: 5 }
+    ]);
+    game.state.dealerHand['faceDown'].should.have.length(1);
+    game.state.dealerHand['faceUp'].should.have.length(1);
+    game.state.deck.should.have.length(46);
+    game.state.discardPile.should.have.length(0);
+  });
+
 });
