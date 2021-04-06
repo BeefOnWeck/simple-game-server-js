@@ -110,7 +110,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
   });
 
   // When a player sends their action(s)
-  socket.on('player-actions', actions => {
+  socket.on('player-actions', (actions, callback) => {
     if (game.phase === 'play') {
       if (socket.id === game.activePlayerId) {
         game = game.processActions(actions);
@@ -123,16 +123,17 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
         io.to(game.activePlayerId).emit('start-your-turn', 
           game.activePlayerDecisions);
       } else {
-        socket.emit('It is not your turn', {});
+        callback({status: 'It is not your turn'});
       }
     } else {
-      socket.emit('Play has not started yet', {});
+      callback({status: 'Play has not started yet'});
     }
   }); 
 
   // When a player ends their turn
-  socket.on('end-my-turn', () => {
-    socket.emit('Warning: This is a deprecated message type', {})
+  socket.on('end-my-turn', (_, callback) => {
+    console.log('Player trying to end their turn, which is deprecated');
+    callback({status: 'Warning: This is a deprecated message type'});
   });
 
 });
