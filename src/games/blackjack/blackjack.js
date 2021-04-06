@@ -136,11 +136,12 @@ export const game0 = {
 
       // Do we have the configured number of players yet?
       // Skip setup and move directly to the play phase and the first round.
-      let updatedGame = gameToDecorate.numPlayers == configNumPlayers ?
-        gameToDecorate.nextPhase().nextPhase().nextRound() :
-        gameToDecorate;
+      if (gameToDecorate.numPlayers == configNumPlayers) {
+        gameToDecorate = gameToDecorate.nextPhase().nextPhase().nextRound();
+        gameToDecorate.activePlayerDecisions = ['make-initial-bet'];
+      }
 
-      let playerList = updatedGame.players;
+      let playerList = gameToDecorate.players;
 
       let playerHands = playerList.reduce((acc,cv) => {
         return {
@@ -161,9 +162,9 @@ export const game0 = {
 
       // Return the updated game with the updated players mixed in.
       return {
-        ...updatedGame,
+        ...gameToDecorate,
         state: {
-          ...updatedGame.state,
+          ...gameToDecorate.state,
           playerHands: playerHands,
           playerFunds: playerFunds
         }

@@ -191,7 +191,7 @@ describe('Blackjack', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
-      activePlayerDecisions: [],
+      activePlayerDecisions: ['make-initial-bet'],
       players: [
         {
           name: 'player1',
@@ -233,7 +233,7 @@ describe('Blackjack', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
-      activePlayerDecisions: [],
+      activePlayerDecisions: ['make-initial-bet'],
       players: [
         {
           name: 'player1',
