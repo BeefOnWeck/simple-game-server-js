@@ -16,7 +16,7 @@ export const game0 = {
   /** Game-specific configuration */
   config: {
 
-    maxNumPlayers: 2,
+    configNumPlayers: 2,
 
     maxRounds: 10
 
@@ -42,6 +42,7 @@ export const game0 = {
     },
 
     discardPile: []
+
   },
 
   shuffleDeck(game = this) {
@@ -127,21 +128,21 @@ export const game0 = {
     /** When adding a player, initialize their hand. */
     addPlayer(gameToDecorate) {
 
-      const maxNumPlayers = gameToDecorate.config.maxNumPlayers;
+      const configNumPlayers = gameToDecorate.config.configNumPlayers;
 
-      if (gameToDecorate.numPlayers > maxNumPlayers) {
+      if (gameToDecorate.numPlayers > configNumPlayers) {
         throw new Error('Cannot add player; exceeds maximum number of players.');
       }
 
-      // Do we have two players yet?
+      // Do we have the configured number of players yet?
       // Skip setup and move directly to the play phase and the first round.
-      let updatedGame = gameToDecorate.numPlayers == maxNumPlayers ?
+      let updatedGame = gameToDecorate.numPlayers == configNumPlayers ?
         gameToDecorate.nextPhase().nextPhase().nextRound() :
         gameToDecorate;
 
       let playerList = updatedGame.players;
 
-      let playerHands = playerList.reduce((acc, cv, ci) => {
+      let playerHands = playerList.reduce((acc,cv) => {
         return {
           ...acc,
           [cv.id]: {
@@ -209,22 +210,23 @@ export const game0 = {
     /**  */
     nextPlayer(gameToDecorate) {
 
-      let updatedGame = gameToDecorate;
-
       // Note this is the next player set in gameCore.nextPlayer().
-      let activePlayerIndex = updatedGame.players.findIndex(p => {
-        return p.id === updatedGame.activePlayerId
+      let activePlayerIndex = gameToDecorate.players.findIndex(p => {
+        return p.id === gameToDecorate.activePlayerId
       });
 
+      // If we have moved back to the first player and all players have placed 
+      // their bets, that means it is time for players to make their moves.
+      // But first, the dealer gets to draw their cards.
       if (activePlayerIndex == 0) {
-        if (updatedGame.state.playerBets.length == updatedGame.numPlayers) {
-          updatedGame = updatedGame.drawCard('DEALER').drawCard('DEALER', 'faceUp');
+        if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
+          gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
         }
       }
 
       // Increment the round if we're back to the first player
       return {
-        ...updatedGame
+        ...gameToDecorate
       }
     },
 
