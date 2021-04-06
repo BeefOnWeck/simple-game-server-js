@@ -114,22 +114,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     if (game.phase === 'play') {
       if (socket.id === game.activePlayerId) {
         game = game.processActions(actions);
-      } else {
-        socket.emit('It is not your turn', {});
-      }
-    } else {
-      socket.emit('Play has not started yet', {});
-    }
-  }); 
-
-  // When a player ends their turn
-  socket.on('end-my-turn', () => {
-    if (game.phase === 'play') {
-      if (socket.id === game.activePlayerId) {
-        console.log('Player is done:', game.activePlayerId);
-        // But first let's just go to the next player
         game = game.nextPlayer();
-        // Send game status to each player
         game.players.forEach(player => {
           io.to(player.id).emit('game-state',
             game.getGameStatus(player.id)
@@ -143,6 +128,11 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     } else {
       socket.emit('Play has not started yet', {});
     }
+  }); 
+
+  // When a player ends their turn
+  socket.on('end-my-turn', () => {
+    socket.emit('Warning: This is a deprecated message type', {})
   });
 
 });
