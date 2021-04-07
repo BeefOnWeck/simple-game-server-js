@@ -339,6 +339,77 @@ describe('Blackjack', function() {
     ]);
   });
 
+  it('Should support players making a move after their bet.', function() {
+    let game = selectGame('Blackjack', {configNumPlayers: 4});
+    game = game.shuffleDeck()
+      .addPlayer('player1','id1')
+      .addPlayer('player2','id2')
+      .addPlayer('player3','id3')
+      .addPlayer('player4','id4');
+
+    game = game.makeBet('id1', 10)
+      .drawCard('id1')
+      .drawCard('id1', 'faceUp')
+      .nextPlayer();
+    game = game.makeBet('id2', 10)
+      .drawCard('id2')
+      .drawCard('id2', 'faceUp')
+      .nextPlayer();
+    game = game.makeBet('id3', 10)
+      .drawCard('id3')
+      .drawCard('id3', 'faceUp')
+      .nextPlayer();
+    game = game.makeBet('id4', 10)
+      .drawCard('id4')
+      .drawCard('id4', 'faceUp')
+      .nextPlayer();
+
+    game = game.makeMove('id1', 'Hit');
+    game.state.playerHands['id1']['faceDown'].should.have.length(1);
+    game.state.playerHands['id1']['faceUp'].should.have.length(2);
+    console.log(game.state.playerBets);
+    game.state.playerBets.should.deep.equal([
+      { id: 'id1', amount: 10 },
+      { id: 'id2', amount: 10 },
+      { id: 'id3', amount: 10 },
+      { id: 'id4', amount: 10 }
+    ]);
+    game = game.nextPlayer();
+    
+    game = game.makeMove('id2', 'Stand');
+    game.state.playerHands['id2']['faceDown'].should.have.length(1);
+    game.state.playerHands['id2']['faceUp'].should.have.length(1);
+    game.state.playerBets.should.deep.equal([
+      { id: 'id1', amount: 10 },
+      { id: 'id2', amount: 10 },
+      { id: 'id3', amount: 10 },
+      { id: 'id4', amount: 10 }
+    ]);
+    game = game.nextPlayer();
+    
+    game = game.makeMove('id3', 'Double');
+    game.state.playerHands['id3']['faceDown'].should.have.length(1);
+    game.state.playerHands['id3']['faceUp'].should.have.length(2);
+    game.state.playerBets.should.deep.equal([
+      { id: 'id1', amount: 10 },
+      { id: 'id2', amount: 10 },
+      { id: 'id3', amount: 20 },
+      { id: 'id4', amount: 10 }
+    ]);
+    game = game.nextPlayer();
+
+    game = game.makeMove('id4', 'Surrender');
+    game.state.playerHands['id4']['faceDown'].should.have.length(0);
+    game.state.playerHands['id4']['faceUp'].should.have.length(0);
+    game.state.playerBets.should.deep.equal([
+      { id: 'id1', amount: 10 },
+      { id: 'id2', amount: 10 },
+      { id: 'id3', amount: 20 },
+      { id: 'id4', amount: 5 }
+    ]);
+    game = game.nextPlayer();
+  });
+
 
 
 });

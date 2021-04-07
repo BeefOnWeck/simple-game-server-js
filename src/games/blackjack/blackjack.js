@@ -116,6 +116,55 @@ export const game0 = {
     }
   },
 
+  /**
+   * 
+   */
+  makeMove(playerId, move, game = this) {
+
+    let updatedGame = game;
+    let playerBetAmount = updatedGame.state.playerBets
+      .filter(bet => bet.id == playerId)[0]['amount'];
+
+    switch(move) {
+      case 'Hit':
+        updatedGame = updatedGame.drawCard(playerId, 'faceUp');
+        break;
+      case 'Stand':
+        // Do nothing
+        break;
+      case 'Double':
+        updatedGame = updatedGame.drawCard(playerId, 'faceUp');
+        playerBetAmount = playerBetAmount * 2;
+        break;
+      case 'Surrender':
+        updatedGame = updatedGame.discardCards(playerId);
+        playerBetAmount = playerBetAmount * 0.5;
+        break;
+      default:
+        // TODO: Throw error
+    }
+
+    let playerBets = updatedGame.state.playerBets.map(bet => {
+      if (bet.id == playerId) {
+        return {
+          id: playerId,
+          amount: playerBetAmount
+        };
+      } else {
+        return bet;
+      }
+    })
+
+    return {
+      ...updatedGame,
+      state: {
+        ...updatedGame.state,
+        playerBets: playerBets
+      }
+    };
+
+  },
+
 
   /** 
    * Decorators allow methods defined in gameCore to be modified.
