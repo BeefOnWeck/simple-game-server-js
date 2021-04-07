@@ -325,4 +325,18 @@ describe('Blackjack', function() {
     game.state.discardPile.should.have.length(0);
   });
 
+  it('Should specify the correct active player decisions.', function() {
+    let game = selectGame('Blackjack');
+    game.activePlayerDecisions.should.deep.equal([]);
+    game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
+    game.activePlayerDecisions.should.deep.equal([
+      'make-initial-bet'
+    ]);
+    game = game.makeBet('id1', 10).nextPlayer();
+    game = game.makeBet('id2', 10).nextPlayer();
+    game.activePlayerDecisions.should.deep.equal([
+      'make-move'
+    ]);
+  });
+
 });
