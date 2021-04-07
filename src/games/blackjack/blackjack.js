@@ -134,13 +134,13 @@ export const game0 = {
         throw new Error('Cannot add player; exceeds maximum number of players.');
       }
 
-      let currentDecisions = gameToDecorate.activePlayerDecisions;
+      let currentActions = gameToDecorate.currentActions;
 
       // Do we have the configured number of players yet?
       // Skip setup and move directly to the play phase and the first round.
       if (gameToDecorate.numPlayers == configNumPlayers) {
         gameToDecorate = gameToDecorate.nextPhase().nextPhase().nextRound();
-        currentDecisions = ['make-initial-bet'];
+        currentActions = ['make-initial-bet'];
       }
 
       let playerList = gameToDecorate.players;
@@ -165,7 +165,7 @@ export const game0 = {
       // Return the updated game with the updated players mixed in.
       return {
         ...gameToDecorate,
-        activePlayerDecisions: currentDecisions,
+        currentActions: currentActions,
         state: {
           ...gameToDecorate.state,
           playerHands: playerHands,
@@ -219,7 +219,7 @@ export const game0 = {
         return p.id === gameToDecorate.activePlayerId
       });
 
-      let currentDecisions = gameToDecorate.activePlayerDecisions;
+      let currentActions = gameToDecorate.currentActions;
 
       // If we have moved back to the first player and all players have placed 
       // their bets, that means it is time for players to make their moves.
@@ -227,7 +227,7 @@ export const game0 = {
       if (activePlayerIndex == 0) {
         if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
           gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
-          currentDecisions = [
+          currentActions = [
             'make-move'
           ];
         }
@@ -236,7 +236,7 @@ export const game0 = {
       // Increment the round if we're back to the first player
       return {
         ...gameToDecorate,
-        activePlayerDecisions: currentDecisions
+        currentActions: currentActions
       }
     },
 

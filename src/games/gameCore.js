@@ -35,10 +35,10 @@ export const gameCore = {
   activePlayerId: null,
 
   /**
-   * What decisions is the current player being asked to make?
+   * What actions is the current player being asked to take?
    * @type {string[]}
    */
-  activePlayerDecisions: [],
+  currentActions: [],
 
   /**
    * The socket ID of the first player.
@@ -87,7 +87,7 @@ export const gameCore = {
       phase: game.phase, // NOTE: game = this (object calling this method)
       round: game.round,
       activePlayer: game.activePlayerId,
-      activePlayerDecisions: game.activePlayerDecisions,
+      currentActions: game.currentActions,
       players: game.players,
       state: game.state
     };

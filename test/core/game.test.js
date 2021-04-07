@@ -120,7 +120,7 @@ describe('Game Core', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id2',
-      activePlayerDecisions: [],
+      currentActions: [],
       players: [
         {
           name: 'name1',

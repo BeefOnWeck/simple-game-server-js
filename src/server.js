@@ -94,7 +94,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
         });
         // Tell player 1 it's their turn
         io.to(game.firstPlayerId).emit('start-your-turn', 
-          game.activePlayerDecisions);
+          game.currentActions);
 
         // This is a point where things could break (if player 1 doesn't get the message, we're stuck)
         // How to ensure we get confirmation?
@@ -121,7 +121,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
           );
         });
         io.to(game.activePlayerId).emit('start-your-turn', 
-          game.activePlayerDecisions);
+          game.currentActions);
       } else {
         callback({status: 'It is not your turn'});
       }
