@@ -89,6 +89,48 @@ export const game0 = {
         ...game.state,
         deck: deck,
         playerHands: playerHands,
+        dealerHand: dealerHand,
+        discardPile: discardPile
+      }
+    }
+  },
+
+  /**
+   * 
+   */
+  discardCards(playerId, game = this) {
+
+    let playerHands = game.state.playerHands;
+    let dealerHand = game.state.dealerHand;
+    let discardPile = game.state.discardPile;
+    let card = {};
+
+    if (playerId) {
+      if (playerId in playerHands) {
+        while( (card = playerHands[playerId]['faceUp'].shift()) != undefined ) {
+          discardPile.shift(card);
+        }
+        while( (card = playerHands[playerId]['faceDown'].shift()) != undefined ) {
+          discardPile.shift(card);
+        }
+      } else if (playerId == 'DEALER') {
+        while( (card = dealerHand['faceUp'].shift()) != undefined ) {
+          discardPile.shift(card);
+        }
+        while( (card = dealerHand['faceDown'].shift()) != undefined ) {
+          discardPile.shift(card);
+        }
+      } else {
+        // TODO: Throw error.
+      }
+    }
+
+    return {
+      ...game,
+      state: {
+        ...game.state,
+        playerHands: playerHands,
+        dealerHand: dealerHand,
         discardPile: discardPile
       }
     }

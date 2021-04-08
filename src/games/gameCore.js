@@ -35,7 +35,7 @@ export const gameCore = {
   activePlayerId: null,
 
   /**
-   * What actions is the current player being asked to take?
+   * What actions are the current player being asked to take?
    * @type {string[]}
    */
   currentActions: [],
@@ -126,7 +126,7 @@ export const gameCore = {
   nextRound(game = this) {
     return {
       ...game, // NOTE: game = this (object calling this method)
-      round: game.round + 1 // TODO: test this
+      round: game.round + 1
     };
   },
 
@@ -134,7 +134,7 @@ export const gameCore = {
    * Moves the game to the next phase.
    * @returns {game} 
    */
-  nextPhase(game = this) { // TODO: Refactor with phase array
+  nextPhase(game = this) {
     let theNextPhase;
     if (game.phase === 'end') {
       return game; // TODO: Throw error? Reset the game?
@@ -227,7 +227,6 @@ export const gameCore = {
   nextPlayer(game = this) { // TODO: Test
     // TODO: Error out if there is not active player
     // TODO: Check that we're in the play phase (how to make sure things are coupled?)
-    // NOTE: This assumes players go once per round (may need to relax in the future)
     let activePlayerIndex = game.players.findIndex(p => p.id === game.activePlayerId);
     let nextPlayerIndex = (activePlayerIndex + 1) % game.numPlayers;
 
