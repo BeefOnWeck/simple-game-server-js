@@ -410,6 +410,49 @@ describe('Blackjack', function() {
     game = game.nextPlayer();
   });
 
+  it('Should resolve dealer hand after all players have made their moves.', function() {
+    let game = selectGame('Blackjack', {configNumPlayers: 4});
+    game = game.shuffleDeck()
+      .addPlayer('player1','id1')
+      .addPlayer('player2','id2')
+      .addPlayer('player3','id3')
+      .addPlayer('player4','id4');
+
+    // Round 1: Make bets
+    game = game.makeBet('id1', 10).drawCard('id1')
+      .drawCard('id1', 'faceUp').nextPlayer();
+    game = game.makeBet('id2', 10).drawCard('id2')
+      .drawCard('id2', 'faceUp').nextPlayer();
+    game = game.makeBet('id3', 10).drawCard('id3')
+      .drawCard('id3', 'faceUp').nextPlayer();
+    game = game.makeBet('id4', 10).drawCard('id4')
+      .drawCard('id4', 'faceUp').nextPlayer();
+
+    // NOTE: The dealer is delt their cards after all players have made 
+    //       their bets and nextPlayer() is called.
+    const dealerScore = game.scoreHand('DEALER');
+
+    // Round 1: Make moves
+    game = game.makeMove('id1', 'Hit');
+    game = game.nextPlayer();
+    game = game.makeMove('id2', 'Stand');
+    game = game.nextPlayer();
+    game = game.makeMove('id3', 'Double');
+    game = game.nextPlayer();
+    game = game.makeMove('id4', 'Surrender');
+    game = game.nextPlayer();
+
+    // NOTE: The dealer hand is resolved after all players have made their 
+    //       moves and nextPlayer() is called.
+    const newDealerScore = game.scoreHand('DEALER');
+    // NOTE: The dealer always hits if their score is below 17
+    if (dealerScore < 17) {
+      newDealerScore.should.be.above(dealerScore);
+    } else {
+      newDealerScore.should.equal(dealerScore);
+    }
+  });
+
 
 
 });

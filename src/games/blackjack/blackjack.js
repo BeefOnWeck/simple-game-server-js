@@ -207,6 +207,66 @@ export const game0 = {
 
   },
 
+  // TODO: A function that moves all cards from faceDown to faceUp (showHand)
+
+  /**
+   * 
+   */
+  scoreHand(playerId, game = this) {
+    let playerHands = game.state.playerHands;
+    let dealerHand = game.state.dealerHand;
+    let cards;
+
+    if (playerId) {
+      if (playerId in playerHands) {
+        cards = playerHands[playerId]['faceUp'].concat(
+          playerHands[playerId]['faceDown']
+        );
+      } else if (playerId == 'DEALER') {
+        cards = dealerHand['faceUp'].concat(
+          dealerHand['faceDown']
+        );
+        console.log(cards);
+      } else {
+        // TODO: Throw error.
+      }
+    }
+
+    return game.scoreCards(cards);
+  },
+
+  /**
+   * 
+   */
+  scoreCards(cards, game = this) {
+    let aces = cards.filter(card => card.rank == 'Ace');
+    let nonAces = cards.filter(card => card.rank != 'Ace');
+
+    let initialScore = nonAces.reduce((score, card) => {
+      return score + game.scoreOfNonAceCard(card);
+    },0);
+
+    let finalScore = aces.reduce((score, card) => {
+      if (score <= 10) {
+        return score + 11;
+      } else {
+        return score + 1;
+      }
+    },initialScore);
+  },
+
+  /**
+   * 
+   */
+  scoreOfNonAceCard(card) {
+    // TODO: Is it worth even having this as a separate function?
+    // TODO: Throw error if card is an ace
+    if (['Jack', 'Queen', 'King'].includes(card.rank)) {
+      return 10;
+    } else {
+      return parseInt(card.rank);
+    }
+  },
 
   /** 
    * Decorators allow methods defined in gameCore to be modified.
@@ -305,18 +365,18 @@ export const game0 = {
     /**  */
     nextPlayer(gameToDecorate) {
 
-      // Note this is the next player set in gameCore.nextPlayer().
+      // Note this is the "next player" set in gameCore.nextPlayer().
       let activePlayerIndex = gameToDecorate.players.findIndex(p => {
         return p.id === gameToDecorate.activePlayerId
       });
 
       let currentActions = gameToDecorate.currentActions;
 
-      // If we have moved back to the first player and all players have placed 
-      // their bets, that means it is time for players to make their moves.
-      // But first, the dealer gets to draw their cards.
       if (activePlayerIndex == 0) {
+        // If we have moved back to the first player and all players have placed 
+        // their bets, that means it is time for players to make their moves.
         if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
+          // But first, the dealer gets to draw their cards.
           gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
           currentActions = [
             'make-move'

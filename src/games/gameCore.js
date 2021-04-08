@@ -264,7 +264,8 @@ export const gameCore = {
 
     return {
       ...game, // NOTE: game = this (object calling this method)
-      ...decorators(returnObject)
+      ...decorators(returnObject),
+      actions: {}
     };
   }
   
