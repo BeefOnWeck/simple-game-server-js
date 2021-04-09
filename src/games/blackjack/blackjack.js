@@ -140,7 +140,59 @@ export const game0 = {
   /**
    * 
    */
+  showHand(playerId, game = this) {
+    // TODO: Refactor to allow methods to share common code
+    let playerHands = game.state.playerHands;
+    let dealerHand = game.state.dealerHand;
+    let card = {};
+
+    if (playerId) {
+      if (playerId in playerHands) {
+        while( (card = playerHands[playerId]['faceDown'].shift()) != undefined ) {
+          playerHands[playerId]['faceUp'].unshift(card);
+        }
+      } else if (playerId == 'DEALER') {
+        while( (card = dealerHand['faceDown'].shift()) != undefined ) {
+          dealerHand['faceUp'].unshift(card);
+        }
+      } else {
+        // TODO: Throw error.
+      }
+    }
+
+    return {
+      ...game,
+      state: {
+        ...game.state,
+        playerHands: playerHands,
+        dealerHand: dealerHand
+      }
+    }
+  },
+
+  /**
+   * 
+   */
+  turnAllCardsFaceUp(game = this) {
+
+    let updatedGame = {...game};
+
+    game.players.forEach(player => {
+      updatedGame = updatedGame.showHand(player.id);
+    });
+    updatedGame = updatedGame.showHand('DEALER');
+
+    return {
+      ...updatedGame
+    }
+  },
+
+  /**
+   * 
+   */
   makeBet(playerId, betAmount, game = this) {
+
+    // TODO: Bet cannot be larger than what the player has
 
     let updatedPlayerBets = [
       ...game.state.playerBets,
@@ -207,8 +259,6 @@ export const game0 = {
     };
 
   },
-
-  // TODO: A function that moves all cards from faceDown to faceUp (showHand)
 
   /**
    * 
@@ -390,6 +440,7 @@ export const game0 = {
       if (activePlayerIndex == 0) {
         if (currentActions.includes('make-move')) {
           gameToDecorate = gameToDecorate.resolveDealerHand();
+          gameToDecorate = gameToDecorate.turnAllCardsFaceUp();
           currentActions = [
             'make-initial-bet'
           ];

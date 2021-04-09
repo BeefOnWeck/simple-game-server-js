@@ -452,6 +452,47 @@ describe('Blackjack', function() {
     }
   });
 
+  it('Should turn all cards face up at the end of the round.', function() {
+    let game = selectGame('Blackjack', {configNumPlayers: 4});
+    game = game.shuffleDeck()
+      .addPlayer('player1','id1')
+      .addPlayer('player2','id2')
+      .addPlayer('player3','id3')
+      .addPlayer('player4','id4');
+
+    // Round 1: Make bets
+    game = game.makeBet('id1', 10).drawCard('id1')
+      .drawCard('id1', 'faceUp').nextPlayer();
+    game = game.makeBet('id2', 10).drawCard('id2')
+      .drawCard('id2', 'faceUp').nextPlayer();
+    game = game.makeBet('id3', 10).drawCard('id3')
+      .drawCard('id3', 'faceUp').nextPlayer();
+    game = game.makeBet('id4', 10).drawCard('id4')
+      .drawCard('id4', 'faceUp').nextPlayer();
+
+    // Round 1: Make moves
+    game = game.makeMove('id1', 'Hit');
+    game = game.nextPlayer();
+    game = game.makeMove('id2', 'Stand');
+    game = game.nextPlayer();
+    game = game.makeMove('id3', 'Double');
+    game = game.nextPlayer();
+    game = game.makeMove('id4', 'Surrender');
+    game = game.nextPlayer();
+
+    // All cards should now be face up
+    game.state.playerHands['id1']['faceDown'].should.have.length(0);
+    game.state.playerHands['id1']['faceUp'].should.have.length(3);
+    game.state.playerHands['id2']['faceDown'].should.have.length(0);
+    game.state.playerHands['id2']['faceUp'].should.have.length(2);
+    game.state.playerHands['id3']['faceDown'].should.have.length(0);
+    game.state.playerHands['id3']['faceUp'].should.have.length(3);
+    game.state.playerHands['id4']['faceDown'].should.have.length(0);
+    game.state.playerHands['id4']['faceUp'].should.have.length(0);
+    game.state.dealerHand['faceDown'].should.have.length(0);
+
+  });
+
 
 
 });
