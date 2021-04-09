@@ -367,7 +367,6 @@ describe('Blackjack', function() {
     game = game.makeMove('id1', 'Hit');
     game.state.playerHands['id1']['faceDown'].should.have.length(1);
     game.state.playerHands['id1']['faceUp'].should.have.length(2);
-    console.log(game.state.playerBets);
     game.state.playerBets.should.deep.equal([
       { id: 'id1', amount: 10 },
       { id: 'id2', amount: 10 },

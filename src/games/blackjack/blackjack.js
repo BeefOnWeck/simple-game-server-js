@@ -36,6 +36,7 @@ export const game0 = {
 
     playerHands: {},
 
+    // TODO: Merge this with playerHands and rename
     dealerHand: {
       faceDown: [],
       faceUp: []
@@ -163,7 +164,7 @@ export const game0 = {
    */
   makeMove(playerId, move, game = this) {
 
-    let updatedGame = game;
+    let updatedGame = {...game};
     let playerBetAmount = updatedGame.state.playerBets
       .filter(bet => bet.id == playerId)[0]['amount'];
 
@@ -226,7 +227,6 @@ export const game0 = {
         cards = dealerHand['faceUp'].concat(
           dealerHand['faceDown']
         );
-        console.log(cards);
       } else {
         // TODO: Throw error.
       }
@@ -253,6 +253,8 @@ export const game0 = {
         return score + 1;
       }
     },initialScore);
+
+    return finalScore;
   },
 
   /**
@@ -268,6 +270,18 @@ export const game0 = {
     }
   },
 
+  /**
+   * 
+   */
+  resolveDealerHand(game = this) {
+    let dealerScore;
+    while( (dealerScore = game.scoreHand('DEALER')) < 17 ) {
+      game = game.drawCard('DEALER', 'faceUp');
+    }
+
+    return game;
+  },
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
@@ -278,6 +292,7 @@ export const game0 = {
 
     /** When adding a player, initialize their hand. */
     addPlayer(gameToDecorate) {
+      // TODO: Throw an error if someone tries to pick "DEALER" as their username
 
       const configNumPlayers = gameToDecorate.config.configNumPlayers;
 
@@ -373,14 +388,21 @@ export const game0 = {
       let currentActions = gameToDecorate.currentActions;
 
       if (activePlayerIndex == 0) {
-        // If we have moved back to the first player and all players have placed 
-        // their bets, that means it is time for players to make their moves.
-        if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
-          // But first, the dealer gets to draw their cards.
-          gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
+        if (currentActions.includes('make-move')) {
+          gameToDecorate = gameToDecorate.resolveDealerHand();
           currentActions = [
-            'make-move'
+            'make-initial-bet'
           ];
+        } else if (currentActions.includes('make-initial-bet')) {
+          // If we have moved back to the first player and all players have placed 
+          // their bets, that means it is time for players to make their moves.
+          if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
+            // But first, the dealer gets to draw their cards.
+            gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
+            currentActions = [
+              'make-move'
+            ];
+          }
         }
       }
 
