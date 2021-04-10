@@ -34,12 +34,11 @@ export const game0 = {
 
     playerBets: [],
 
-    playerHands: {},
-
-    // TODO: Merge this with playerHands and rename
-    dealerHand: {
-      faceDown: [],
-      faceUp: []
+    playerHands: {
+      DEALER: {
+        faceDown: [],
+        faceUp: []
+      }
     },
 
     discardPile: []
@@ -69,16 +68,11 @@ export const game0 = {
     const card = deck.shift(); // Remove top card
     
     let playerHands = game.state.playerHands;
-    let dealerHand = game.state.dealerHand;
     let discardPile = game.state.discardPile;
     // TODO: Throw errors for failed checks
-    if (playerId) {
-      if (playerId in playerHands) {
-        // Add card to player hand (faceDown by default)
-        playerHands[playerId][faceUpOrDown].unshift(card);
-      } else if (playerId == 'DEALER') {
-        dealerHand[faceUpOrDown].unshift(card);
-      }
+    if (playerId in playerHands) {
+      // Add card to player hand (faceDown by default)
+      playerHands[playerId][faceUpOrDown].unshift(card);
     } else {
       // Add card to discard pile
       discardPile.unshift(card);
@@ -90,7 +84,6 @@ export const game0 = {
         ...game.state,
         deck: deck,
         playerHands: playerHands,
-        dealerHand: dealerHand,
         discardPile: discardPile
       }
     }
@@ -102,28 +95,18 @@ export const game0 = {
   discardCards(playerId, game = this) {
 
     let playerHands = game.state.playerHands;
-    let dealerHand = game.state.dealerHand;
     let discardPile = game.state.discardPile;
     let card = {};
 
-    if (playerId) {
-      if (playerId in playerHands) {
-        while( (card = playerHands[playerId]['faceUp'].shift()) != undefined ) {
-          discardPile.shift(card);
-        }
-        while( (card = playerHands[playerId]['faceDown'].shift()) != undefined ) {
-          discardPile.shift(card);
-        }
-      } else if (playerId == 'DEALER') {
-        while( (card = dealerHand['faceUp'].shift()) != undefined ) {
-          discardPile.shift(card);
-        }
-        while( (card = dealerHand['faceDown'].shift()) != undefined ) {
-          discardPile.shift(card);
-        }
-      } else {
-        // TODO: Throw error.
+    if (playerId in playerHands) {
+      while( (card = playerHands[playerId]['faceUp'].shift()) != undefined ) {
+        discardPile.shift(card);
       }
+      while( (card = playerHands[playerId]['faceDown'].shift()) != undefined ) {
+        discardPile.shift(card);
+      }
+    } else {
+      // TODO: Throw error.
     }
 
     return {
@@ -131,7 +114,6 @@ export const game0 = {
       state: {
         ...game.state,
         playerHands: playerHands,
-        dealerHand: dealerHand,
         discardPile: discardPile
       }
     }
@@ -143,29 +125,21 @@ export const game0 = {
   showHand(playerId, game = this) {
     // TODO: Refactor to allow methods to share common code
     let playerHands = game.state.playerHands;
-    let dealerHand = game.state.dealerHand;
     let card = {};
 
-    if (playerId) {
-      if (playerId in playerHands) {
-        while( (card = playerHands[playerId]['faceDown'].shift()) != undefined ) {
-          playerHands[playerId]['faceUp'].unshift(card);
-        }
-      } else if (playerId == 'DEALER') {
-        while( (card = dealerHand['faceDown'].shift()) != undefined ) {
-          dealerHand['faceUp'].unshift(card);
-        }
-      } else {
-        // TODO: Throw error.
+    if (playerId in playerHands) {
+      while( (card = playerHands[playerId]['faceDown'].shift()) != undefined ) {
+        playerHands[playerId]['faceUp'].unshift(card);
       }
+    } else {
+      // TODO: Throw error.
     }
 
     return {
       ...game,
       state: {
         ...game.state,
-        playerHands: playerHands,
-        dealerHand: dealerHand
+        playerHands: playerHands
       }
     }
   },
@@ -314,21 +288,14 @@ export const game0 = {
    */
   scoreHand(playerId, game = this) {
     let playerHands = game.state.playerHands;
-    let dealerHand = game.state.dealerHand;
     let cards;
 
-    if (playerId) {
-      if (playerId in playerHands) {
-        cards = playerHands[playerId]['faceUp'].concat(
-          playerHands[playerId]['faceDown']
-        );
-      } else if (playerId == 'DEALER') {
-        cards = dealerHand['faceUp'].concat(
-          dealerHand['faceDown']
-        );
-      } else {
-        // TODO: Throw error.
-      }
+    if (playerId in playerHands) {
+      cards = playerHands[playerId]['faceUp'].concat(
+        playerHands[playerId]['faceDown']
+      );
+    } else {
+      // TODO: Throw error.
     }
 
     return game.scoreCards(cards);
@@ -433,7 +400,10 @@ export const game0 = {
         currentActions: currentActions,
         state: {
           ...gameToDecorate.state,
-          playerHands: playerHands,
+          playerHands: {
+            ...gameToDecorate.state.playerHands,
+            ...playerHands
+          },
           playerFunds: playerFunds
         }
       };
@@ -498,7 +468,7 @@ export const game0 = {
           currentActions = [
             'make-initial-bet'
           ];
-          
+
         } else if (currentActions.includes('make-initial-bet')) {
           // If we have moved back to the first player and all players have placed 
           // their bets, that means it is time for players to make their moves.

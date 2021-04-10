@@ -72,11 +72,11 @@ describe('Blackjack', function() {
 
       playerBets: [],
 
-      playerHands: {},
-
-      dealerHand: {
-        faceDown: [],
-        faceUp: []
+      playerHands: {
+        DEALER: {
+          faceDown: [],
+          faceUp: []
+        }
       },
 
       discardPile: []
@@ -204,10 +204,6 @@ describe('Blackjack', function() {
       ],
       state: {
         deck: 48,
-        dealerHand: {
-          faceDown: [],
-          faceUp: []
-        },
         playerFunds: [
           { id: 'id1', amount: 100 },
           { id: 'id2', amount: 100 }
@@ -215,6 +211,10 @@ describe('Blackjack', function() {
         playerBets: [],
         discardPile: 0,
         playerHands: {
+          DEALER: {
+            faceDown: 0,
+            faceUp: []
+          },
           id1: {
             faceUp: game.state.playerHands['id1']['faceUp'],
             faceDown: game.state.playerHands['id1']['faceDown']
@@ -246,10 +246,6 @@ describe('Blackjack', function() {
       ],
       state: {
         deck: 48,
-        dealerHand: {
-          faceDown: [],
-          faceUp: []
-        },
         playerFunds: [
           { id: 'id1', amount: 100 },
           { id: 'id2', amount: 100 }
@@ -257,6 +253,10 @@ describe('Blackjack', function() {
         playerBets: [],
         discardPile: 0,
         playerHands: {
+          DEALER: {
+            faceDown: 0,
+            faceUp: []
+          },
           id1: {
             faceUp: game.state.playerHands['id1']['faceUp'],
             faceDown: 1
@@ -319,8 +319,8 @@ describe('Blackjack', function() {
       { id: 'id1', amount: 10 },
       { id: 'id2', amount: 5 }
     ]);
-    game.state.dealerHand['faceDown'].should.have.length(1);
-    game.state.dealerHand['faceUp'].should.have.length(1);
+    game.state.playerHands['DEALER']['faceDown'].should.have.length(1);
+    game.state.playerHands['DEALER']['faceUp'].should.have.length(1);
     game.state.deck.should.have.length(46);
     game.state.discardPile.should.have.length(0);
   });
@@ -481,7 +481,7 @@ describe('Blackjack', function() {
     game.state.playerHands['id3']['faceUp'].should.have.length(3);
     game.state.playerHands['id4']['faceDown'].should.have.length(0);
     game.state.playerHands['id4']['faceUp'].should.have.length(0);
-    game.state.dealerHand['faceDown'].should.have.length(0);
+    game.state.playerHands['DEALER']['faceDown'].should.have.length(0);
   });
 
   it('Should resolve player hands at the end of the round.', function() {
