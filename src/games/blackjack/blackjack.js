@@ -190,6 +190,55 @@ export const game0 = {
   /**
    * 
    */
+  resolvePlayerBets(game = this) {
+    let updatedGame = {...game};
+
+    const dealerScore = updatedGame.scoreHand('DEALER');
+
+    const playerFundArray = updatedGame.players.reduce((acc,player) => {
+      const playerScore = updatedGame.scoreHand(player.id);
+      const playerBet = updatedGame.state.playerBets
+        .filter(bet => bet.id == player.id)[0].amount;
+
+      let playersFundAmount = updatedGame.state.playerFunds
+        .filter(fund => fund.id == player.id)[0].amount;
+
+      if (playerScore > 21) {
+        playersFundAmount = playersFundAmount - playerBet;
+      } else {
+        if (dealerScore > 21) {
+          playersFundAmount = playersFundAmount + playerBet;
+        } else {
+          if (playerScore > dealerScore) {
+            playersFundAmount = playersFundAmount + playerBet;
+          } else {
+            playersFundAmount = playersFundAmount - playerBet;
+          }
+        }
+      }
+
+      return [
+        ...acc,
+        {
+          id: player.id,
+          amount: playersFundAmount
+        }
+      ];
+      
+    },[]);
+
+    return {
+      ...updatedGame,
+      state: {
+        ...updatedGame.state,
+        playerFunds: playerFundArray
+      }
+    };
+  },
+
+  /**
+   * 
+   */
   makeBet(playerId, betAmount, game = this) {
 
     // TODO: Bet cannot be larger than what the player has
@@ -429,6 +478,8 @@ export const game0 = {
 
     /**  */
     nextPlayer(gameToDecorate) {
+      // NOTE: We do not need to create a copy of game since that has 
+      //       already been done in gameCore.nextPlayer().
 
       // Note this is the "next player" set in gameCore.nextPlayer().
       let activePlayerIndex = gameToDecorate.players.findIndex(p => {
@@ -439,11 +490,15 @@ export const game0 = {
 
       if (activePlayerIndex == 0) {
         if (currentActions.includes('make-move')) {
-          gameToDecorate = gameToDecorate.resolveDealerHand();
-          gameToDecorate = gameToDecorate.turnAllCardsFaceUp();
+          
+          gameToDecorate = gameToDecorate.resolveDealerHand()
+            .turnAllCardsFaceUp()
+            .resolvePlayerBets();
+
           currentActions = [
             'make-initial-bet'
           ];
+          
         } else if (currentActions.includes('make-initial-bet')) {
           // If we have moved back to the first player and all players have placed 
           // their bets, that means it is time for players to make their moves.

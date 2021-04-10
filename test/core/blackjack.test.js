@@ -432,14 +432,10 @@ describe('Blackjack', function() {
     const dealerScore = game.scoreHand('DEALER');
 
     // Round 1: Make moves
-    game = game.makeMove('id1', 'Hit');
-    game = game.nextPlayer();
-    game = game.makeMove('id2', 'Stand');
-    game = game.nextPlayer();
-    game = game.makeMove('id3', 'Double');
-    game = game.nextPlayer();
-    game = game.makeMove('id4', 'Surrender');
-    game = game.nextPlayer();
+    game = game.makeMove('id1', 'Hit').nextPlayer();
+    game = game.makeMove('id2', 'Stand').nextPlayer();
+    game = game.makeMove('id3', 'Double').nextPlayer();
+    game = game.makeMove('id4', 'Surrender').nextPlayer();
 
     // NOTE: The dealer hand is resolved after all players have made their 
     //       moves and nextPlayer() is called.
@@ -471,14 +467,10 @@ describe('Blackjack', function() {
       .drawCard('id4', 'faceUp').nextPlayer();
 
     // Round 1: Make moves
-    game = game.makeMove('id1', 'Hit');
-    game = game.nextPlayer();
-    game = game.makeMove('id2', 'Stand');
-    game = game.nextPlayer();
-    game = game.makeMove('id3', 'Double');
-    game = game.nextPlayer();
-    game = game.makeMove('id4', 'Surrender');
-    game = game.nextPlayer();
+    game = game.makeMove('id1', 'Hit').nextPlayer();
+    game = game.makeMove('id2', 'Stand').nextPlayer();
+    game = game.makeMove('id3', 'Double').nextPlayer();
+    game = game.makeMove('id4', 'Surrender').nextPlayer();
 
     // All cards should now be face up
     game.state.playerHands['id1']['faceDown'].should.have.length(0);
@@ -490,6 +482,118 @@ describe('Blackjack', function() {
     game.state.playerHands['id4']['faceDown'].should.have.length(0);
     game.state.playerHands['id4']['faceUp'].should.have.length(0);
     game.state.dealerHand['faceDown'].should.have.length(0);
+  });
+
+  it('Should resolve player hands at the end of the round.', function() {
+    let game = selectGame('Blackjack', {configNumPlayers: 4});
+    game = game.shuffleDeck()
+      .addPlayer('player1','id1')
+      .addPlayer('player2','id2')
+      .addPlayer('player3','id3')
+      .addPlayer('player4','id4');
+
+    // Round 1: Make bets
+    game = game.makeBet('id1', 10).drawCard('id1')
+      .drawCard('id1', 'faceUp').nextPlayer();
+    game = game.makeBet('id2', 10).drawCard('id2')
+      .drawCard('id2', 'faceUp').nextPlayer();
+    game = game.makeBet('id3', 10).drawCard('id3')
+      .drawCard('id3', 'faceUp').nextPlayer();
+    game = game.makeBet('id4', 10).drawCard('id4')
+      .drawCard('id4', 'faceUp').nextPlayer();
+
+    // Round 1: Make moves
+    game = game.makeMove('id1', 'Hit').nextPlayer();
+    game = game.makeMove('id2', 'Stand').nextPlayer();
+    game = game.makeMove('id3', 'Double').nextPlayer();
+    game = game.makeMove('id4', 'Surrender').nextPlayer();
+
+    // How player hands are resolved depend upon the dealer score
+    const dealerScore = game.scoreHand('DEALER');
+
+    const playerOneScore = game.scoreHand('id1');
+    const playerOneFunds = game.state.playerFunds
+      .filter(fund => fund.id == 'id1')[0].amount;
+    if (dealerScore <= 21) {
+      if (playerOneScore <= 21) {
+        if (playerOneScore > dealerScore) {
+          playerOneFunds.should.equal(110);
+        } else {
+          playerOneFunds.should.equal(90);
+        }
+      } else {
+        playerOneFunds.should.equal(90);
+      }
+    } else {
+      if (playerOneScore <= 21) {
+        playerOneFunds.should.equal(110);
+      } else {
+        playerOneFunds.should.equal(90);
+      }
+    }
+
+    const playerTwoScore = game.scoreHand('id2');
+    const playerTwoFunds = game.state.playerFunds
+      .filter(fund => fund.id == 'id2')[0].amount;
+    if (dealerScore <= 21) {
+      if (playerTwoScore <= 21) {
+        if (playerTwoScore > dealerScore) {
+          playerTwoFunds.should.equal(110);
+        } else {
+          playerTwoFunds.should.equal(90);
+        }
+      } else {
+        playerTwoFunds.should.equal(90);
+      }
+    } else {
+      if (playerTwoScore <= 21) {
+        playerTwoFunds.should.equal(110);
+      } else {
+        playerTwoFunds.should.equal(90);
+      }
+    }
+
+    const playerThreeScore = game.scoreHand('id3');
+    const playerThreeFunds = game.state.playerFunds
+      .filter(fund => fund.id == 'id3')[0].amount;
+    if (dealerScore <= 21) {
+      if (playerThreeScore <= 21) {
+        if (playerThreeScore > dealerScore) {
+          playerThreeFunds.should.equal(120);
+        } else {
+          playerThreeFunds.should.equal(80);
+        }
+      } else {
+        playerThreeFunds.should.equal(80);
+      }
+    } else {
+      if (playerThreeScore <= 21) {
+        playerThreeFunds.should.equal(120);
+      } else {
+        playerThreeFunds.should.equal(80);
+      }
+    }
+
+    const playerFourScore = game.scoreHand('id4');
+    const playerFourFunds = game.state.playerFunds
+      .filter(fund => fund.id == 'id4')[0].amount;
+    if (dealerScore <= 21) {
+      if (playerFourScore <= 21) {
+        if (playerFourScore > dealerScore) {
+          playerFourFunds.should.equal(105);
+        } else {
+          playerFourFunds.should.equal(95);
+        }
+      } else {
+        playerFourFunds.should.equal(95);
+      }
+    } else {
+      if (playerFourScore <= 21) {
+        playerFourFunds.should.equal(105);
+      } else {
+        playerFourFunds.should.equal(95);
+      }
+    }
 
   });
 

@@ -71,7 +71,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
   //       picking a name. What if players need to take turns placing pieces 
   //       in the game?
   socket.on('send-user-name', (username, callback) => {
-    // TODO: Throw error on null or empty name?
+    // TODO: Throw error on null or empty name? That should happen in game.
     socket.username = username ?? '';
     console.log('username', username);
 
@@ -94,7 +94,8 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
         });
         // Tell player 1 it's their turn
         io.to(game.firstPlayerId).emit('start-your-turn', 
-          game.currentActions);
+          game.currentActions
+        );
 
         // This is a point where things could break (if player 1 doesn't get the message, we're stuck)
         // How to ensure we get confirmation?
@@ -113,15 +114,15 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
   socket.on('player-actions', (actions, callback) => {
     if (game.phase === 'play') {
       if (socket.id === game.activePlayerId) {
-        game = game.processActions(actions);
-        game = game.nextPlayer();
+        game = game.processActions(actions).nextPlayer();
         game.players.forEach(player => {
           io.to(player.id).emit('game-state',
             game.getGameStatus(player.id)
           );
         });
         io.to(game.activePlayerId).emit('start-your-turn', 
-          game.currentActions);
+          game.currentActions
+        );
       } else {
         callback({status: 'It is not your turn'});
       }
