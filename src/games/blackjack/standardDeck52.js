@@ -1,7 +1,7 @@
 
-const suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
+const suits = ['♣︎', '♦︎', '♥︎', '♠︎'];
 const ranks = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 
-  'Jack', 'Queen', 'King', 'Ace'];
+  'J', 'Q', 'K', 'A'];
 
 export const standardDeck52 = suits.reduce((acc,cv) => {
   const oneSuit = ranks.map(v => ({ suit: cv, rank: v}));

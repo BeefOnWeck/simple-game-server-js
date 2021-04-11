@@ -305,8 +305,8 @@ export const game0 = {
    * 
    */
   scoreCards(cards, game = this) {
-    let aces = cards.filter(card => card.rank == 'Ace');
-    let nonAces = cards.filter(card => card.rank != 'Ace');
+    let aces = cards.filter(card => card.rank == 'A');
+    let nonAces = cards.filter(card => card.rank != 'A');
 
     let initialScore = nonAces.reduce((score, card) => {
       return score + game.scoreOfNonAceCard(card);
@@ -329,7 +329,7 @@ export const game0 = {
   scoreOfNonAceCard(card) {
     // TODO: Is it worth even having this as a separate function?
     // TODO: Throw error if card is an ace
-    if (['Jack', 'Queen', 'King'].includes(card.rank)) {
+    if (['J', 'Q', 'K'].includes(card.rank)) {
       return 10;
     } else {
       return parseInt(card.rank);
