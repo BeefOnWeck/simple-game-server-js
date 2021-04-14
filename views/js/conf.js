@@ -47,6 +47,17 @@
   // Get handles for the two screens in the modal window
   let modalScreen1 = document.getElementById('ms1');
   let modalScreen2 = document.getElementById('ms2');
+
+  function selectGame(element) {
+    console.log(element.id);
+    modalScreen1.classList.add('hidden');
+    modalScreen2.classList.remove('hidden');
+  }
+
+  var gameBoxes = document.getElementsByClassName('game-box');
+  for (let i = 0; i < gameBoxes.length; i++) {
+    gameBoxes[i].addEventListener('click',function(){selectGame(gameBoxes[i])},false);
+  }
   
   // Hide screen 2 on page load
   modalScreen2.classList.add('hidden');
@@ -54,10 +65,10 @@
   // Add event listener to first screen
   // When we select the screen, it becomes hidden while the second screen 
   // becomes visible.
-  modalScreen1.onclick = function() {
-    modalScreen1.classList.add('hidden');
-    modalScreen2.classList.remove('hidden');
-  };
+  // modalScreen1.onclick = function() {
+  //   modalScreen1.classList.add('hidden');
+  //   modalScreen2.classList.remove('hidden');
+  // };
 
   // Pressing the start button does the following:
   //  1. Sends a POST request to the server to start the game
