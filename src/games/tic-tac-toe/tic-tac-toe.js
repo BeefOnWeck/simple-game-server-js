@@ -9,7 +9,7 @@ export const game0 = {
   /** Metadata for describing a particular game */
   meta: {
     name: 'Tic Tac Toe',
-    avatar: 't3.png' // Filename for a 100x100 png
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/3/32/Tic_tac_toe.svg' // public domain image
   },
 
   /** Game-specific configuration */

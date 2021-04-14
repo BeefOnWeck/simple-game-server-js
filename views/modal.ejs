@@ -11,12 +11,16 @@
         <div class="modal__content">
           <div id="ms1">
             <!-- TODO: Loop over all games -->
-            <div>
-              <img src="/assets/<%= meta[0].avatar %>" alt="<%= meta[0].name %>">
-            </div>
-            <div>
-              <%= meta[0].name %>
-            </div>
+            <% for (let gameIndex = 0; gameIndex < meta.length; gameIndex++) { %>
+              <div class="game-box" id="game_<%= gameIndex %>">
+                <div>
+                  <img src="<%= meta[gameIndex].avatar %>" width="100" alt="<%= meta[gameIndex].name %>">
+                </div>
+                <div>
+                  <%= meta[gameIndex].name %>
+                </div>
+              </div>
+            <% } %>
           </div>
           <div id="ms2">
             <!-- TODO: Only show config for selected game -->

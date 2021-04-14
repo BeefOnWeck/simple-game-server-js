@@ -10,7 +10,7 @@ export const game0 = {
   /** Metadata for describing a particular game */
   meta: {
     name: 'Blackjack',
-    avatar: 'blackjack.png' // Filename for a 100x100 png
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/e/e4/BlackJack6.jpg' // public domain image
   },
 
   /** Game-specific configuration */

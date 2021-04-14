@@ -6,3 +6,8 @@
 input.config-input {
   width: 30px;
 }
+
+.game-box {
+  display: inline-block;
+  margin-right: 25px;
+}
