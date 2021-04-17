@@ -48,6 +48,18 @@
   let modalScreen1 = document.getElementById('ms1'); // game selection
   let modalScreen2 = document.getElementById('ms2'); // game configuration
 
+  // Each game in modalScreen1 is wrapped in a 'game-box' div element.
+  var gameBoxes = document.getElementsByClassName('game-box');
+
+  // Each game configuration in modalScreen2 is wrapped in a 'config-box' div element.
+  var configBoxes = document.getElementsByClassName('config-box');
+
+  // Hide modalScreen2 and the configuration boxes on page load
+  modalScreen2.classList.add('hidden');
+  for (box of configBoxes) {
+    box.classList.add('hidden');
+  };
+
   // Event listener for selecting a game in modalScreen1.
   // When a game is selected:
   // 1. Get the index of the selected game
@@ -59,19 +71,21 @@
     console.log(selectedGameIndex);
     modalScreen1.classList.add('hidden');
     modalScreen2.classList.remove('hidden');
+    for (box of configBoxes) {
+      const boxIndex = parseInt(box.id.match(/\d+$/), 10);
+      if (boxIndex == selectedGameIndex) {
+        box.classList.remove('hidden');
+      }
+    }
   }
 
-  // Each game in modalScreen1 is wrapped in a 'game-box' div element.
+  
   // Add `selectGame()` as a 'click' event listener to each one.
-  var gameBoxes = document.getElementsByClassName('game-box');
   for (let i = 0; i < gameBoxes.length; i++) {
     gameBoxes[i].addEventListener('click', function() {
       selectGame(gameBoxes[i])
     }, false);
   }
-  
-  // Hide screen 2 on page load
-  modalScreen2.classList.add('hidden');
 
   // Pressing the start button does the following:
   //  1. Sends a POST request to the server to start the game
@@ -128,6 +142,9 @@
     el.onclick = function() {
       modalScreen1.classList.remove('hidden');
       modalScreen2.classList.add('hidden');
+      for (box of configBoxes) {
+        box.classList.add('hidden');
+      };
     }
   });
 
