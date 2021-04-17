@@ -10,8 +10,9 @@
       <div class="modal-content-content">
         <div class="modal__content">
           <div id="ms1">
-            <!-- TODO: Loop over all games -->
+            <!-- Loop over all games -->
             <% for (let gameIndex = 0; gameIndex < meta.length; gameIndex++) { %>
+              <!-- For each game, show the avatar and name and embed in a 'game-box' -->
               <div class="game-box" id="game_<%= gameIndex %>">
                 <div>
                   <img src="<%= meta[gameIndex].avatar %>" width="100" alt="<%= meta[gameIndex].name %>">
@@ -23,21 +24,25 @@
             <% } %>
           </div>
           <div id="ms2">
-            <!-- TODO: Only show config for selected game -->
-            <div>
-              <%= config[0].name %>
-            </div>
-            <div id="configs">
-              <% for (let [key, value] of Object.entries(config[0].conf)) { %>
-                <div id=<%= key %>>
-                  <%= key %>: 
-                  <% if (!Array.isArray(value)) { value = [value] } %>
-                  <% value.forEach( element => { %>
-                    <input class="config-input" value=<%= element %>></input>
-                  <% }) %>
+            <% for (let gameIndex = 0; gameIndex < meta.length; gameIndex++) { %>
+              <!-- For each game, show the configuration options embedded in a 'config-box' -->
+              <div class="config-box" id="configname_<%= gameIndex %>">
+                <div name-of-this-game="<%= config[gameIndex].name %>"">
+                  <%= config[gameIndex].name %>
                 </div>
-              <% } %>
-            </div>
+                <div id="configuration_<%= gameIndex %>">
+                  <% for (let [key, value] of Object.entries(config[gameIndex].conf)) { %>
+                    <div id="<%= config[gameIndex].name %>_<%= key %>">
+                      <%= key %>: 
+                      <% if (!Array.isArray(value)) { value = [value] } %>
+                      <% value.forEach( element => { %>
+                        <input class="config-input" value=<%= element %>></input>
+                      <% }) %>
+                    </div>
+                  <% } %>
+                </div>
+              </div>
+            <% } %>
             <div>
               <button id="start-btn" data-micromodal-close>Start</button>
             </div>

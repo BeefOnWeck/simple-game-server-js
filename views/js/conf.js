@@ -45,30 +45,33 @@
     }), 5000);
 
   // Get handles for the two screens in the modal window
-  let modalScreen1 = document.getElementById('ms1');
-  let modalScreen2 = document.getElementById('ms2');
+  let modalScreen1 = document.getElementById('ms1'); // game selection
+  let modalScreen2 = document.getElementById('ms2'); // game configuration
 
+  // Event listener for selecting a game in modalScreen1.
+  // When a game is selected:
+  // 1. Get the index of the selected game
+  // 2. Hide the first modal screen (for selecting games)
+  // 3. Show the second modal screen (for configuring the selected game)
+  var selectedGameIndex = null;
   function selectGame(element) {
-    console.log(element.id);
+    selectedGameIndex = parseInt(element.id.match(/\d+$/), 10);
+    console.log(selectedGameIndex);
     modalScreen1.classList.add('hidden');
     modalScreen2.classList.remove('hidden');
   }
 
+  // Each game in modalScreen1 is wrapped in a 'game-box' div element.
+  // Add `selectGame()` as a 'click' event listener to each one.
   var gameBoxes = document.getElementsByClassName('game-box');
   for (let i = 0; i < gameBoxes.length; i++) {
-    gameBoxes[i].addEventListener('click',function(){selectGame(gameBoxes[i])},false);
+    gameBoxes[i].addEventListener('click', function() {
+      selectGame(gameBoxes[i])
+    }, false);
   }
   
   // Hide screen 2 on page load
   modalScreen2.classList.add('hidden');
-
-  // Add event listener to first screen
-  // When we select the screen, it becomes hidden while the second screen 
-  // becomes visible.
-  // modalScreen1.onclick = function() {
-  //   modalScreen1.classList.add('hidden');
-  //   modalScreen2.classList.remove('hidden');
-  // };
 
   // Pressing the start button does the following:
   //  1. Sends a POST request to the server to start the game
@@ -78,21 +81,30 @@
   startButton.onclick = function() {
     console.log('Starting game!');
 
-    const numChildElements = document.getElementById('configs').childElementCount;
-    let configElements = document.getElementById('configs').children;
+    // Before POSTing we need to get the configuration entered in modalScreen2
+    const idToSelect = 'configuration_' + selectedGameIndex;
+    const numChildElements = document.getElementById(idToSelect).childElementCount;
+    let configElements = document.getElementById(idToSelect).children;
     let conf = {};
     for (let ce = 0; ce < numChildElements; ce++) {
+      let configNameArray = configElements[ce].id.split('_');
+      configNameArray.shift();
+      let configName = configNameArray.join();
       if (configElements[ce].childElementCount == 1) {
-        conf[configElements[ce].id] = configElements[ce].children[0].value;
+        conf[configName] = configElements[ce].children[0].value;
       } else {
         let values = [];
         for (let ve = 0; ve < configElements[ce].childElementCount; ve++) {
           values[ve] = configElements[ce].children[ve].value;
         }
-        conf[configElements[ce].id] = values;
+        conf[configName] = values;
       }
     }
     console.log(conf);
+
+    // Then get the name of the selected game
+    const nameDiv = document.getElementById(idToSelect).previousElementSibling;
+    gameName = nameDiv.innerHTML.trim();
 
     // POST server to have game start
     fetch('http://localhost:3000/start', { // TODO: Parameterize this (env var)
@@ -100,8 +112,8 @@
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ // TODO: Add configuration
-        selectedGame: 'Tic Tac Toe', // NOTE: Selected game is hard-coded
+      body: JSON.stringify({
+        selectedGame: gameName, // NOTE: Selected game is hard-coded
         configuration: conf
       })
     }).then(() => {
