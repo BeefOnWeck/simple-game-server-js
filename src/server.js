@@ -114,6 +114,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
   socket.on('player-actions', (actions, callback) => {
     if (game.phase === 'play') {
       if (socket.id === game.activePlayerId) {
+        // TODO: May need to add a try-catch block here
         game = game.processActions(actions).nextPlayer();
         game.players.forEach(player => {
           io.to(player.id).emit('game-state',
