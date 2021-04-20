@@ -112,18 +112,21 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
 
   // When a player sends their action(s)
   socket.on('player-actions', (actions, callback) => {
-    if (game.phase === 'play') {
+    if (game.phase === 'play') { // TODO: Also allow actions during setup
       if (socket.id === game.activePlayerId) {
-        // TODO: May need to add a try-catch block here
-        game = game.processActions(actions).nextPlayer();
-        game.players.forEach(player => {
-          io.to(player.id).emit('game-state',
-            game.getGameStatus(player.id)
+        try {
+          game = game.processActions(actions).nextPlayer();
+          game.players.forEach(player => {
+            io.to(player.id).emit('game-state',
+              game.getGameStatus(player.id)
+            );
+          });
+          io.to(game.activePlayerId).emit('start-your-turn', 
+            game.currentActions
           );
-        });
-        io.to(game.activePlayerId).emit('start-your-turn', 
-          game.currentActions
-        );
+        } catch (e) {
+          callback({status: e.message});
+        }
       } else {
         callback({status: 'It is not your turn'});
       }

@@ -505,7 +505,13 @@ export const game0 = {
           .drawCard(pid, 'faceUp');
       }
 
-      // TODO: Handle hits, double-downs, stands, etc.
+      if (actionName = 'make-move') {
+        let pid = action.pid;
+        let move = action.move;
+        return gameToDecorate
+          .makeMove(pid, move);
+      }
+
     }
 
   }
