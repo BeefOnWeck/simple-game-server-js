@@ -371,7 +371,8 @@ export const game0 = {
       // Do we have the configured number of players yet?
       // Skip setup and move directly to the play phase and the first round.
       if (gameToDecorate.numPlayers == configNumPlayers) {
-        gameToDecorate = gameToDecorate.nextPhase().nextPhase().nextRound();
+        gameToDecorate = gameToDecorate.nextPhase().shuffleDeck();
+        gameToDecorate = gameToDecorate.nextPhase().nextRound();
         currentActions = ['make-initial-bet'];
       }
 
