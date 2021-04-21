@@ -205,6 +205,7 @@ export const game0 = {
       ...updatedGame,
       state: {
         ...updatedGame.state,
+        playerBets: [],
         playerFunds: playerFundArray
       }
     };
@@ -459,6 +460,9 @@ export const game0 = {
 
       let currentActions = gameToDecorate.currentActions;
 
+      console.log(activePlayerIndex);
+      console.log(currentActions);
+
       if (activePlayerIndex == 0) {
         if (currentActions.includes('make-move')) {
           
@@ -471,6 +475,8 @@ export const game0 = {
           ];
 
         } else if (currentActions.includes('make-initial-bet')) {
+          console.log(gameToDecorate.state.playerBets.length);
+          console.log(gameToDecorate.numPlayers);
           // If we have moved back to the first player and all players have placed 
           // their bets, that means it is time for players to make their moves.
           if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
@@ -482,6 +488,7 @@ export const game0 = {
           }
         }
       }
+      console.log(currentActions);
 
       // Increment the round if we're back to the first player
       return {
