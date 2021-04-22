@@ -459,40 +459,45 @@ export const game0 = {
       });
 
       let currentActions = gameToDecorate.currentActions;
+      let round = gameToDecorate.round;
 
-      console.log(activePlayerIndex);
-      console.log(currentActions);
-
+      // If we're back at the first player
       if (activePlayerIndex == 0) {
+        // If currentActions is already set to 'make-move' this means that 
+        // all players have already made their moves for the last round.
         if (currentActions.includes('make-move')) {
           
+          // So we need to finish up the last round, ...
           gameToDecorate = gameToDecorate.resolveDealerHand()
             .turnAllCardsFaceUp()
             .resolvePlayerBets();
 
+          // ...reset currentActions to 'make-initial-bet', ...
           currentActions = [
             'make-initial-bet'
           ];
 
+          // ...and increment the round.
+          round = round + 1;
+
         } else if (currentActions.includes('make-initial-bet')) {
-          console.log(gameToDecorate.state.playerBets.length);
-          console.log(gameToDecorate.numPlayers);
           // If we have moved back to the first player and all players have placed 
           // their bets, that means it is time for players to make their moves.
           if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
             // But first, the dealer gets to draw their cards.
             gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
+
             currentActions = [
               'make-move'
             ];
+            
           }
         }
       }
-      console.log(currentActions);
 
-      // Increment the round if we're back to the first player
       return {
         ...gameToDecorate,
+        round: round,
         currentActions: currentActions
       }
     },

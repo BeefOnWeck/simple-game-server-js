@@ -597,6 +597,10 @@ describe('Blackjack', function() {
 
   });
 
+  // TODO: Player bets are cleared out after each round
+
+  // TODO: Test with processActions()
+
   // TODO: Player with highest score after 10 rounds wins
 
   // TODO: Player is out when they lose all their money
