@@ -3,7 +3,7 @@ import { standardDeck52, shuffle } from './standardDeck52.js'
 
 /** @typedef {object} game */
 
-/** Tic Tac Toe */
+/** Blackjack */
 export const game0 = {
   ...gameCore, // Copy core game object and mixin (last in wins)
 
@@ -16,8 +16,10 @@ export const game0 = {
   /** Game-specific configuration */
   config: {
 
+    /** The number of players that will join the game. */
     configNumPlayers: 2,
 
+    /** The maximum number of rounds before declaring a winner. */
     maxRounds: 10
 
   },
@@ -28,12 +30,18 @@ export const game0 = {
    */
   state: {
 
+    /** A standard deck of 52 playing cards. */
     deck: standardDeck52,
 
+    /** An array of how much money each player has. */
     playerFunds: [],
 
+    /** An array of the current player bets. */
     playerBets: [],
 
+    /** 
+     * Object of face up and face down cards for dealer and all players. 
+     */
     playerHands: {
       DEALER: {
         faceDown: [],
@@ -41,6 +49,7 @@ export const game0 = {
       }
     },
 
+    /** An array to hold the discarded cards. */
     discardPile: []
 
   },
