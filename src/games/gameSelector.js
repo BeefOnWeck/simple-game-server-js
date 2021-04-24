@@ -11,6 +11,7 @@ const games = [
 
 export const selectGame = function(name, config = {}) {
   // TODO: Check for valid key and throw error if necessary
+  // TODO: If I implement a proper reset() function then the clone won't be necessary.
   let newGame = cloneDeep(games.filter(g => g.meta.name === name)[0]);
   // Apply any configuration
   newGame = newGame.configureGame(config);

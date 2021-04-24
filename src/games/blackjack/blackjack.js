@@ -54,12 +54,17 @@ export const game0 = {
 
   },
 
+  /**
+   * Shuffle the deck.
+   * @function
+   * @returns {game}
+   */
   shuffleDeck(game = this) {
 
     const shuffledDeck = shuffle(game.state.deck);
 
     return {
-      ...game,
+      ...game, // NOTE: game = this (the object calling this method)
       state: {
         ...game.state,
         deck: shuffledDeck
@@ -70,7 +75,11 @@ export const game0 = {
   // TODO: Consider allowing the first player to cut the deck at a specified position.
 
   /**
-   * 
+   * Draws a card, face up or down, for a player.
+   * @function
+   * @param {string} playerId - The socket ID of the player
+   * @param {string} faceUpOrDown - Is the card drawn face up or down
+   * @returns {game}
    */
   drawCard(playerId, faceUpOrDown = 'faceDown', game = this) {
     let deck = game.state.deck;
@@ -88,7 +97,7 @@ export const game0 = {
     }
 
     return {
-      ...game,
+      ...game, // NOTE: game = this (the object calling this method)
       state: {
         ...game.state,
         deck: deck,
@@ -99,7 +108,10 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Discards a player's cards
+   * @function
+   * @param {string} playerId - The socket ID of the player
+   * @returns {game}
    */
   discardCards(playerId, game = this) {
 
@@ -108,6 +120,8 @@ export const game0 = {
     let card = {};
 
     if (playerId in playerHands) {
+      // Loop over the face up and face down cards in the player's hand;
+      // remove them from the hand and add to the discard pile.
       while( (card = playerHands[playerId]['faceUp'].shift()) != undefined ) {
         discardPile.shift(card);
       }
@@ -119,7 +133,7 @@ export const game0 = {
     }
 
     return {
-      ...game,
+      ...game, // NOTE: game = this (the object calling this method)
       state: {
         ...game.state,
         playerHands: playerHands,
@@ -129,7 +143,10 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Turn a player's hand face up.
+   * @function
+   * @param {string} playerId - The socket ID of the player
+   * @returns {game}
    */
   showHand(playerId, game = this) {
     // TODO: Refactor to allow methods to share common code
@@ -137,6 +154,7 @@ export const game0 = {
     let card = {};
 
     if (playerId in playerHands) {
+      // Loop over face down cards and make them face up
       while( (card = playerHands[playerId]['faceDown'].shift()) != undefined ) {
         playerHands[playerId]['faceUp'].unshift(card);
       }
@@ -145,7 +163,7 @@ export const game0 = {
     }
 
     return {
-      ...game,
+      ...game, // NOTE: game = this (the object calling this method)
       state: {
         ...game.state,
         playerHands: playerHands
