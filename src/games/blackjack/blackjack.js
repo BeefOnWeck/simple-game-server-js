@@ -172,12 +172,16 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Turn all player hands face up.
+   * @function
+   * @returns {game}
    */
   turnAllCardsFaceUp(game = this) {
 
+    // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
+    // Loop over all players and turn their cards face up
     game.players.forEach(player => {
       updatedGame = updatedGame.showHand(player.id);
     });
@@ -189,21 +193,32 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Compares each player's hand with the dealer's and resolves 
+   * their bets accordingly.
+   * @function
+   * @returns {game}
    */
   resolvePlayerBets(game = this) {
+    // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
+    // Get the dealer's score
     const dealerScore = updatedGame.scoreHand('DEALER');
 
+    // Evaluate each player's hand and resolve their bets accordingly.
     const playerFundArray = updatedGame.players.reduce((acc,player) => {
+
+      // Get the player score and their bet
       const playerScore = updatedGame.scoreHand(player.id);
       const playerBet = updatedGame.state.playerBets
         .filter(bet => bet.id == player.id)[0].amount;
 
+      // How much funds does the player have?
       let playersFundAmount = updatedGame.state.playerFunds
         .filter(fund => fund.id == player.id)[0].amount;
 
+      // Adjust player fund based upon their bet and how their 
+      // score compared with the dealer's.
       if (playerScore > 21) {
         playersFundAmount = playersFundAmount - playerBet;
       } else {
@@ -218,6 +233,8 @@ export const game0 = {
         }
       }
 
+      // Each iteration of this reduce() concatenates the player's 
+      // adjusted funds.
       return [
         ...acc,
         {
@@ -254,7 +271,7 @@ export const game0 = {
     ];
     
     return {
-      ...game,
+      ...game, // NOTE: game = this (the object calling this method)
       state: {
         ...game.state,
         playerBets: updatedPlayerBets
