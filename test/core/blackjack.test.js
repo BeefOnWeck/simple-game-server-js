@@ -409,6 +409,26 @@ describe('Blackjack', function() {
     game = game.nextPlayer();
   });
 
+  it('Should throw an error if an unsupported move is requested', function(){
+    let game = selectGame('Blackjack', {configNumPlayers: 2});
+    game = game.shuffleDeck()
+      .addPlayer('player1','id1')
+      .addPlayer('player2','id2');
+
+    game = game.makeBet('id1', 10)
+      .drawCard('id1')
+      .drawCard('id1', 'faceUp')
+      .nextPlayer();
+    game = game.makeBet('id2', 10)
+      .drawCard('id2')
+      .drawCard('id2', 'faceUp')
+      .nextPlayer();
+
+    game.makeMove.bind(game, 'id1', 'hit')
+      .should.throw(Error, 'Unsupported move (note all moves must be capitalized).');
+
+  });
+
   it('Should resolve dealer hand after all players have made their moves.', function() {
     let game = selectGame('Blackjack', {configNumPlayers: 4});
     game = game.shuffleDeck()

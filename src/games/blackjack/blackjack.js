@@ -304,7 +304,7 @@ export const game0 = {
         playerBetAmount = playerBetAmount * 0.5;
         break;
       default:
-        // TODO: Throw error
+        throw new Error('Unsupported move (note all moves must be capitalized).');
     }
 
     let playerBets = updatedGame.state.playerBets.map(bet => {
