@@ -429,6 +429,26 @@ describe('Blackjack', function() {
 
   });
 
+  it('Should throw an error if a player tries to place a bet when they should be making a move', function(){
+    let game = selectGame('Blackjack', {configNumPlayers: 2});
+    game = game.shuffleDeck()
+      .addPlayer('player1','id1')
+      .addPlayer('player2','id2');
+
+    game = game.makeBet('id1', 10)
+      .drawCard('id1')
+      .drawCard('id1', 'faceUp')
+      .nextPlayer();
+    game = game.makeBet('id2', 10)
+      .drawCard('id2')
+      .drawCard('id2', 'faceUp')
+      .nextPlayer();
+
+    game.makeBet.bind(game, 'id1', 10)
+      .should.throw(Error, 'It is not the time for making bets.');
+
+  });
+
   it('Should resolve dealer hand after all players have made their moves.', function() {
     let game = selectGame('Blackjack', {configNumPlayers: 4});
     game = game.shuffleDeck()

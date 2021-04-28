@@ -261,6 +261,9 @@ export const game0 = {
   makeBet(playerId, betAmount, game = this) {
 
     // TODO: Bet cannot be larger than what the player has
+    if (game.currentActions != 'make-initial-bet') {
+      throw new Error('It is not the time for making bets.')
+    }
 
     let updatedPlayerBets = [
       ...game.state.playerBets,
