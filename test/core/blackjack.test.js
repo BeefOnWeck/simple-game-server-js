@@ -314,7 +314,7 @@ describe('Blackjack', function() {
         amount: 5
       }
     });
-    game = game.nextPlayer();
+    game = game.nextPlayer(); // <- DEALER is dealed cards here
     game.state.playerBets.should.deep.equal([
       { id: 'id1', amount: 10 },
       { id: 'id2', amount: 5 }
@@ -541,12 +541,19 @@ describe('Blackjack', function() {
       .drawCard('id3', 'faceUp').nextPlayer();
     game = game.makeBet('id4', 10).drawCard('id4')
       .drawCard('id4', 'faceUp').nextPlayer();
+    //                           ^^^^^^^^^^^^
+    // This last call to nextPlayer() deals cards to the DEALER.
 
     // Round 1: Make moves
     game = game.makeMove('id1', 'Hit').nextPlayer();
     game = game.makeMove('id2', 'Stand').nextPlayer();
     game = game.makeMove('id3', 'Double').nextPlayer();
     game = game.makeMove('id4', 'Surrender').nextPlayer();
+    //                                       ^^^^^^^^^^^^
+    // This last call to nextPlayer():
+    // 1. Resolves the DEALER hand
+    // 2. Turns all cards face up
+    // 3. Resolves all player bets
 
     // How player hands are resolved depend upon the dealer score
     const dealerScore = game.scoreHand('DEALER');
@@ -637,7 +644,48 @@ describe('Blackjack', function() {
 
   });
 
-  // TODO: Player bets are cleared out after each round
+  it('Should clear player bets out after each round.', function() {
+    let game = selectGame('Blackjack', {configNumPlayers: 2});
+    game = game.shuffleDeck()
+      .addPlayer('player1','id1')
+      .addPlayer('player2','id2');
+
+    // Round 1: Make bets
+    game = game.makeBet('id1', 10).drawCard('id1')
+      .drawCard('id1', 'faceUp').nextPlayer();
+    game = game.makeBet('id2', 10).drawCard('id2')
+      .drawCard('id2', 'faceUp').nextPlayer();
+    //                           ^^^^^^^^^^^^
+    // This last call to nextPlayer() deals cards to the DEALER.
+
+    // Round 1: Make moves
+    game = game.makeMove('id1', 'Hit').nextPlayer();
+    game = game.makeMove('id2', 'Stand').nextPlayer();
+    //                                   ^^^^^^^^^^^^
+    // This last call to nextPlayer():
+    // 1. Resolves the DEALER hand
+    // 2. Turns all cards face up
+    // 3. Resolves all player bets
+
+    game.state.playerBets.should.deep.equal([]);
+  });
+
+  it('Should throw an error if a player tries to place a bet for more than they have', function(){
+    let game = selectGame('Blackjack', {configNumPlayers: 2});
+    game = game.shuffleDeck()
+      .addPlayer('player1','id1')
+      .addPlayer('player2','id2');
+
+    game.makeBet.bind(game, 'id1', 10000)
+      .should.throw(Error, 'You don\'t have enough money to cover that bet.');
+
+  });
+
+
+
+  // TODO: Players can't bet more money than they have
+
+  // TODO: Player cards are returned to the deck after each round
 
   // TODO: Test with processActions()
 

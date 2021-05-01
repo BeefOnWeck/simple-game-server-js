@@ -265,6 +265,13 @@ export const game0 = {
       throw new Error('It is not the time for making bets.')
     }
 
+    let playersFundAmount = game.state.playerFunds
+      .filter(fund => fund.id == playerId)[0].amount;
+
+    if (betAmount > playersFundAmount) {
+      throw new Error('You don\'t have enough money to cover that bet.')
+    }
+
     let updatedPlayerBets = [
       ...game.state.playerBets,
       {
@@ -500,11 +507,12 @@ export const game0 = {
       // NOTE: We do not need to create a copy of game since that has 
       //       already been done in gameCore.nextPlayer().
 
-      // Note this is the "next player" set in gameCore.nextPlayer().
+      // Note this is the "next player" incremented in gameCore.nextPlayer().
       let activePlayerIndex = gameToDecorate.players.findIndex(p => {
         return p.id === gameToDecorate.activePlayerId
       });
 
+      // Gather the currentActions and round so we can update them
       let currentActions = gameToDecorate.currentActions;
       let round = gameToDecorate.round;
 
@@ -533,7 +541,7 @@ export const game0 = {
           if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
             // But first, the dealer gets to draw their cards.
             gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
-
+            // This will indicate to the players they need to make their move.
             currentActions = [
               'make-move'
             ];
