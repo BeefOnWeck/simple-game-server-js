@@ -83,7 +83,16 @@ export const game0 = {
    */
   drawCard(playerId, faceUpOrDown = 'faceDown', game = this) {
     let deck = game.state.deck;
+
+    // If the deck is empty, reshuffle in the discards
+    if (deck.length == 0) {
+      game = game.reshuffleDiscards();
+    }
+
     const card = deck.shift(); // Remove top card
+    if (card == undefined) {
+      throw new Error('There are no more cards left to draw.');
+    }
     
     let playerHands = game.state.playerHands;
     let discardPile = game.state.discardPile;
@@ -123,10 +132,10 @@ export const game0 = {
       // Loop over the face up and face down cards in the player's hand;
       // remove them from the hand and add to the discard pile.
       while( (card = playerHands[playerId]['faceUp'].shift()) != undefined ) {
-        discardPile.shift(card);
+        discardPile.unshift(card);
       }
       while( (card = playerHands[playerId]['faceDown'].shift()) != undefined ) {
-        discardPile.shift(card);
+        discardPile.unshift(card);
       }
     } else {
       // TODO: Throw error.
@@ -137,6 +146,35 @@ export const game0 = {
       state: {
         ...game.state,
         playerHands: playerHands,
+        discardPile: discardPile
+      }
+    }
+  },
+
+  /**
+   * 
+   * @param {game} game 
+   * @returns {game}
+   */
+  reshuffleDiscards(game = this) {
+    // NOTE: game = this (the object calling this method)
+    let updatedGame = {...game};
+    
+    let discardPile = updatedGame.state.discardPile;
+    let deck = updatedGame.state.deck;
+
+    let card;
+    while( (card = discardPile.shift()) != undefined ) {
+      deck.unshift(card);
+    }
+
+    updatedGame = updatedGame.shuffleDeck();
+
+    return {
+      ...updatedGame,
+      state: {
+        ...updatedGame.state,
+        deck: deck,
         discardPile: discardPile
       }
     }
@@ -540,6 +578,7 @@ export const game0 = {
           // their bets, that means it is time for players to make their moves.
           if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
             // But first, the dealer gets to draw their cards.
+            gameToDecorate = gameToDecorate.discardCards('DEALER');
             gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
             // This will indicate to the players they need to make their move.
             currentActions = [
@@ -568,6 +607,7 @@ export const game0 = {
         let pid = action.pid;
         let amount = action.amount;
         return gameToDecorate
+          .discardCards(pid)
           .makeBet(pid, amount)
           .drawCard(pid)
           .drawCard(pid, 'faceUp');

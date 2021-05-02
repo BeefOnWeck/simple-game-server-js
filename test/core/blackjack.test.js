@@ -681,13 +681,84 @@ describe('Blackjack', function() {
 
   });
 
+  it('Should reshuffle the discards if the deck is empty.', function() {
+    let game = selectGame('Blackjack');
+    game = game.shuffleDeck();
 
+    // Draw and discard all 52 cards
+    let take52 = Array.from({length: 52}, (v,i) => i);
+    take52.forEach(t => game = game.drawCard());
+    game.state.deck.should.have.length(0);
+    game.state.discardPile.should.have.length(52);
 
-  // TODO: Players can't bet more money than they have
+    // Then draw one more
+    game = game.drawCard();
+    game.state.deck.should.have.length(51);
+    game.state.discardPile.should.have.length(1);
 
-  // TODO: Player cards are returned to the deck after each round
+  });
 
-  // TODO: Test with processActions()
+  it('Should throw an error if both the deck and discard piles run out of cards', function() {
+    let game = selectGame('Blackjack', {configNumPlayers: 1});
+    game = game.shuffleDeck()
+      .addPlayer('player1','id1');
+
+    // Have player 1 draw all 52 cards
+    let take52 = Array.from({length: 52}, (v,i) => i);
+    take52.forEach(t => game = game.drawCard('id1'));
+    game.state.deck.should.have.length(0);
+    game.state.discardPile.should.have.length(0);
+
+    // Then have player 1 try to draw one more
+    game.drawCard.bind(game, 'id1')
+      .should.throw(Error, 'There are no more cards left to draw.');
+  });
+
+  it('Should be able to handle a whole round with just nextPlayer() and processActions().', function() {
+    let game = selectGame('Blackjack');
+    game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
+
+    // Round 1
+
+    // Make bets
+    game = game.processActions({
+      'make-initial-bet': {
+        pid: 'id1',
+        amount: 10
+      }
+    }).nextPlayer();
+    game = game.processActions({
+      'make-initial-bet': {
+        pid: 'id2',
+        amount: 10
+      }
+    }).nextPlayer(); // <- DEALER is delt cards here
+
+    // Make moves
+    game = game.processActions({
+      'make-move': {
+        pid: 'id1',
+        move: 'Stand'
+      }
+    }).nextPlayer();
+    game = game.processActions({
+      'make-move': {
+        pid: 'id2',
+        move: 'Stand'
+      }
+    }).nextPlayer(); // <- Player hands and bets are resolved here
+
+    // Check some basic information about what happened during the round
+    game.round.should.equal(2);
+    game.state.deck.length.should.be.at.most(46);
+    const playerOneFunds = game.state.playerFunds
+      .filter(fund => fund.id == 'id1')[0].amount;
+    playerOneFunds.should.be.at.most(110);
+    const playerTwoFunds = game.state.playerFunds
+      .filter(fund => fund.id == 'id2')[0].amount;
+    playerTwoFunds.should.be.at.most(110);
+    
+  });
 
   // TODO: Player with highest score after 10 rounds wins
 
