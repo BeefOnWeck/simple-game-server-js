@@ -202,6 +202,7 @@ describe('Blackjack', function() {
           id: 'id2'
         }
       ],
+      theWinner: null,
       state: {
         deck: 48,
         playerFunds: [
@@ -244,6 +245,7 @@ describe('Blackjack', function() {
           id: 'id2'
         }
       ],
+      theWinner: null,
       state: {
         deck: 48,
         playerFunds: [
@@ -760,10 +762,51 @@ describe('Blackjack', function() {
     
   });
 
-  // TODO: Player with highest score after 10 rounds wins
+  it('Should stop the game after 10 rounds and declare a winner.', function() {
+    let game = selectGame('Blackjack');
+    game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
+
+    let playerOneBet = {
+      'make-initial-bet': {
+        pid: 'id1',
+        amount: 1
+      }
+    };
+
+    let playerTwoBet = {
+      'make-initial-bet': {
+        pid: 'id2',
+        amount: 1
+      }
+    };
+
+    let playerOneMove = {
+      'make-move': {
+        pid: 'id1',
+        move: 'Stand'
+      }
+    };
+
+    let playerTwoMove = {
+      'make-move': {
+        pid: 'id2',
+        move: 'Stand'
+      }
+    };
+
+    let tenRounds = Array.from({length: 10}, (v,i) => i);
+    tenRounds.forEach(t => {
+      game = game.processActions(playerOneBet).nextPlayer()
+      .processActions(playerTwoBet).nextPlayer()
+      .processActions(playerOneMove).nextPlayer()
+      .processActions(playerTwoMove).nextPlayer();
+    });
+
+    game.phase.should.equal('end');
+    game.theWinner.should.not.be.null;
+    
+  });
 
   // TODO: Player is out when they lose all their money
-
-
 
 });

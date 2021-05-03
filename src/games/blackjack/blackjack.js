@@ -15,14 +15,18 @@ export const game0 = {
 
   /** Game-specific configuration */
   config: {
-
     /** The number of players that will join the game. */
     configNumPlayers: 2,
 
     /** The maximum number of rounds before declaring a winner. */
     maxRounds: 10
-
   },
+
+  /**
+   * The socket ID of the winning player.
+   * @type {string}
+   */
+   theWinner: null,
 
   /** 
    * Game-specific state information.
@@ -441,6 +445,31 @@ export const game0 = {
     return game;
   },
 
+  /**
+   * 
+   */
+  findTheWinner(game = this) {
+    let updatedGame = {...game};
+
+    let playerFunds = updatedGame.state.playerFunds;
+
+    let theWinner = playerFunds.reduce( (acc, fund) => {
+      if (fund.amount > acc.amount) {
+        return fund;
+      } else {
+        return acc;
+      }
+    },{
+      pid: null,
+      amount: 0
+    }).id;
+
+    return {
+      ...updatedGame,
+      theWinner: theWinner
+    };
+  },
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
@@ -531,6 +560,7 @@ export const game0 = {
       // with the number of cards face down.
       // Also just return the number of cards in the deck and discard pile.
       return {
+        theWinner: gameToDecorate.theWinner ?? null,
         state: {
           ...gameToDecorate.state,
           deck: gameToDecorate.state.deck.length,
@@ -572,6 +602,12 @@ export const game0 = {
 
           // ...and increment the round.
           round = round + 1;
+          
+          // Check to see if the game is over and who the winner is
+          if (round > gameToDecorate.config.maxRounds) {
+            gameToDecorate = gameToDecorate.nextPhase(); // play --> end
+            gameToDecorate = gameToDecorate.findTheWinner();
+          }
 
         } else if (currentActions.includes('make-initial-bet')) {
           // If we have moved back to the first player and all players have placed 
