@@ -76,8 +76,6 @@ export const game0 = {
     };
   },
 
-  // TODO: Consider allowing the first player to cut the deck at a specified position.
-
   /**
    * Draws a card, face up or down, for a player.
    * @function
@@ -156,7 +154,7 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Reshuffles the discard pile back into the deck.
    * @param {game} game 
    * @returns {game}
    */
@@ -298,7 +296,11 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Sets a player's bet for the round.
+   * @function
+   * @param {string} playerId - The socket ID of the player
+   * @param {number} betAmount - The amount of the player's bet
+   * @returns {game} game
    */
   makeBet(playerId, betAmount, game = this) {
 
@@ -332,7 +334,10 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Sets a player's move for the round.
+   * @param {string} playerId - The socket ID of the player
+   * @param {string} move - One of: Hit, Stand, Double, or Surrender
+   * @returns {game} game
    */
   makeMove(playerId, move, game = this) {
 
@@ -359,6 +364,7 @@ export const game0 = {
         throw new Error('Unsupported move (note all moves must be capitalized).');
     }
 
+    // Adjust player bet, if necessary.
     let playerBets = updatedGame.state.playerBets.map(bet => {
       if (bet.id == playerId) {
         return {
@@ -381,12 +387,16 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Scores the cards in the player's hand.
+   * @function
+   * @param {string} playerId - The socket ID of the player
+   * @returns {number} - The total score of their hand 
    */
   scoreHand(playerId, game = this) {
     let playerHands = game.state.playerHands;
     let cards;
 
+    // Go through player hand and select all the cards
     if (playerId in playerHands) {
       cards = playerHands[playerId]['faceUp'].concat(
         playerHands[playerId]['faceDown']
@@ -395,20 +405,26 @@ export const game0 = {
       // TODO: Throw error.
     }
 
+    // Return their score
     return game.scoreCards(cards);
   },
 
   /**
-   * 
+   * Scores cards.
+   * @param {array} cards - An array of cards
+   * @returns {number} finalScore - The total score
    */
   scoreCards(cards, game = this) {
+    // Treat aces differently since they can either count as 1 or 10
     let aces = cards.filter(card => card.rank == 'A');
     let nonAces = cards.filter(card => card.rank != 'A');
 
+    // First find the score without the aces
     let initialScore = nonAces.reduce((score, card) => {
       return score + game.scoreOfNonAceCard(card);
     },0);
 
+    // Then add the aces in one at a time
     let finalScore = aces.reduce((score, card) => {
       if (score <= 10) {
         return score + 11;
@@ -421,7 +437,10 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Get the score of a non-ace card.
+   * @function
+   * @param {object} card - The non-ace card.
+   * @returns {number} The score
    */
   scoreOfNonAceCard(card) {
     // TODO: Is it worth even having this as a separate function?
@@ -434,7 +453,9 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Resolve the dealer hand by drawing cards until the score is at least 17.
+   * @function
+   * @returns {game}
    */
   resolveDealerHand(game = this) {
     let dealerScore;
@@ -446,13 +467,16 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Finds the player with the most funds and sets them as the winner.
+   * @function
+   * @return {game}
    */
   findTheWinner(game = this) {
     let updatedGame = {...game};
 
     let playerFunds = updatedGame.state.playerFunds;
 
+    // Reduce over player funds and select the one with the largest amount
     let theWinner = playerFunds.reduce( (acc, fund) => {
       if (fund.amount > acc.amount) {
         return fund;
@@ -462,7 +486,7 @@ export const game0 = {
     },{
       pid: null,
       amount: 0
-    }).id;
+    }).id; // <--
 
     return {
       ...updatedGame,
@@ -478,7 +502,10 @@ export const game0 = {
    */
    decorators: {
 
-    /** When adding a player, initialize their hand. */
+    /** 
+     * When adding a player, initialize their hand and funds. Also start 
+     * the game once we have enough players.
+     */
     addPlayer(gameToDecorate) {
       // TODO: Throw an error if someone tries to pick "DEALER" as their username
 
@@ -570,7 +597,14 @@ export const game0 = {
       };
     },
 
-    /**  */
+    /**
+     * Most of the game logic gets executed within this function:
+     * - Each round consists of players betting and then making moves.
+     * - After players make their bets they receive their cards.
+     * - After all players have their cards, the dealer gets their cards.
+     * - After all players have made their moves their hands can be scored
+     * and their bets can be resolved.
+     */
     nextPlayer(gameToDecorate) {
       // NOTE: We do not need to create a copy of game since that has 
       //       already been done in gameCore.nextPlayer().
@@ -587,7 +621,8 @@ export const game0 = {
       // If we're back at the first player
       if (activePlayerIndex == 0) {
         // If currentActions is already set to 'make-move' this means that 
-        // all players have already made their moves for the last round.
+        // all players have already made their moves for the last round and 
+        // that we're starting a new round.
         if (currentActions.includes('make-move')) {
           
           // So we need to finish up the last round, ...
@@ -620,7 +655,6 @@ export const game0 = {
             currentActions = [
               'make-move'
             ];
-            
           }
         }
       }
@@ -632,7 +666,9 @@ export const game0 = {
       }
     },
 
-    /**  */
+    /**
+     * Players are only allowed to adjust the game via a set of pre-defined actions.
+     */
     processActions(gameToDecorate) {
       // TODO: Handle multiple actions
       let actions = gameToDecorate.actions;
@@ -643,7 +679,7 @@ export const game0 = {
         let pid = action.pid;
         let amount = action.amount;
         return gameToDecorate
-          .discardCards(pid)
+          .discardCards(pid) // discard cards from last round
           .makeBet(pid, amount)
           .drawCard(pid)
           .drawCard(pid, 'faceUp');
