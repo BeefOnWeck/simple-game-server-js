@@ -62,17 +62,24 @@ export const gameCore = {
    * Reset the game.
    * @function
    * @returns {game}
-   * @deprecated There is a better way to do this.
    */
   reset(game = this) {
+
+    // Games can define a decorator to augment/overide the game status
+    const decorators = game.decorators['reset'] ?? function(){};
+
     return {
-      ...game,
+      ...game, // NOTE: game = this (object calling this method)
       phase: 'boot',
       round: 0,
       players: [],
+      numPlayers: 0,
+      firstPlayerId: null,
       state: {},
-      actions: {}
+      actions: {},
+      ...decorators(game)
     };
+
   },
 
   /** 
