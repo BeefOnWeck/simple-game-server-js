@@ -124,6 +124,29 @@ export const game0 = {
    */
   decorators: {
 
+    /** 
+     * Games are responsible for resetting state and any other 
+     * properties they create.
+     */
+    reset(gameToDecorate) {
+      let grid = gameToDecorate.state.grid;
+      grid = grid.map(g => {
+        return {
+          ...g,
+          mark: null
+        }
+      });
+      return {
+        config: {
+          marks: ['x', 'o']
+        },
+        theWinner: null,
+        state: {
+          grid
+        }
+      }
+    },
+
     /** Add `theWinner` to the list of game stats */
     getGameStatus(_playerId, gameToDecorate) {
       return {

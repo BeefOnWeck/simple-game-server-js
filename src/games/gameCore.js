@@ -75,7 +75,7 @@ export const gameCore = {
       players: [],
       numPlayers: 0,
       firstPlayerId: null,
-      state: {},
+      // state: {}, // Don't clear this out, let the game do it cleanly
       actions: {},
       ...decorators(game)
     };

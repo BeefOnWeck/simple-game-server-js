@@ -503,6 +503,32 @@ export const game0 = {
    decorators: {
 
     /** 
+     * Games are responsible for resetting state and any other 
+     * properties they create.
+     */
+    reset(gameToDecorate) {
+      return {
+        config: {
+          configNumPlayers: 2,
+          maxRounds: 10
+        },
+        theWinner: null,
+        state: {
+          ...gameToDecorate.state,
+          discardPile: [],
+          playerFunds: [],
+          playerBets: [],
+          playerHands: {
+            DEALER: {
+              faceDown: [],
+              faceUp: []
+            }
+          }
+        }
+      }
+    },
+
+    /** 
      * When adding a player, initialize their hand and funds. Also start 
      * the game once we have enough players.
      */

@@ -39,7 +39,8 @@ describe('Game Core', function() {
     game.should.have.property('actions').that.is.not.empty;
     game = game.reset();
     game.should.have.property('players').that.is.empty;
-    game.should.have.property('state').that.is.empty;
+    // Each game is responsible for resetting state
+    game.should.have.property('state').that.is.not.empty;
     game.should.have.property('actions').that.is.empty;
   });
 
