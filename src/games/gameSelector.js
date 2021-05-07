@@ -1,10 +1,12 @@
 // import all games here
 import { game0 as t3 } from './tic-tac-toe/tic-tac-toe.js';
 import { game0 as blackjack } from './blackjack/blackjack.js';
+import { game0 as hexagon } from './hexagon-island/hexagon-island.js'
 
 const games = [
   t3,
-  blackjack
+  blackjack,
+  hexagon
 ];
 
 export const selectGame = function(name, config = {}) {
