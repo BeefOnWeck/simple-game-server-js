@@ -59,13 +59,34 @@ export const game0 = {
       }
     },
 
-    /** 
+  /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
    * Alternatively you can overwrite gameCore methods, but that usually 
    * requires more code.
    */
    decorators: {
+
+    /** 
+     * Games are responsible for resetting state and any other 
+     * properties they create.
+     */
+     reset(gameToDecorate) {
+      return {
+        config: {
+          configNumPlayers: 2
+        },
+        theWinner: null,
+        state: {
+          ...gameToDecorate.state,
+          centroids: [],
+          nodes: [],
+          hexagons: [],
+          numbers: [],
+          roads: []
+        }
+      }
+    },
 
    }
 };
