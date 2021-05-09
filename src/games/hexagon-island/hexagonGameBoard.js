@@ -1,9 +1,6 @@
 
 import { shuffle } from '../blackjack/standardDeck52.js';
 
-// TODO: These should be in their own module and imported into game and called during setup
-
-
 function computeHexGridCentroids(centroidSpacing=1, numCentroidsAcross=5) {
   let hexGridCentroids = [];
   let maxOffset = (numCentroidsAcross - 1)/2;
@@ -50,7 +47,7 @@ function assignResourcesAndRolls(centroids) {
   resources.fill('grain', numBrick + numOre + numWood);
   resources.fill('sheep', numBrick + numOre + numWood + numGrain);
   resources.fill('desert', numBrick + numOre + numWood + numGrain + numSheep);
-  shuffle(resources);
+  resources = shuffle(resources);
 
   // Number ratios
   let twoRatio = 1 / canonicalCount;
@@ -91,10 +88,16 @@ function assignResourcesAndRolls(centroids) {
   numbers.fill('11', numTwo + numThree + numFour + numFive + numSix + numEight + numNine + numTen);
   numbers.fill('12', numTwo + numThree + numFour + numFive + numSix + numEight + numNine + numTen + numEleven);
   numbers.push('');
-  shuffle(numbers);
+  numbers = shuffle(numbers);
+
+  let desertIndex = resources.indexOf('desert');
+  let blankIndex = numbers.indexOf('');
+  if (desertIndex != blankIndex) {
+    numbers[blankIndex] = numbers[desertIndex];
+    numbers[desertIndex] = '';
+  }
 
   return {resources, numbers};
-
 }
 
 function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
@@ -105,7 +108,8 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
   let radius = centroidSpacing / Math.sqrt(3.0);
   // Find the [non-unique] six nodes around each hexagon centroid
   centroids.forEach((el, idx) => {
-    let hex = '';
+    // let hex = '';
+    let hex = [];
     let cumIdx = idx*6;
     for (let step=0; step<6; step++){
       let angle = step * Math.PI / 3.0;
@@ -115,7 +119,11 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
         x: x,
         y: y
       });
-      hex = step<5 ? hex + `${x},${y}, ` : hex + `${x},${y}`; // svg polygon defining a hexagon
+      // hex = step<5 ? hex + `${x},${y}, ` : hex + `${x},${y}`; // svg polygon defining a hexagon
+      hex.push({
+        x: x,
+        y: y
+      });
       if (step == 0) {
         roads.push([cumIdx + 5, cumIdx]);
       } else {
@@ -158,26 +166,21 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
     }
   }, []);
   // Define road lines
-  roads.forEach((segment) => {
-    let node1 = nodes[segment[0]];
-    let node2 = nodes[segment[1]];
-    let path = `M ${node1.x} ${node1.y} L ${node2.x} ${node2.y}`;
-    lines.push(path);
-  });
-  return {nodes, hexagons, roads, lines};
+  // roads.forEach((segment) => {
+  //   let node1 = nodes[segment[0]];
+  //   let node2 = nodes[segment[1]];
+  //   let path = `M ${node1.x} ${node1.y} L ${node2.x} ${node2.y}`;
+  //   lines.push(path);
+  // });
+  return {nodes, hexagons, roads}; //, lines};
 }
 
 export function setupGameBoard(centroidSpacing = 100, numCentroidsAcross = 5) {
 
     let centroids = computeHexGridCentroids(centroidSpacing, numCentroidsAcross);
     let {resources, numbers} = assignResourcesAndRolls(centroids);
-    let {nodes, hexagons, roads, lines} = computeNodesAndRoads(centroids, centroidSpacing, resources);
-    let desertIndex = resources.indexOf('desert');
-    let blankIndex = numbers.indexOf('');
-    if (desertIndex != blankIndex) {
-      numbers[blankIndex] = numbers[desertIndex];
-      numbers[desertIndex] = '';
-    }
+    let {nodes, hexagons, roads} = computeNodesAndRoads(centroids, centroidSpacing, resources);
+    
     centroids.forEach((cent, index) => {
       cent.number = numbers[index];
     });
@@ -187,7 +190,7 @@ export function setupGameBoard(centroidSpacing = 100, numCentroidsAcross = 5) {
       nodes: nodes,
       hexagons: hexagons,
       numbers: numbers,
-      roads: roads,
-      lines: lines
+      roads: roads
+      // lines: lines
     };
 }

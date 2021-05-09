@@ -16,9 +16,6 @@ export const game0 = {
     config: {
       /** The number of players that will join the game. */
       configNumPlayers: 2,
-  
-      /** The maximum number of rounds before declaring a winner. */
-      maxRounds: 10
     },
   
     /**
@@ -32,7 +29,11 @@ export const game0 = {
      * Changes via player actions.
      */
     state: {
-  
+      centroids: [],
+      nodes: [],
+      hexagons: [],
+      numbers: [],
+      roads: []
     },
 
     /** 
