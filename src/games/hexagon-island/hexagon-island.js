@@ -94,7 +94,7 @@ export const game0 = {
      addPlayer(gameToDecorate) {
       // TODO: Throw an error if someone tries to pick "DEALER" as their username
 
-      const configNumPlayers = gameToDecorate.config.configNumPlayers;
+      const configNumPlayers = parseInt(gameToDecorate.config.configNumPlayers);
 
       if (gameToDecorate.numPlayers > configNumPlayers) {
         throw new Error('Cannot add player; exceeds maximum number of players.');
@@ -105,7 +105,8 @@ export const game0 = {
       // Do we have the configured number of players yet?
       // Skip setup and move directly to the play phase and the first round.
       if (gameToDecorate.numPlayers == configNumPlayers) {
-        gameToDecorate = gameToDecorate.nextPhase().setup(100, 3);
+        let boardWidth = Math.max(5, configNumPlayers + 1);
+        gameToDecorate = gameToDecorate.nextPhase().setup(100, boardWidth);
         gameToDecorate = gameToDecorate.nextPhase().nextRound();
         // currentActions = ['make-initial-bet'];
       }
