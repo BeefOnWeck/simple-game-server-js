@@ -40,7 +40,7 @@ export const game0 = {
     /**
      * 
      */
-    setup(centroidSpacing = 100, numCentroidsAcross = 5, game = this) {
+    setup(centroidSpacing = 1, numCentroidsAcross = 5, game = this) {
       let updatedGame = game;
 
       const { centroids, nodes, hexagons, numbers, roads } = 
@@ -87,6 +87,44 @@ export const game0 = {
         }
       }
     },
+
+    /** 
+     * 
+     */
+     addPlayer(gameToDecorate) {
+      // TODO: Throw an error if someone tries to pick "DEALER" as their username
+
+      const configNumPlayers = gameToDecorate.config.configNumPlayers;
+
+      if (gameToDecorate.numPlayers > configNumPlayers) {
+        throw new Error('Cannot add player; exceeds maximum number of players.');
+      }
+
+      // let currentActions = gameToDecorate.currentActions;
+
+      // Do we have the configured number of players yet?
+      // Skip setup and move directly to the play phase and the first round.
+      if (gameToDecorate.numPlayers == configNumPlayers) {
+        gameToDecorate = gameToDecorate.nextPhase().setup(100, 3);
+        gameToDecorate = gameToDecorate.nextPhase().nextRound();
+        // currentActions = ['make-initial-bet'];
+      }
+
+
+      // Return the updated game with the updated players mixed in.
+      return {
+        ...gameToDecorate
+      };
+    },
+
+    /** 
+     * 
+     */
+     getGameStatus(playerId, gameToDecorate) {
+      return {
+        theWinner: gameToDecorate.theWinner ?? null
+      };
+    }
 
    }
 };

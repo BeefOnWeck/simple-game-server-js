@@ -175,7 +175,7 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
   return {nodes, hexagons, roads}; //, lines};
 }
 
-export function setupGameBoard(centroidSpacing = 100, numCentroidsAcross = 5) {
+export function setupGameBoard(centroidSpacing = 1, numCentroidsAcross = 5) {
 
     let centroids = computeHexGridCentroids(centroidSpacing, numCentroidsAcross);
     let {resources, numbers} = assignResourcesAndRolls(centroids);
