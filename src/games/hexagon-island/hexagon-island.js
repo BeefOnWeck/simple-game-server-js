@@ -1,4 +1,5 @@
 import { gameCore } from '../gameCore.js';
+import { setupGameBoard } from './hexagonGameBoard.js';
 
 /** @typedef {object} game */
 
@@ -34,6 +35,28 @@ export const game0 = {
       hexagons: [],
       numbers: [],
       roads: []
+    },
+
+    /**
+     * 
+     */
+    setup(centroidSpacing = 100, numCentroidsAcross = 5, game = this) {
+      let updatedGame = game;
+
+      const { centroids, nodes, hexagons, numbers, roads } = 
+        setupGameBoard(centroidSpacing, numCentroidsAcross);
+
+      return {
+        ...updatedGame,
+        state: {
+          ...updatedGame.state,
+          centroids: centroids,
+          nodes: nodes,
+          hexagons: hexagons,
+          numbers: numbers,
+          roads: roads
+        }
+      }
     },
 
     /** 
