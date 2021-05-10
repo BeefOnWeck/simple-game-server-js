@@ -109,6 +109,8 @@ export const game0 = {
         gameToDecorate = gameToDecorate.nextPhase().setup(100, boardWidth);
         gameToDecorate = gameToDecorate.nextPhase().nextRound();
         // currentActions = ['make-initial-bet'];
+
+        // TODO: Allow player order to be randomized here
       }
 
 

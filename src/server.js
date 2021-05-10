@@ -85,7 +85,6 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
       }
     
       if (game.phase == 'play') {
-        // TODO: Also announce start of game?
         // Send game status to each player
         game.players.forEach(player => {
           io.to(player.id).emit('game-state',
