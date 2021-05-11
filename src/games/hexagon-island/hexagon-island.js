@@ -34,7 +34,8 @@ export const game0 = {
       nodes: [],
       hexagons: [],
       numbers: [],
-      roads: []
+      roads: [],
+      rollResult: 0
     },
 
     /**
@@ -58,6 +59,27 @@ export const game0 = {
         }
       }
     },
+
+  /**
+   * 
+   */
+  rollDice(game = this) {
+    let updatedGame = game;
+
+    const dieResult1 = Math.floor(Math.random() * 6);
+    const dieResult2 = Math.floor(Math.random() * 6);
+
+    const rollResult = dieResult1 + dieResult2;
+
+    return {
+      ...updatedGame,
+      state: {
+        ...updatedGame.state,
+        rollResult: rollResult
+      }
+    };
+
+  },
 
   /** 
    * Decorators allow methods defined in gameCore to be modified.

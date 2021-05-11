@@ -13,7 +13,8 @@ describe('Hexagon Island', function() {
       nodes: [],
       hexagons: [],
       numbers: [],
-      roads: []
+      roads: [],
+      rollResult: 0
     });
   });
 
@@ -46,12 +47,13 @@ describe('Hexagon Island', function() {
       nodes: [],
       hexagons: [],
       numbers: [],
-      roads: []
+      roads: [],
+      rollResult: 0
     });    
 
   });
 
-  it('Should be to setup() different size boards', function() {
+  it('Should be able to setup() different size boards', function() {
     let game = selectGame('Hexagon Island');
     game = game.setup(100, 2);
 
@@ -78,5 +80,67 @@ describe('Hexagon Island', function() {
     game.state.roads.should.have.length(84);
 
   });
+
+  it('Should allow dice to be rolled', function() {
+
+    let game = selectGame('Hexagon Island');
+    
+    game.state.rollResult.should.equal(0);
+    game = game.rollDice();
+    game.state.rollResult.should.not.equal(0);
+
+  });
+
+  it('Should roll the dice pseudorandomly', function() {
+    // The sum total of rolling two dice can range between 2 and 12.
+    // There are 6 * 6 = 36 possible combinations of the two die rolls.
+    // The histogram (counts vs. dice total) of the 36 possible 
+    // combinations should look like the following if die are random:
+    //
+    //                                      x
+    //                                  x   x   x
+    //                              x   x   x   x   x
+    // ^                        x   x   x   x   x   x    x
+    // |                    x   x   x   x   x   x   x    x    x
+    // Counts           x   x   x   x   x   x   x   x    x    x    x
+    // Dice total --> | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
+
+    let game = selectGame('Hexagon Island');
+
+    const N = 10000; // Number of trials
+
+    // Create an empty histogram
+    let histogram = Array.from({length: 11}, (h,i) => {
+      return {
+        bin: i+2,
+        count: 0
+      };
+    });
+
+    // For each trial:
+    // for (let i = 0; i < N; i++) {
+    //   game = game.rollDice();
+    //   histogram[game.rollResult-2].count++;
+    // }
+
+    // // Define the expected upper and lower bounds
+    // const mu = N/52;
+    // const sigma = Math.sqrt(N*51/52/52);
+    // const lowerBound = mu - 4*sigma;
+    // const upperBound = mu + 4*sigma;
+
+    // // Now loop over all histogram bins and check for outliers
+    // let numberOfOutliers = 0;
+    // counts.forEach(card => {
+    //   card.hist.forEach(hits => {
+    //     if (hits < lowerBound || hits > upperBound) numberOfOutliers++;
+    //   });
+    // });
+
+    // numberOfOutliers.should.equal(0);
+
+  });
+
+
 
 });
