@@ -66,8 +66,8 @@ export const game0 = {
   rollDice(game = this) {
     let updatedGame = game;
 
-    const dieResult1 = Math.floor(Math.random() * 6);
-    const dieResult2 = Math.floor(Math.random() * 6);
+    const dieResult1 = Math.floor(Math.random() * 6) + 1;
+    const dieResult2 = Math.floor(Math.random() * 6) + 1;
 
     const rollResult = dieResult1 + dieResult2;
 

@@ -117,27 +117,34 @@ describe('Hexagon Island', function() {
       };
     });
 
+    // Compute basic expected values
+    histogram = histogram.map((h,i) => {
+      const expected_probability = (i+2 < 8 ? i+1.0 : 11.0-i) / 36.0;
+      const expected_value = N * expected_probability;
+      const standard_deviation = Math.sqrt(expected_value * (1-expected_probability));
+      return {
+        ...h,
+        expected_probability,
+        expected_value,
+        standard_deviation
+      };
+    })
+
     // For each trial:
-    // for (let i = 0; i < N; i++) {
-    //   game = game.rollDice();
-    //   histogram[game.rollResult-2].count++;
-    // }
+    for (let i = 0; i < N; i++) {
+      game = game.rollDice();
+      histogram[game.state.rollResult-2].count++;
+    }
 
-    // // Define the expected upper and lower bounds
-    // const mu = N/52;
-    // const sigma = Math.sqrt(N*51/52/52);
-    // const lowerBound = mu - 4*sigma;
-    // const upperBound = mu + 4*sigma;
+    // Now loop over all histogram bins and check for outliers
+    let numberOfOutliers = 0;
+    histogram.forEach(h => {
+      const lowerBound = h.expected_value - 4.0*h.standard_deviation;
+      const upperBound = h.expected_value + 4.0*h.standard_deviation;
+      if (h.count < lowerBound || h.count > upperBound) numberOfOutliers++;
+    });
 
-    // // Now loop over all histogram bins and check for outliers
-    // let numberOfOutliers = 0;
-    // counts.forEach(card => {
-    //   card.hist.forEach(hits => {
-    //     if (hits < lowerBound || hits > upperBound) numberOfOutliers++;
-    //   });
-    // });
-
-    // numberOfOutliers.should.equal(0);
+    numberOfOutliers.should.equal(0);
 
   });
 
