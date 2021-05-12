@@ -104,7 +104,7 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
   let nodes = [];
   let hexagons = [];
   let roads = [];
-  let lines = [];
+  // let lines = [];
   let radius = centroidSpacing / Math.sqrt(3.0);
   // Find the [non-unique] six nodes around each hexagon centroid
   centroids.forEach((el, idx) => {
@@ -175,22 +175,45 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
   return {nodes, hexagons, roads}; //, lines};
 }
 
+/**
+ * 
+ * @param {Number} centroidSpacing 
+ * @param {Number} numCentroidsAcross 
+ * @returns {Object}
+ */
 export function setupGameBoard(centroidSpacing = 1, numCentroidsAcross = 5) {
 
-    let centroids = computeHexGridCentroids(centroidSpacing, numCentroidsAcross);
-    let {resources, numbers} = assignResourcesAndRolls(centroids);
-    let {nodes, hexagons, roads} = computeNodesAndRoads(centroids, centroidSpacing, resources);
-    
-    centroids.forEach((cent, index) => {
-      cent.number = numbers[index];
-    });
+  let centroids = computeHexGridCentroids(centroidSpacing, numCentroidsAcross);
+  let {resources, numbers} = assignResourcesAndRolls(centroids);
+  let {nodes, hexagons, roads} = computeNodesAndRoads(centroids, centroidSpacing, resources);
+  
+  centroids.forEach((cent, index) => {
+    cent.number = numbers[index];
+  });
 
+  // Make room for the player ID
+  roads = roads.map(r => {
     return {
-      centroids: centroids,
-      nodes: nodes,
-      hexagons: hexagons,
-      numbers: numbers,
-      roads: roads
-      // lines: lines
+      inds: r,
+      playerId: null
     };
+  });
+
+  // Make room for the player ID and building type
+  nodes = nodes.map(n => {
+    return {
+      ...n,
+      playerId: null,
+      buildingType: null
+    };
+  });
+
+  return {
+    centroids: centroids,
+    nodes: nodes,
+    hexagons: hexagons,
+    numbers: numbers,
+    roads: roads
+    // lines: lines
+  };
 }
