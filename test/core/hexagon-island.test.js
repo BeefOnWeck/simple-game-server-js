@@ -148,6 +148,32 @@ describe('Hexagon Island', function() {
 
   });
 
+  it('Should build a road when asked', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(100, 2);
+
+    game.state.roads.should.have.length(24);
+
+    let builtRoads = game.state.roads.filter(r => {
+      return r.playerId !== null;
+    });
+
+    builtRoads.should.have.length(0);
+
+    const roadIndex = 0;
+    game = game.buildRoad(roadIndex,'playerIdString');
+
+    builtRoads = game.state.roads.filter(r => {
+      return r.playerId !== null;
+    });
+
+    builtRoads.should.have.length(1);
+
+  });
+
+  
+
 
 
 });

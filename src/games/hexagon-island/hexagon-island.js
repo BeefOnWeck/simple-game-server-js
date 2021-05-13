@@ -81,6 +81,28 @@ export const game0 = {
 
   },
 
+  /**
+   * 
+   */
+  buildRoad(roadIndex, playerId, game = this) {
+
+    // TODO: Throw error if invalid parameters
+    let updatedGame = game;
+
+    let roads = updatedGame.state.roads;
+
+    roads[roadIndex].playerId = playerId;
+
+    return {
+      ...updatedGame,
+      state: {
+        ...updatedGame.state,
+        roads: roads
+      }
+    };
+
+  },
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
