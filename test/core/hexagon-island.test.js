@@ -172,8 +172,28 @@ describe('Hexagon Island', function() {
 
   });
 
-  
+  it('Should build on a node when asked', function() {
 
+    let game = selectGame('Hexagon Island');
+    game = game.setup(100, 2);
 
+    game.state.nodes.should.have.length(20);
+
+    let buildings = game.state.nodes.filter(n => {
+      return n.playerId !== null;
+    });
+
+    buildings.should.have.length(0);
+
+    const nodeIndex = 0;
+    game = game.makeBuilding(nodeIndex, 'playerIdString', 'village');
+
+    buildings = game.state.nodes.filter(n => {
+      return n.playerId !== null;
+    });
+
+    buildings.should.have.length(1);
+
+  });
 
 });

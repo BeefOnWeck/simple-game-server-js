@@ -86,11 +86,11 @@ export const game0 = {
    */
   buildRoad(roadIndex, playerId, game = this) {
 
-    // TODO: Throw error if invalid parameters
     let updatedGame = game;
 
     let roads = updatedGame.state.roads;
 
+    // TODO: Throw error if invalid parameters
     roads[roadIndex].playerId = playerId;
 
     return {
@@ -98,6 +98,29 @@ export const game0 = {
       state: {
         ...updatedGame.state,
         roads: roads
+      }
+    };
+
+  },
+
+  /**
+   * 
+   */
+   makeBuilding(nodeIndex, playerId, buildingType, game = this) {
+
+    let updatedGame = game;
+
+    let nodes = updatedGame.state.nodes;
+
+    // TODO: Throw error if invalid parameters
+    nodes[nodeIndex].playerId = playerId;
+    nodes[nodeIndex].buildingType = buildingType;
+
+    return {
+      ...updatedGame,
+      state: {
+        ...updatedGame.state,
+        nodes: nodes
       }
     };
 
