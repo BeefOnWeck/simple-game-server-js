@@ -81,6 +81,55 @@ describe('Hexagon Island', function() {
 
   });
 
+  it('Should build a canonical sized board with the correct number of resources', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(100, 5);
+
+    game.state.centroids.should.have.length(19);
+    game.state.nodes.should.have.length(54);
+    game.state.hexagons.should.have.length(19);
+    game.state.numbers.should.have.length(19);
+    game.state.roads.should.have.length(114); // TODO: These should be unique
+
+    let numBrick = game.state.hexagons.filter(h => {
+      return h.resource == 'brick';
+    }).length;
+
+    numBrick.should.equal(3);
+
+    let numOre = game.state.hexagons.filter(h => {
+      return h.resource == 'ore';
+    }).length;
+
+    numOre.should.equal(3);
+
+    let numWood = game.state.hexagons.filter(h => {
+      return h.resource == 'wood';
+    }).length;
+
+    numWood.should.equal(4);
+
+    let numGrain = game.state.hexagons.filter(h => {
+      return h.resource == 'grain';
+    }).length;
+
+    numGrain.should.equal(4);
+
+    let numSheep = game.state.hexagons.filter(h => {
+      return h.resource == 'sheep';
+    }).length;
+
+    numSheep.should.equal(4);
+
+    let numDesert = game.state.hexagons.filter(h => {
+      return h.resource == 'desert';
+    }).length;
+
+    numDesert.should.equal(1);
+
+  });
+
   it('Should allow dice to be rolled', function() {
 
     let game = selectGame('Hexagon Island');
