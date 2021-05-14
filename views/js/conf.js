@@ -133,6 +133,9 @@
     }).then(() => {
       modalScreen1.classList.remove('hidden');
       modalScreen2.classList.add('hidden');
+      for (box of configBoxes) {
+        box.classList.add('hidden');
+      };
     });
   }
 
