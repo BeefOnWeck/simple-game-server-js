@@ -48,6 +48,9 @@ function assignResourcesAndRolls(centroids) {
   resources.fill('sheep', numBrick + numOre + numWood + numGrain);
   resources.fill('desert', numBrick + numOre + numWood + numGrain + numSheep);
   resources = shuffle(resources);
+  if (numBrick + numOre + numWood + numGrain + numSheep == numCentroids) {
+    resources[0] = 'desert'; // Take the first random element and make it a desert
+  }
 
   // Number ratios
   let twoRatio = 1 / canonicalCount;
