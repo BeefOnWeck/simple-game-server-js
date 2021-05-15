@@ -245,4 +245,12 @@ describe('Hexagon Island', function() {
 
   });
 
+  // TODO: Add players with empty placeholder for resources and their own color
+  // TODO: Can't build a building within two spaces of another building
+  // TODO: Can't build a road or building in a space that is already taken
+  // TODO: Should show available building locations
+  // TODO: Can only build in available locations, except during setup phase
+  // TODO: Trade resources
+  // TODO: End turn is a thing again
+
 });
