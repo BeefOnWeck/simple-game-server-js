@@ -14,7 +14,8 @@ describe('Hexagon Island', function() {
       hexagons: [],
       numbers: [],
       roads: [],
-      rollResult: 0
+      rollResult: 0,
+      playerResources: []
     });
   });
 
@@ -48,7 +49,8 @@ describe('Hexagon Island', function() {
       hexagons: [],
       numbers: [],
       roads: [],
-      rollResult: 0
+      rollResult: 0,
+      playerResources: []
     });    
 
   });
@@ -245,7 +247,32 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: Add players with empty placeholder for resources and their own color
+  it('Should assign players a color when they join the game', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(100, 3);
+
+    game = game.addPlayer('name1','id1').addPlayer('name2','id2');
+
+    game.should.have.property('players').deep.equal([
+      {
+        name: 'name1',
+        id: 'id1',
+        color: '#8b0000'
+      },
+      {
+        name: 'name2',
+        id: 'id2',
+        color: '#00008b'
+      }
+    ]);
+  });
+
+  it('Should prevent a new building from being constructed with two spaces of an existing building', function() {
+
+  });
+
+
   // TODO: Can't build a building within two spaces of another building
   // TODO: Can't build a road or building in a space that is already taken
   // TODO: Should show available building locations

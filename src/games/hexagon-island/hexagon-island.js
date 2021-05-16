@@ -1,6 +1,28 @@
 import { gameCore } from '../gameCore.js';
 import { setupGameBoard } from './hexagonGameBoard.js';
 
+/** Array of possible player colors */
+let colorArray = [
+  '#8b0000', // darkred
+  '#00008b', // darkblue
+  '#006400', // darkgreen
+  '#ff8c00', // darkorange
+  '#9932cc', // darkorchid
+  '#008b8b', // darkcyan
+  '#a9a9a9', // darkgrey
+  '#bdb76b', // darkkhaki
+  '#8b008b', // darkmagenta
+  '#556b2f', // darkolivegreen
+  '#e9967a', // darksalmon
+  '#9400d3', // darkviolet
+  '#add8e6', // lightblue
+  '#e0ffff', // lightcyan
+  '#90ee90', // lightgreen
+  '#d3d3d3', // lightgrey
+  '#ffb6c1', // lightpink
+  '#ffffe0', // lightyellow
+];
+
 /** @typedef {object} game */
 
 /** Hexagon Island */
@@ -35,7 +57,8 @@ export const game0 = {
       hexagons: [],
       numbers: [],
       roads: [],
-      rollResult: 0
+      rollResult: 0,
+      playerResources: []
     },
 
     /**
@@ -167,6 +190,12 @@ export const game0 = {
         throw new Error('Cannot add player; exceeds maximum number of players.');
       }
 
+      let updatedPlayerList = gameToDecorate.players
+        .map((p,i) => ({
+          ...p,
+          color: colorArray[i]
+        }));
+
       // let currentActions = gameToDecorate.currentActions;
 
       // Do we have the configured number of players yet?
@@ -183,7 +212,8 @@ export const game0 = {
 
       // Return the updated game with the updated players mixed in.
       return {
-        ...gameToDecorate
+        ...gameToDecorate,
+        players: updatedPlayerList
       };
     },
 

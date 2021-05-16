@@ -190,6 +190,7 @@ export function setupGameBoard(centroidSpacing = 1, numCentroidsAcross = 5) {
   let {resources, numbers} = assignResourcesAndRolls(centroids);
   let {nodes, hexagons, roads} = computeNodesAndRoads(centroids, centroidSpacing, resources);
   
+  // Add a number to each centroid
   centroids.forEach((cent, index) => {
     cent.number = numbers[index];
   });
