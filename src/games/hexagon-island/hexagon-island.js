@@ -134,17 +134,24 @@ export const game0 = {
    makeBuilding(nodeIndex, playerId, buildingType, game = this) {
 
     let updatedGame = game;
+    let nodes = updatedGame.state.nodes;
+
+    if (buildingType == 'village' && nodes[nodeIndex].buildingType == 'village') {
+      throw new Error('Cannot place a village on a space that already has a village.');
+    }
 
     // Finding adjacent nodes
     let roads = updatedGame.state.roads;
     let adjacentNodes = roads.filter(r => {
+      // returns true for roads that include nodeIndex
       return (r.inds[0] == nodeIndex) || (r.inds[1] == nodeIndex);
     }).map(r => {
+      // returns the index connecting to nodeIndex
       let rv = (r.inds[0] == nodeIndex) ? r.inds[1] : r.inds[0];
       return rv;
     });
 
-    let nodes = updatedGame.state.nodes;
+    // Check if there are buildings in adjacent spaces
     let adjacentBuilding = false;
     adjacentNodes.forEach(n => {
       if (nodes[n].buildingType != null) adjacentBuilding = true;

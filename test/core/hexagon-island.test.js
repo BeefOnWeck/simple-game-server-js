@@ -260,7 +260,7 @@ describe('Hexagon Island', function() {
     ]);
   });
 
-  it('Should prevent a new building from being constructed with two spaces of an existing building', function() {
+  it('Should prevent a new building from being constructed within two spaces of an existing building', function() {
     
     let game = selectGame('Hexagon Island');
     game = game.setup(3);
@@ -278,11 +278,26 @@ describe('Hexagon Island', function() {
 
   });
 
+  it('Should prevent a village from being built on a node with an existing village', function() {
+    
+    let game = selectGame('Hexagon Island');
+    game = game.setup(3);
+
+    game = game.makeBuilding(0, 'pid1', 'village');
+
+    game.makeBuilding.bind(game, 0, 'pid2', 'village')
+      .should.throw(Error, 'Cannot place a village on a space that already has a village.');
+
+    game = game.makeBuilding(2, 'pid2', 'village');
+
+  });
+
   // TODO: Can't build a road or building in a space that is already taken
   // TODO: Have to build a road next to another road or building
   // TODO: Should show available building locations
   // TODO: Can only build in available locations, except during setup phase
+  // TODO: Building costs resources
   // TODO: Trade resources
-  // TODO: End turn is a thing again
+  // TODO: End turn is a thing again (configurable)
 
 });
