@@ -204,6 +204,9 @@ describe('Hexagon Island', function() {
 
     builtRoads.should.have.length(0);
 
+    // first have to make an adjacent building
+    game = game.makeBuilding(0, 'playerIdString', 'village');
+
     const roadIndex = 0;
     game = game.buildRoad(roadIndex,'playerIdString');
 
@@ -292,8 +295,28 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: Can't build a road or building in a space that is already taken
-  // TODO: Have to build a road next to another road or building
+  it('Should enforce road-building to occur next to other buildings and roads', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(3);
+
+    game = game.makeBuilding(0, 'pid1', 'village');
+    game = game.buildRoad(1, 'pid1');
+
+    // Can't build here because it isn't connected to the other road
+    game.buildRoad.bind(game, 3, 'pid1')
+      .should.throw(Error, 'Roads have to be built next to other roads or buildings you own.');    
+
+    // But we can build there if we first build the connecting road
+    game = game.buildRoad(2, 'pid1');
+    game = game.buildRoad(3, 'pid1');
+
+    // This connects to the other side of the building
+    game = game.buildRoad(0, 'pid1');
+
+  });
+
+  // TODO: Cannot build a road on top of another road
   // TODO: Should show available building locations
   // TODO: Can only build in available locations, except during setup phase
   // TODO: Building costs resources

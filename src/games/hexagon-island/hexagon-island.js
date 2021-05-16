@@ -114,6 +114,26 @@ export const game0 = {
     let updatedGame = game;
 
     let roads = updatedGame.state.roads;
+    let nodes = updatedGame.state.nodes;
+
+    // Do either of the nodes connected by this road contain a building by this player?
+    let noAdjacentBuilding = true;
+    let thisRoad = roads[roadIndex];
+    let [node1,node2] = thisRoad.inds;
+    if ((nodes[node1].playerId == playerId) || (nodes[node2].playerId == playerId)) noAdjacentBuilding = false;
+
+    // Is there an adjacent road owned by this player?
+    let adjacentRoads = roads.filter(r => {
+      return ((r.inds[0] == node1)
+          || (r.inds[1] == node1)
+          || (r.inds[0] == node2)
+          || (r.inds[1] == node2))
+        && (r.playerId == playerId);
+    });
+
+    if (noAdjacentBuilding && adjacentRoads.length == 0) {
+      throw new Error('Roads have to be built next to other roads or buildings you own.');
+    }
 
     // TODO: Throw error if invalid parameters
     roads[roadIndex].playerId = playerId;
