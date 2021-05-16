@@ -261,12 +261,25 @@ describe('Hexagon Island', function() {
   });
 
   it('Should prevent a new building from being constructed with two spaces of an existing building', function() {
+    
+    let game = selectGame('Hexagon Island');
+    game = game.setup(3);
+
+    game = game.makeBuilding(0, 'pid1', 'village');
+    game = game.buildRoad(0, 'pid1');
+
+    game = game.makeBuilding(2, 'pid1', 'village');
+    game = game.buildRoad(1, 'pid1');
+
+    game.makeBuilding.bind(game, 3, 'pid2', 'burgh')
+      .should.throw(Error, 'Cannot place a building there; you must respect the two-space rule.');
+
+    game = game.makeBuilding(4, 'pid2', 'burgh');
 
   });
 
-
-  // TODO: Can't build a building within two spaces of another building
   // TODO: Can't build a road or building in a space that is already taken
+  // TODO: Have to build a road next to another road or building
   // TODO: Should show available building locations
   // TODO: Can only build in available locations, except during setup phase
   // TODO: Trade resources

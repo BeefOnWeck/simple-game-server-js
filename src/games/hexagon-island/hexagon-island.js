@@ -135,7 +135,24 @@ export const game0 = {
 
     let updatedGame = game;
 
+    // Finding adjacent nodes
+    let roads = updatedGame.state.roads;
+    let adjacentNodes = roads.filter(r => {
+      return (r.inds[0] == nodeIndex) || (r.inds[1] == nodeIndex);
+    }).map(r => {
+      let rv = (r.inds[0] == nodeIndex) ? r.inds[1] : r.inds[0];
+      return rv;
+    });
+
     let nodes = updatedGame.state.nodes;
+    let adjacentBuilding = false;
+    adjacentNodes.forEach(n => {
+      if (nodes[n].buildingType != null) adjacentBuilding = true;
+    });
+
+    if (adjacentBuilding == true) {
+      throw new Error('Cannot place a building there; you must respect the two-space rule.')
+    }
 
     // TODO: Throw error if invalid parameters
     nodes[nodeIndex].playerId = playerId;
