@@ -107,13 +107,14 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
   let nodes = [];
   let hexagons = [];
   let roads = [];
-  // let lines = [];
   let radius = centroidSpacing / Math.sqrt(3.0);
-  // Find the [non-unique] six nodes around each hexagon centroid
+
+  // Loop over centroids and construct the nodes, roads, and hexagons
   centroids.forEach((el, idx) => {
-    // let hex = '';
     let hex = [];
-    let cumIdx = idx*6;
+    let nodeIdx = idx*6; // To keep track of the node indices
+
+    // Find the [non-unique] six nodes around each hexagon centroid
     for (let step=0; step<6; step++){
       let angle = step * Math.PI / 3.0;
       let x = Math.round((radius * Math.sin(angle) + el.x + Number.EPSILON)*1000)/1000;
@@ -122,22 +123,22 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
         x: x,
         y: y
       });
-      // hex = step<5 ? hex + `${x},${y}, ` : hex + `${x},${y}`; // svg polygon defining a hexagon
       hex.push({
         x: x,
         y: y
       });
       if (step == 0) {
-        roads.push([cumIdx + 5, cumIdx]);
+        roads.push([nodeIdx + 5, nodeIdx]);
       } else {
-        roads.push([cumIdx+step-1, cumIdx+step]);
+        roads.push([nodeIdx+step-1, nodeIdx+step]);
       }
     }
     hexagons.push({
-      poly: hex,// should be nodes and not svg
+      poly: hex, // TODO: Rename to vertices
       resource: resources[idx]
     });
   });
+
   // Now go through the list of nodes and reduce it down to the unique set
   nodes = nodes.reduce((unique, item, index) => {
     // Is `item` already in the `unique` array?
@@ -150,10 +151,12 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
     // If `item` is already in `unique`
     if ( newIdx.length > 0 ) {
       // Update the indices in `roads`
-      roads = roads.map((segment) => {
-        let s1 = segment[0] == index ? newIdx[0] : segment[0];
-        let s2 = segment[1] == index ? newIdx[0] : segment[1];
-        return [s1, s2];
+      newIdx.forEach(ni => {
+        roads = roads.map((segment) => {
+          let s1 = segment[0] == index ? ni : segment[0];
+          let s2 = segment[1] == index ? ni : segment[1];
+          return [s1, s2];
+        });
       });
       // And don't add the node to the `unique` list
       return unique;
@@ -168,13 +171,18 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
       return [...unique, item];
     }
   }, []);
-  // Define road lines
-  // roads.forEach((segment) => {
-  //   let node1 = nodes[segment[0]];
-  //   let node2 = nodes[segment[1]];
-  //   let path = `M ${node1.x} ${node1.y} L ${node2.x} ${node2.y}`;
-  //   lines.push(path);
-  // });
+  
+  // Winnow roads down to a unique set
+  roads = roads.reduce((acc,cv) => {
+    let reversiblyUnique = true;
+    acc.forEach(a => {
+      if (cv[0] == a[0] && cv[1] == a[1]) reversiblyUnique = false;
+      if (cv[0] == a[1] && cv[1] == a[0]) reversiblyUnique = false;
+    });
+    let upAcc = reversiblyUnique ? [...acc,cv] : [...acc];
+    return upAcc;
+  },[]);
+
   return {nodes, hexagons, roads}; //, lines};
 }
 

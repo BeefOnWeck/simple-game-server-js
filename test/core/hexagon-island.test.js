@@ -21,25 +21,25 @@ describe('Hexagon Island', function() {
 
   it('Should setup the game board correctly', function() {
     let game = selectGame('Hexagon Island', {configNumPlayers: 2});
-    game = game.setup(2);
+    game = game.setup(3);
 
-    game.state.centroids.should.have.length(4);
-    game.state.nodes.should.have.length(20);
-    game.state.hexagons.should.have.length(4);
-    game.state.numbers.should.have.length(4);
-    game.state.roads.should.have.length(24);
+    game.state.centroids.should.have.length(7);
+    game.state.nodes.should.have.length(24);
+    game.state.hexagons.should.have.length(7);
+    game.state.numbers.should.have.length(7);
+    game.state.roads.should.have.length(30);
 
   });
 
   it('Should be able to reset the board', function() {
     let game = selectGame('Hexagon Island');
-    game = game.setup(2);
+    game = game.setup(3);
 
-    game.state.centroids.should.have.length(4);
-    game.state.nodes.should.have.length(20);
-    game.state.hexagons.should.have.length(4);
-    game.state.numbers.should.have.length(4);
-    game.state.roads.should.have.length(24);
+    game.state.centroids.should.have.length(7);
+    game.state.nodes.should.have.length(24);
+    game.state.hexagons.should.have.length(7);
+    game.state.numbers.should.have.length(7);
+    game.state.roads.should.have.length(30);
 
     game = game.reset();
 
@@ -57,29 +57,21 @@ describe('Hexagon Island', function() {
 
   it('Should be able to setup() different size boards', function() {
     let game = selectGame('Hexagon Island');
-    game = game.setup(2);
-
-    game.state.centroids.should.have.length(4);
-    game.state.nodes.should.have.length(20);
-    game.state.hexagons.should.have.length(4);
-    game.state.numbers.should.have.length(4);
-    game.state.roads.should.have.length(24);
-
     game = game.setup(3);
 
     game.state.centroids.should.have.length(7);
     game.state.nodes.should.have.length(24);
     game.state.hexagons.should.have.length(7);
     game.state.numbers.should.have.length(7);
-    game.state.roads.should.have.length(42);
+    game.state.roads.should.have.length(30);
 
-    game = game.setup(4);
+    game = game.reset().setup(4);
 
     game.state.centroids.should.have.length(14);
     game.state.nodes.should.have.length(50);
     game.state.hexagons.should.have.length(14);
     game.state.numbers.should.have.length(14);
-    game.state.roads.should.have.length(84);
+    game.state.roads.should.have.length(62);
 
   });
 
@@ -92,7 +84,7 @@ describe('Hexagon Island', function() {
     game.state.nodes.should.have.length(54);
     game.state.hexagons.should.have.length(19);
     game.state.numbers.should.have.length(19);
-    game.state.roads.should.have.length(114); // TODO: These should be unique
+    game.state.roads.should.have.length(72); // TODO: These should be unique
 
     let numBrick = game.state.hexagons.filter(h => {
       return h.resource == 'brick';
@@ -202,9 +194,9 @@ describe('Hexagon Island', function() {
   it('Should build a road when asked', function() {
 
     let game = selectGame('Hexagon Island');
-    game = game.setup(2);
+    game = game.setup(3);
 
-    game.state.roads.should.have.length(24);
+    game.state.roads.should.have.length(30);
 
     let builtRoads = game.state.roads.filter(r => {
       return r.playerId !== null;
@@ -226,9 +218,9 @@ describe('Hexagon Island', function() {
   it('Should build on a node when asked', function() {
 
     let game = selectGame('Hexagon Island');
-    game = game.setup(2);
+    game = game.setup(3);
 
-    game.state.nodes.should.have.length(20);
+    game.state.nodes.should.have.length(24);
 
     let buildings = game.state.nodes.filter(n => {
       return n.playerId !== null;
