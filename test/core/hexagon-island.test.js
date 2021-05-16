@@ -21,7 +21,7 @@ describe('Hexagon Island', function() {
 
   it('Should setup the game board correctly', function() {
     let game = selectGame('Hexagon Island', {configNumPlayers: 2});
-    game = game.setup(100, 2);
+    game = game.setup(2);
 
     game.state.centroids.should.have.length(4);
     game.state.nodes.should.have.length(20);
@@ -33,7 +33,7 @@ describe('Hexagon Island', function() {
 
   it('Should be able to reset the board', function() {
     let game = selectGame('Hexagon Island');
-    game = game.setup(100, 2);
+    game = game.setup(2);
 
     game.state.centroids.should.have.length(4);
     game.state.nodes.should.have.length(20);
@@ -57,7 +57,7 @@ describe('Hexagon Island', function() {
 
   it('Should be able to setup() different size boards', function() {
     let game = selectGame('Hexagon Island');
-    game = game.setup(100, 2);
+    game = game.setup(2);
 
     game.state.centroids.should.have.length(4);
     game.state.nodes.should.have.length(20);
@@ -65,7 +65,7 @@ describe('Hexagon Island', function() {
     game.state.numbers.should.have.length(4);
     game.state.roads.should.have.length(24);
 
-    game = game.setup(100, 3);
+    game = game.setup(3);
 
     game.state.centroids.should.have.length(7);
     game.state.nodes.should.have.length(24);
@@ -73,7 +73,7 @@ describe('Hexagon Island', function() {
     game.state.numbers.should.have.length(7);
     game.state.roads.should.have.length(42);
 
-    game = game.setup(100, 4);
+    game = game.setup(4);
 
     game.state.centroids.should.have.length(14);
     game.state.nodes.should.have.length(50);
@@ -86,7 +86,7 @@ describe('Hexagon Island', function() {
   it('Should build a canonical sized board with the correct number of resources', function() {
 
     let game = selectGame('Hexagon Island');
-    game = game.setup(100, 5);
+    game = game.setup(5);
 
     game.state.centroids.should.have.length(19);
     game.state.nodes.should.have.length(54);
@@ -202,7 +202,7 @@ describe('Hexagon Island', function() {
   it('Should build a road when asked', function() {
 
     let game = selectGame('Hexagon Island');
-    game = game.setup(100, 2);
+    game = game.setup(2);
 
     game.state.roads.should.have.length(24);
 
@@ -226,7 +226,7 @@ describe('Hexagon Island', function() {
   it('Should build on a node when asked', function() {
 
     let game = selectGame('Hexagon Island');
-    game = game.setup(100, 2);
+    game = game.setup(2);
 
     game.state.nodes.should.have.length(20);
 
@@ -250,7 +250,7 @@ describe('Hexagon Island', function() {
   it('Should assign players a color when they join the game', function() {
 
     let game = selectGame('Hexagon Island');
-    game = game.setup(100, 3);
+    game = game.setup(3);
 
     game = game.addPlayer('name1','id1').addPlayer('name2','id2');
 
