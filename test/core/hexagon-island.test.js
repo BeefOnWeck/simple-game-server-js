@@ -15,7 +15,7 @@ describe('Hexagon Island', function() {
       numbers: [],
       roads: [],
       rollResult: 0,
-      playerResources: []
+      playerResources: {}
     });
   });
 
@@ -50,7 +50,7 @@ describe('Hexagon Island', function() {
       numbers: [],
       roads: [],
       rollResult: 0,
-      playerResources: []
+      playerResources: {}
     });    
 
   });
@@ -86,35 +86,35 @@ describe('Hexagon Island', function() {
     game.state.numbers.should.have.length(19);
     game.state.roads.should.have.length(72); // TODO: These should be unique
 
-    let numBrick = game.state.hexagons.filter(h => {
-      return h.resource == 'brick';
+    let numBlock = game.state.hexagons.filter(h => {
+      return h.resource == 'block';
     }).length;
 
-    numBrick.should.equal(3);
+    numBlock.should.equal(3);
 
-    let numOre = game.state.hexagons.filter(h => {
-      return h.resource == 'ore';
+    let numRock = game.state.hexagons.filter(h => {
+      return h.resource == 'rock';
     }).length;
 
-    numOre.should.equal(3);
+    numRock.should.equal(3);
 
-    let numWood = game.state.hexagons.filter(h => {
-      return h.resource == 'wood';
+    let numTimber = game.state.hexagons.filter(h => {
+      return h.resource == 'timber';
     }).length;
 
-    numWood.should.equal(4);
+    numTimber.should.equal(4);
 
-    let numGrain = game.state.hexagons.filter(h => {
-      return h.resource == 'grain';
+    let numCereal = game.state.hexagons.filter(h => {
+      return h.resource == 'cereal';
     }).length;
 
-    numGrain.should.equal(4);
+    numCereal.should.equal(4);
 
-    let numSheep = game.state.hexagons.filter(h => {
-      return h.resource == 'sheep';
+    let numFiber = game.state.hexagons.filter(h => {
+      return h.resource == 'fiber';
     }).length;
 
-    numSheep.should.equal(4);
+    numFiber.should.equal(4);
 
     let numDesert = game.state.hexagons.filter(h => {
       return h.resource == 'desert';
@@ -316,10 +316,54 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: Cannot build a road on top of another road
-  // TODO: Should show available building locations
-  // TODO: Can only build in available locations, except during setup phase
+  it('Should prevent a road from being built on another road', function() {
+    
+    let game = selectGame('Hexagon Island');
+    game = game.setup(3);
+
+    game = game.makeBuilding(0, 'pid1', 'village');
+    game = game.buildRoad(1, 'pid1');
+
+    game.buildRoad.bind(game, 1, 'pid2')
+      .should.throw(Error, 'Cannot build a road on top of an existing road.');
+
+  });
+
+  // TODO: Can assign players resources
+  it('Should be able to assign players resources', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(3);
+
+    game = game.addPlayer('name1','id1');
+
+    game.state.playerResources.should.deep.equal({
+      id1: {
+        block: 0,
+        timber: 0,
+        fiber: 0,
+        cereal: 0,
+        rock: 0
+      }
+    });
+
+    game = game.assignResource('id1', 'block');
+
+    game.state.playerResources.should.deep.equal(
+      {
+        id1: {
+          block: 1,
+          timber: 0,
+          fiber: 0,
+          cereal: 0,
+          rock: 0
+        }
+      }
+    );
+
+  });
   // TODO: Building costs resources
+  // TODO: Rolling on a resource assigns it to neighboring players
   // TODO: Trade resources
   // TODO: End turn is a thing again (configurable)
 

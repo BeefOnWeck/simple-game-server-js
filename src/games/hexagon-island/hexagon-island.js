@@ -58,7 +58,7 @@ export const game0 = {
       numbers: [],
       roads: [],
       rollResult: 0,
-      playerResources: []
+      playerResources: {}
     },
 
     /**
@@ -115,6 +115,10 @@ export const game0 = {
 
     let roads = updatedGame.state.roads;
     let nodes = updatedGame.state.nodes;
+
+    if (roads[roadIndex].playerId != null) {
+      throw new Error('Cannot build a road on top of an existing road.');
+    }
 
     // Do either of the nodes connected by this road contain a building by this player?
     let noAdjacentBuilding = true;
@@ -195,6 +199,29 @@ export const game0 = {
 
   },
 
+  /**
+   * 
+   */
+  assignResource(playerId, resourceType, game = this) {
+
+    let updatedGame = game;
+
+    let playerResources = updatedGame.state.playerResources;
+
+    if (playerId in playerResources) {
+      playerResources[playerId][resourceType] += 1;
+    } // TODO: Throw error on else or if invalid resourceType
+
+    return {
+      ...updatedGame,
+      state: {
+        ...updatedGame.state,
+        playerResources: playerResources
+      }
+    };
+
+  },
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
@@ -219,7 +246,9 @@ export const game0 = {
           nodes: [],
           hexagons: [],
           numbers: [],
-          roads: []
+          roads: [],
+          rollResult: 0,
+          playerResources: {}
         }
       }
     },
@@ -242,6 +271,19 @@ export const game0 = {
           color: colorArray[i]
         }));
 
+      let playerResources = updatedPlayerList.reduce((acc,cv) => {
+        return {
+          ...acc,
+          [cv.id]: {
+            block: 0,
+            timber: 0,
+            fiber: 0,
+            cereal: 0,
+            rock: 0
+          }
+        }
+      }, {});
+
       // let currentActions = gameToDecorate.currentActions;
 
       // Do we have the configured number of players yet?
@@ -259,7 +301,11 @@ export const game0 = {
       // Return the updated game with the updated players mixed in.
       return {
         ...gameToDecorate,
-        players: updatedPlayerList
+        players: updatedPlayerList,
+        state: {
+          ...gameToDecorate.state,
+          playerResources: playerResources
+        }
       };
     },
 

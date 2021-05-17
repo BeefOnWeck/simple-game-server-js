@@ -23,32 +23,32 @@ function assignResourcesAndRolls(centroids) {
   // Resource ratios
   let numCentroids = centroids.length;
   let canonicalCount = 18;
-  let brickRatio = 3 / canonicalCount;
-  let oreRatio = 3 / canonicalCount;
-  let woodRatio = 4 / canonicalCount;
-  let grainRatio = 4 / canonicalCount;
-  let sheepRatio = 4 / canonicalCount;
+  let blockRatio = 3 / canonicalCount;
+  let rockRatio = 3 / canonicalCount;
+  let timberRatio = 4 / canonicalCount;
+  let cerealRatio = 4 / canonicalCount;
+  let fiberRatio = 4 / canonicalCount;
 
   // Determine number of hexagons per resource type
-  let numBrick = Math.round(brickRatio * numCentroids);
-  let numOre = Math.round(oreRatio * numCentroids);
-  let numWood = Math.round(woodRatio * numCentroids);
-  let numGrain = Math.round(grainRatio * numCentroids);
-  let numSheep = Math.round(sheepRatio * numCentroids);
-  //let numDesert = numCentroids - numBrick - numOre - numWood - numGrain - numSheep;
+  let numBlock = Math.round(blockRatio * numCentroids);
+  let numRock = Math.round(rockRatio * numCentroids);
+  let numTimber = Math.round(timberRatio * numCentroids);
+  let numCereal = Math.round(cerealRatio * numCentroids);
+  let numFiber = Math.round(fiberRatio * numCentroids);
+  //let numDesert = numCentroids - numBlock - numRock - numTimber - numCereal - numFiber;
 
   // Form [randomly-shuffled] resources array
   let size = numCentroids;
   let resources = [];
   while(size--) resources[size] = ' ';
-  resources.fill('brick', 0);
-  resources.fill('ore', numBrick);
-  resources.fill('wood', numBrick + numOre);
-  resources.fill('grain', numBrick + numOre + numWood);
-  resources.fill('sheep', numBrick + numOre + numWood + numGrain);
-  resources.fill('desert', numBrick + numOre + numWood + numGrain + numSheep);
+  resources.fill('block', 0);
+  resources.fill('rock', numBlock);
+  resources.fill('timber', numBlock + numRock);
+  resources.fill('cereal', numBlock + numRock + numTimber);
+  resources.fill('fiber', numBlock + numRock + numTimber + numCereal);
+  resources.fill('desert', numBlock + numRock + numTimber + numCereal + numFiber);
   resources = shuffle(resources);
-  if (numBrick + numOre + numWood + numGrain + numSheep == numCentroids) {
+  if (numBlock + numRock + numTimber + numCereal + numFiber == numCentroids) {
     resources[0] = 'desert'; // Take the first random element and make it a desert
   }
 
