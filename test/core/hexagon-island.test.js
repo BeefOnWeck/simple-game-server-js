@@ -329,7 +329,6 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: Can assign players resources
   it('Should be able to assign players resources', function() {
 
     let game = selectGame('Hexagon Island');
@@ -347,7 +346,7 @@ describe('Hexagon Island', function() {
       }
     });
 
-    game = game.assignResource('id1', 'block');
+    game = game.assignResources('id1', 'block');
 
     game.state.playerResources.should.deep.equal(
       {
@@ -362,7 +361,61 @@ describe('Hexagon Island', function() {
     );
 
   });
+
+  it('Should be able to deduct resources from players', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(3);
+
+    game = game.addPlayer('name1','id1');
+
+    game = game.assignResources('id1', 'block');
+
+    game.state.playerResources.should.deep.equal(
+      {
+        id1: {
+          block: 1,
+          timber: 0,
+          fiber: 0,
+          cereal: 0,
+          rock: 0
+        }
+      }
+    );
+
+    game = game.deductResources('id1', 'block');
+
+    game.state.playerResources.should.deep.equal({
+      id1: {
+        block: 0,
+        timber: 0,
+        fiber: 0,
+        cereal: 0,
+        rock: 0
+      }
+    });
+
+    game.deductResources.bind(game, 'id1', 'block')
+      .should.throw(Error, 'Cannot deduct resource.');
+
+  });
+  
   // TODO: Building costs resources
+  // it('Should throw errors if a player tries to build with the correct resources', function() {
+
+  //   let game = selectGame('Hexagon Island');
+  //   game = game.setup(3);
+
+  //   game = game.addPlayer('name1','id1');
+
+  //   game.makeBuilding.bind(game, 0, 'pid1', 'village')
+  //     .should.throw(Error, 'Not enough resources to make that building.');
+    
+  //   game.buildRoad.bind(game, 1, 'pid1')
+  //     .should.throw(Error, 'Not enough resources to build that road.'); 
+
+  // });
+
   // TODO: Rolling on a resource assigns it to neighboring players
   // TODO: Trade resources
   // TODO: End turn is a thing again (configurable)

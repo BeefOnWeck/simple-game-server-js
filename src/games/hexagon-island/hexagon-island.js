@@ -202,15 +202,56 @@ export const game0 = {
   /**
    * 
    */
-  assignResource(playerId, resourceType, game = this) {
+  assignResources(playerId, resourceTypes=[], game = this) {
+
+    if (Array.isArray(resourceTypes) == false) {
+      resourceTypes = [resourceTypes];
+    }
 
     let updatedGame = game;
 
     let playerResources = updatedGame.state.playerResources;
 
     if (playerId in playerResources) {
-      playerResources[playerId][resourceType] += 1;
-    } // TODO: Throw error on else or if invalid resourceType
+      resourceTypes.forEach(rt => {
+        // TODO: Throw error on else or if invalid resourceType
+        playerResources[playerId][rt] += 1;
+      })
+    } 
+
+    return {
+      ...updatedGame,
+      state: {
+        ...updatedGame.state,
+        playerResources: playerResources
+      }
+    };
+
+  },
+
+  /**
+   * 
+   */
+   deductResources(playerId, resourceTypes=[], game = this) {
+
+    if (Array.isArray(resourceTypes) == false) {
+      resourceTypes = [resourceTypes];
+    }
+
+    let updatedGame = game;
+
+    let playerResources = updatedGame.state.playerResources;
+
+    if (playerId in playerResources) {
+      resourceTypes.forEach(rt => {
+        // TODO: Throw error on else or if invalid resourceType
+        if (playerResources[playerId][rt] > 0) {
+          playerResources[playerId][rt] -= 1;
+        } else {
+          throw new Error('Cannot deduct resource.');
+        }
+      })
+    } 
 
     return {
       ...updatedGame,
