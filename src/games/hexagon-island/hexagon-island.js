@@ -109,9 +109,31 @@ export const game0 = {
   /**
    * 
    */
+  requiredResources: {
+    road: {
+      block: 1,
+      timber: 1
+    },
+    village: {
+      block: 1,
+      timber: 1,
+      fiber: 1,
+      cereal: 1
+    },
+    burgh: {
+      rock: 3,
+      cereal: 2
+    }
+  },
+
+  /**
+   * 
+   */
   buildRoad(roadIndex, playerId, game = this) {
 
     let updatedGame = game;
+
+    updatedGame = updatedGame.deductResources(playerId,['block','timber']);
 
     let roads = updatedGame.state.roads;
     let nodes = updatedGame.state.nodes;
@@ -159,6 +181,14 @@ export const game0 = {
 
     let updatedGame = game;
     let nodes = updatedGame.state.nodes;
+
+    console.log(updatedGame.state.playerResources);
+
+    if (buildingType == 'village') {
+      updatedGame = updatedGame.deductResources(playerId,['block','timber','fiber','cereal']);
+    } else if (buildingType == 'burgh') {
+      updatedGame = updatedGame.deductResources(playerId,['rock','rock','rock','cereal','cereal']);
+    } // TODO: Else throw error
 
     if (buildingType == 'village' && nodes[nodeIndex].buildingType == 'village') {
       throw new Error('Cannot place a village on a space that already has a village.');
@@ -251,7 +281,7 @@ export const game0 = {
           throw new Error('Cannot deduct resource.');
         }
       })
-    } 
+    } // TODO: Else
 
     return {
       ...updatedGame,

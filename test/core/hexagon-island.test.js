@@ -401,20 +401,20 @@ describe('Hexagon Island', function() {
   });
   
   // TODO: Building costs resources
-  // it('Should throw errors if a player tries to build with the correct resources', function() {
+  it('Should throw errors if a player tries to build without the correct resources', function() {
 
-  //   let game = selectGame('Hexagon Island');
-  //   game = game.setup(3);
+    let game = selectGame('Hexagon Island');
+    game = game.setup(3);
 
-  //   game = game.addPlayer('name1','id1');
+    game = game.addPlayer('name1','id1');
 
-  //   game.makeBuilding.bind(game, 0, 'pid1', 'village')
-  //     .should.throw(Error, 'Not enough resources to make that building.');
+    game.makeBuilding.bind(game, 0, 'id1', 'village')
+      .should.throw(Error, 'Cannot deduct resource.');
     
-  //   game.buildRoad.bind(game, 1, 'pid1')
-  //     .should.throw(Error, 'Not enough resources to build that road.'); 
+    game.buildRoad.bind(game, 1, 'id1')
+      .should.throw(Error, 'Cannot deduct resource.'); 
 
-  // });
+  });
 
   // TODO: Rolling on a resource assigns it to neighboring players
   // TODO: Trade resources
