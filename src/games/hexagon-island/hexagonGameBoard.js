@@ -103,7 +103,7 @@ function assignResourcesAndRolls(centroids) {
   return {resources, numbers};
 }
 
-function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
+function computeNodesAndRoads(centroids, centroidSpacing=1, resources, numbers) {
   let nodes = [];
   let hexagons = [];
   let roads = [];
@@ -135,7 +135,8 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources) {
     }
     hexagons.push({
       poly: hex, // TODO: Rename to vertices
-      resource: resources[idx]
+      resource: resources[idx],
+      number: numbers[idx]
     });
   });
 
@@ -196,7 +197,7 @@ export function setupGameBoard(centroidSpacing = 1, numCentroidsAcross = 5) {
 
   let centroids = computeHexGridCentroids(centroidSpacing, numCentroidsAcross);
   let {resources, numbers} = assignResourcesAndRolls(centroids);
-  let {nodes, hexagons, roads} = computeNodesAndRoads(centroids, centroidSpacing, resources);
+  let {nodes, hexagons, roads} = computeNodesAndRoads(centroids, centroidSpacing, resources, numbers);
   
   // Add a number to each centroid
   centroids.forEach((cent, index) => {

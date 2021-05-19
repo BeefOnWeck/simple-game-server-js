@@ -182,8 +182,6 @@ export const game0 = {
     let updatedGame = game;
     let nodes = updatedGame.state.nodes;
 
-    console.log(updatedGame.state.playerResources);
-
     if (buildingType == 'village') {
       updatedGame = updatedGame.deductResources(playerId,['block','timber','fiber','cereal']);
     } else if (buildingType == 'burgh') {

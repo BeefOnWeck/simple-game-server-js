@@ -400,7 +400,6 @@ describe('Hexagon Island', function() {
 
   });
   
-  // TODO: Building costs resources
   it('Should throw errors if a player tries to build without the correct resources', function() {
 
     let game = selectGame('Hexagon Island');
