@@ -291,6 +291,23 @@ export const game0 = {
 
   },
 
+  /**
+   * 
+   */
+  findNeighboringNodes(hexagonIndex, game=this) {
+
+    let vertices = game.state.hexagons[hexagonIndex].poly;
+
+    return game.state.nodes.filter(n => {
+      return vertices.some(v => {
+        return v.x === n.x && v.y === n.y;
+      });
+    }).map((n,ind) => {
+      return ind;
+    });
+
+  },
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.

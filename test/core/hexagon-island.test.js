@@ -415,6 +415,18 @@ describe('Hexagon Island', function() {
 
   });
 
+  it('Should find the neighboring nodes around a hexagon', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(3);
+
+    let hexagonIndex = 0;
+    let nodeIndicies = game.findNeighboringNodes(hexagonIndex);
+
+    nodeIndicies.should.deep.equal([0,1,2,3,4,5]);
+
+  });
+
   // TODO: Rolling on a resource assigns it to neighboring players
   // TODO: Trade resources
   // TODO: End turn is a thing again (configurable)
