@@ -114,13 +114,13 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     if (game.phase === 'play') { // TODO: Also allow actions during setup
       if (socket.id === game.activePlayerId) {
         try {
-          game = game.processActions(actions).nextPlayer();
+          game = game.processActions(actions);
           game.players.forEach(player => {
             io.to(player.id).emit('game-state',
               game.getGameStatus(player.id)
             );
           });
-          io.to(game.activePlayerId).emit('start-your-turn', 
+          io.to(game.activePlayerId).emit('start-your-turn', // TODO: Rename message
             game.currentActions
           );
         } catch (e) {
@@ -136,8 +136,27 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
 
   // When a player ends their turn
   socket.on('end-my-turn', (_, callback) => {
-    console.log('Player trying to end their turn, which is deprecated');
-    callback({status: 'Warning: This is a deprecated message type'});
+    if (game.phase === 'play') {
+      if (socket.id === game.activePlayerId) {
+        try {
+          game = game.nextPlayer();
+          game.players.forEach(player => {
+            io.to(player.id).emit('game-state',
+              game.getGameStatus(player.id)
+            );
+          });
+          io.to(game.activePlayerId).emit('start-your-turn',
+            game.currentActions
+          );
+        } catch (e) {
+          callback({status: e.message});
+        }
+      } else {
+        callback({status: 'It is not your turn'});
+      }
+    } else {
+      callback({status: 'Play has not started yet'});
+    }
   });
 
 });

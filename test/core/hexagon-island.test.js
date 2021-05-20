@@ -428,6 +428,10 @@ describe('Hexagon Island', function() {
   });
 
   // TODO: Rolling on a resource assigns it to neighboring players
+  // it('Should assign resources to players based on the outcome of the dice roll.', function() {
+
+  // });
+  
   // TODO: Trade resources
   // TODO: End turn is a thing again (configurable)
 
