@@ -425,10 +425,32 @@ describe('Hexagon Island', function() {
 
     nodeIndicies.should.deep.equal([0,1,2,3,4,5]);
 
+    hexagonIndex = 1;
+    nodeIndicies = game.findNeighboringNodes(hexagonIndex);
+
+    nodeIndicies.should.deep.equal([1,2,6,7,8,9]);
+
+  });
+
+  it('Should find the neighboring hexagons around a node', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(3);
+
+    let nodeIndex = 0;
+    let hexagonIndices = game.findNeighboringHexagons(nodeIndex);
+
+    hexagonIndices.should.deep.equal([0,2,3]);
+
   });
 
   // TODO: Rolling on a resource assigns it to neighboring players
   // it('Should assign resources to players based on the outcome of the dice roll.', function() {
+
+  //   let game = selectGame('Hexagon Island');
+  //   game = game.setup(3);
+
+  //   console.log(game.state.hexagons);
 
   // });
   

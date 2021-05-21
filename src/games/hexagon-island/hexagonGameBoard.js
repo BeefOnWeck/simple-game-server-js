@@ -1,6 +1,7 @@
 
 import { shuffle } from '../blackjack/standardDeck52.js';
 
+// TODO: Describe coordinate system
 function computeHexGridCentroids(centroidSpacing=1, numCentroidsAcross=5) {
   let hexGridCentroids = [];
   let maxOffset = (numCentroidsAcross - 1)/2;

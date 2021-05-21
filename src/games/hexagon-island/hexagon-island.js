@@ -298,13 +298,45 @@ export const game0 = {
 
     let vertices = game.state.hexagons[hexagonIndex].poly;
 
-    return game.state.nodes.filter(n => {
-      return vertices.some(v => {
-        return v.x === n.x && v.y === n.y;
-      });
-    }).map((n,ind) => {
-      return ind;
-    });
+    return game.state.nodes.reduce((acc, n, ind) => {
+      let updatedAccumulator = [...acc];
+      if (vertices.some(v => { return v.x === n.x && v.y === n.y; })) {
+        updatedAccumulator = [
+          ...updatedAccumulator,
+          ind
+        ];
+      }
+
+      return updatedAccumulator;
+
+    },[]);
+
+  },
+
+  /**
+   * 
+   */
+   findNeighboringHexagons(nodeIndex, game=this) {
+
+    let nodeCoordinates = {
+      x: game.state.nodes[nodeIndex].x,
+      y: game.state.nodes[nodeIndex].y
+    };
+    
+    return game.state.hexagons.reduce((acc, h, ind) => {
+      let updatedAccumulator = [...acc];
+      if (h.poly.some(v => { 
+        return v.x === nodeCoordinates.x && v.y === nodeCoordinates.y; 
+      })) {
+        updatedAccumulator = [
+          ...updatedAccumulator,
+          ind
+        ];
+      }
+
+      return updatedAccumulator;
+
+    },[]);
 
   },
 
@@ -376,7 +408,7 @@ export const game0 = {
       // Skip setup and move directly to the play phase and the first round.
       if (gameToDecorate.numPlayers == configNumPlayers) {
         let boardWidth = Math.max(5, configNumPlayers + 1);
-        gameToDecorate = gameToDecorate.nextPhase().setup(boardWidth);
+        gameToDecorate = gameToDecorate.nextPhase().setup(3);
         gameToDecorate = gameToDecorate.nextPhase().nextRound();
         // currentActions = ['make-initial-bet'];
 
