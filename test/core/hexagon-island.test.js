@@ -488,6 +488,15 @@ describe('Hexagon Island', function() {
   });
 
   // TODO: Should move to setup phase when enough players have joined
+  it('Should move to setup once enough players have been added.', function() {
+    let game = selectGame('Hexagon Island', {configNumPlayers: 2});
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2');
+
+    game.phase.should.equal('setup');
+    game.currentActions.should.deep.equal(['setup-villages-and-roads']);
+
+  });
 
   // TODO: setup-village-and-road action
 
