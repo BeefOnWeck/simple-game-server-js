@@ -439,23 +439,22 @@ export const game0 = {
         }
       }, {});
 
-      // let currentActions = gameToDecorate.currentActions;
+      let currentActions = gameToDecorate.currentActions;
 
       // Do we have the configured number of players yet?
       // Skip setup and move directly to the play phase and the first round.
       if (gameToDecorate.numPlayers == configNumPlayers) {
         let boardWidth = Math.max(5, configNumPlayers + 1);
-        gameToDecorate = gameToDecorate.nextPhase().setup(boardWidth);
-        gameToDecorate = gameToDecorate.nextPhase().nextRound();
-        // currentActions = ['make-initial-bet'];
+        gameToDecorate = gameToDecorate.setup(boardWidth).nextPhase();
+        currentActions = ['setup-villages-and-roads'];
 
         // TODO: Allow player order to be randomized here
       }
 
-
       // Return the updated game with the updated players mixed in.
       return {
         ...gameToDecorate,
+        currentActions: currentActions,
         players: updatedPlayerList,
         state: {
           ...gameToDecorate.state,

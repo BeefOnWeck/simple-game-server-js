@@ -84,7 +84,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
         callback({status: e.message});
       }
     
-      if (game.phase == 'play') {
+      if (game.phase == 'setup' || game.phase == 'play') {
         // Send game status to each player
         game.players.forEach(player => {
           io.to(player.id).emit('game-state',
@@ -111,7 +111,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
 
   // When a player sends their action(s)
   socket.on('player-actions', (actions, callback) => {
-    if (game.phase === 'play') { // TODO: Also allow actions during setup
+    if (game.phase == 'setup' || game.phase === 'play') {
       if (socket.id === game.activePlayerId) {
         try {
           game = game.processActions(actions);
@@ -136,7 +136,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
 
   // When a player ends their turn
   socket.on('end-my-turn', (_, callback) => {
-    if (game.phase === 'play') {
+    if (game.phase === 'setup' || game.phase === 'play') {
       if (socket.id === game.activePlayerId) {
         try {
           game = game.nextPlayer();

@@ -486,6 +486,12 @@ describe('Hexagon Island', function() {
     });
 
   });
+
+  // TODO: Should move to setup phase when enough players have joined
+
+  // TODO: setup-village-and-road action
+
+  // TODO: Should progress through setup
   
   // TODO: Trade resources
   // TODO: End turn is a thing again (configurable)
