@@ -65,7 +65,7 @@ export const game0 = {
      * 
      */
     setup(numCentroidsAcross = 5, game = this) {
-      let updatedGame = game;
+      let updatedGame = {...game};
 
       const centroidSpacing = 100;
 
@@ -89,7 +89,7 @@ export const game0 = {
    * 
    */
   rollDice(game = this) {
-    let updatedGame = game;
+    let updatedGame = {...game};
 
     const dieResult1 = Math.floor(Math.random() * 6) + 1;
     const dieResult2 = Math.floor(Math.random() * 6) + 1;
@@ -131,7 +131,7 @@ export const game0 = {
    */
   buildRoad(roadIndex, playerId, game = this) {
 
-    let updatedGame = game;
+    let updatedGame = {...game};
 
     updatedGame = updatedGame.deductResources(playerId,['block','timber']);
 
@@ -179,7 +179,7 @@ export const game0 = {
    */
    makeBuilding(nodeIndex, playerId, buildingType, game = this) {
 
-    let updatedGame = game;
+    let updatedGame = {...game};
     let nodes = updatedGame.state.nodes;
 
     if (buildingType == 'village') {
@@ -236,7 +236,7 @@ export const game0 = {
       resourceTypes = [resourceTypes];
     }
 
-    let updatedGame = game;
+    let updatedGame = {...game};
 
     let playerResources = updatedGame.state.playerResources;
 
@@ -266,7 +266,7 @@ export const game0 = {
       resourceTypes = [resourceTypes];
     }
 
-    let updatedGame = game;
+    let updatedGame = {...game};
 
     let playerResources = updatedGame.state.playerResources;
 
@@ -322,7 +322,7 @@ export const game0 = {
       x: game.state.nodes[nodeIndex].x,
       y: game.state.nodes[nodeIndex].y
     };
-    
+
     return game.state.hexagons.reduce((acc, h, ind) => {
       let updatedAccumulator = [...acc];
       if (h.poly.some(v => { 
@@ -337,6 +337,43 @@ export const game0 = {
       return updatedAccumulator;
 
     },[]);
+
+  },
+
+  /**
+   * 
+   */
+  resolveRoll(game = this) {
+
+    let updatedGame = {...game};
+
+    const rollResult = updatedGame.state.rollResult;
+
+    const rolledHexagons = updatedGame.state.hexagons.reduce((acc, h, ind) => {
+      let updatedAccumulator = [...acc];
+      if (h.number == rollResult) {
+        updatedAccumulator = [
+          ...updatedAccumulator,
+          {
+            ind: ind,
+            resource: h.resource
+          }
+        ];
+      }
+      return updatedAccumulator;
+    },[]);
+
+    rolledHexagons.forEach(h => {
+      const neighborNodes = updatedGame.findNeighboringNodes(h.ind);
+      neighborNodes.forEach(n => {
+        const pid = updatedGame.state.nodes[n].playerId;
+        updatedGame = updatedGame.assignResources(pid,h.resource);
+      });
+    });
+
+    return {
+      ...updatedGame
+    };
 
   },
 
@@ -408,7 +445,7 @@ export const game0 = {
       // Skip setup and move directly to the play phase and the first round.
       if (gameToDecorate.numPlayers == configNumPlayers) {
         let boardWidth = Math.max(5, configNumPlayers + 1);
-        gameToDecorate = gameToDecorate.nextPhase().setup(3);
+        gameToDecorate = gameToDecorate.nextPhase().setup(boardWidth);
         gameToDecorate = gameToDecorate.nextPhase().nextRound();
         // currentActions = ['make-initial-bet'];
 
@@ -434,6 +471,23 @@ export const game0 = {
       return {
         theWinner: gameToDecorate.theWinner ?? null
       };
+    },
+
+    /**
+     * Players are only allowed to adjust the game via a set of pre-defined actions.
+     */
+     processActions(gameToDecorate) {
+      // TODO: Handle multiple actions
+      let actions = gameToDecorate.actions;
+      let actionName = Object.keys(actions)[0];
+      let action = actions[actionName];
+
+      if (actionName == 'roll-dice') {
+        return gameToDecorate
+          .rollDice()
+          .resolveRoll();
+      }
+
     }
 
    }

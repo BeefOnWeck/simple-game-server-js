@@ -444,15 +444,48 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: Rolling on a resource assigns it to neighboring players
-  // it('Should assign resources to players based on the outcome of the dice roll.', function() {
+  it('Should assign resources to players based on the outcome of the dice roll.', function() {
 
-  //   let game = selectGame('Hexagon Island');
-  //   game = game.setup(3);
+    let game = selectGame('Hexagon Island');
+    game = game.setup(5);
 
-  //   console.log(game.state.hexagons);
+    game = game.addPlayer('name1','id1');
+    
+    game.state.nodes.map(n => {
+      n.playerId = 'id1';
+      n.buildingType = 'village';
+      return n;
+    });
 
-  // });
+    game = game.processActions({
+      'roll-dice': {}
+    });
+
+    const diceResult = game.state.rollResult;
+
+    const rolledResources = game.state.hexagons.filter(h => {
+      return h.number == diceResult;
+    }).map(h => {
+      return h.resource;
+    });
+
+    const numBlock = rolledResources.filter(r => r == 'block').length * 6;
+    const numTimber = rolledResources.filter(r => r == 'timber').length * 6;
+    const numFiber = rolledResources.filter(r => r == 'fiber').length * 6;
+    const numCereal = rolledResources.filter(r => r == 'cereal').length * 6;
+    const numRock = rolledResources.filter(r => r == 'rock').length * 6;
+
+    game.state.playerResources.should.deep.equal({
+      id1: {
+        block: numBlock,
+        timber: numTimber,
+        fiber: numFiber,
+        cereal: numCereal,
+        rock: numRock
+      }
+    });
+
+  });
   
   // TODO: Trade resources
   // TODO: End turn is a thing again (configurable)
