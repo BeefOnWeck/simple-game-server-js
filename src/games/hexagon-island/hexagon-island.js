@@ -129,11 +129,13 @@ export const game0 = {
   /**
    * 
    */
-  buildRoad(roadIndex, playerId, game = this) {
+  buildRoad(roadIndex, playerId, requirePayment = true, game = this) {
 
     let updatedGame = {...game};
 
-    updatedGame = updatedGame.deductResources(playerId,['block','timber']);
+    if (requirePayment) {
+      updatedGame = updatedGame.deductResources(playerId,['block','timber']);
+    }
 
     let roads = updatedGame.state.roads;
     let nodes = updatedGame.state.nodes;
@@ -177,16 +179,18 @@ export const game0 = {
   /**
    * 
    */
-   makeBuilding(nodeIndex, playerId, buildingType, game = this) {
+   makeBuilding(nodeIndex, playerId, buildingType, requirePayment = true, game = this) {
 
     let updatedGame = {...game};
     let nodes = updatedGame.state.nodes;
 
-    if (buildingType == 'village') {
-      updatedGame = updatedGame.deductResources(playerId,['block','timber','fiber','cereal']);
-    } else if (buildingType == 'burgh') {
-      updatedGame = updatedGame.deductResources(playerId,['rock','rock','rock','cereal','cereal']);
-    } // TODO: Else throw error
+    if (requirePayment) {
+      if (buildingType == 'village') {
+        updatedGame = updatedGame.deductResources(playerId,['block','timber','fiber','cereal']);
+      } else if (buildingType == 'burgh') {
+        updatedGame = updatedGame.deductResources(playerId,['rock','rock','rock','cereal','cereal']);
+      }
+    }
 
     if (buildingType == 'village' && nodes[nodeIndex].buildingType == 'village') {
       throw new Error('Cannot place a village on a space that already has a village.');
@@ -477,14 +481,23 @@ export const game0 = {
      */
      processActions(gameToDecorate) {
       // TODO: Handle multiple actions
-      let actions = gameToDecorate.actions;
-      let actionName = Object.keys(actions)[0];
-      let action = actions[actionName];
+      const actions = gameToDecorate.actions;
+      const actionName = Object.keys(actions)[0];
+      const action = actions[actionName];
 
       if (actionName == 'roll-dice') {
         return gameToDecorate
           .rollDice()
           .resolveRoll();
+      }
+
+      if (actionName == 'setup-villages-and-roads'){
+        const pid = action.pid;
+        const nodeIndex = action.nodeIndex;
+        const roadIndex = action.roadIndex;
+        return gameToDecorate
+          .makeBuilding(nodeIndex, pid, 'village', false)
+          .buildRoad(roadIndex, pid, false);
       }
 
     }

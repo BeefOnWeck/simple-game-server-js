@@ -205,10 +205,10 @@ describe('Hexagon Island', function() {
     builtRoads.should.have.length(0);
 
     // first have to make an adjacent building
-    game = game.makeBuilding(0, 'playerIdString', 'village');
+    game = game.makeBuilding(0, 'playerIdString', 'village', false);
 
     const roadIndex = 0;
-    game = game.buildRoad(roadIndex,'playerIdString');
+    game = game.buildRoad(roadIndex,'playerIdString', false);
 
     builtRoads = game.state.roads.filter(r => {
       return r.playerId !== null;
@@ -232,7 +232,7 @@ describe('Hexagon Island', function() {
     buildings.should.have.length(0);
 
     const nodeIndex = 0;
-    game = game.makeBuilding(nodeIndex, 'playerIdString', 'village');
+    game = game.makeBuilding(nodeIndex, 'playerIdString', 'village', false);
 
     buildings = game.state.nodes.filter(n => {
       return n.playerId !== null;
@@ -268,16 +268,16 @@ describe('Hexagon Island', function() {
     let game = selectGame('Hexagon Island');
     game = game.setup(3);
 
-    game = game.makeBuilding(0, 'pid1', 'village');
-    game = game.buildRoad(0, 'pid1');
+    game = game.makeBuilding(0, 'pid1', 'village', false);
+    game = game.buildRoad(0, 'pid1', false);
 
-    game = game.makeBuilding(2, 'pid1', 'village');
-    game = game.buildRoad(1, 'pid1');
+    game = game.makeBuilding(2, 'pid1', 'village', false);
+    game = game.buildRoad(1, 'pid1', false);
 
-    game.makeBuilding.bind(game, 3, 'pid2', 'burgh')
+    game.makeBuilding.bind(game, 3, 'pid2', 'burgh', false)
       .should.throw(Error, 'Cannot place a building there; you must respect the two-space rule.');
 
-    game = game.makeBuilding(4, 'pid2', 'burgh');
+    game = game.makeBuilding(4, 'pid2', 'burgh', false);
 
   });
 
@@ -286,12 +286,12 @@ describe('Hexagon Island', function() {
     let game = selectGame('Hexagon Island');
     game = game.setup(3);
 
-    game = game.makeBuilding(0, 'pid1', 'village');
+    game = game.makeBuilding(0, 'pid1', 'village', false);
 
-    game.makeBuilding.bind(game, 0, 'pid2', 'village')
+    game.makeBuilding.bind(game, 0, 'pid2', 'village', false)
       .should.throw(Error, 'Cannot place a village on a space that already has a village.');
 
-    game = game.makeBuilding(2, 'pid2', 'village');
+    game = game.makeBuilding(2, 'pid2', 'village', false);
 
   });
 
@@ -300,19 +300,19 @@ describe('Hexagon Island', function() {
     let game = selectGame('Hexagon Island');
     game = game.setup(3);
 
-    game = game.makeBuilding(0, 'pid1', 'village');
-    game = game.buildRoad(1, 'pid1');
+    game = game.makeBuilding(0, 'pid1', 'village', false);
+    game = game.buildRoad(1, 'pid1', false);
 
     // Can't build here because it isn't connected to the other road
-    game.buildRoad.bind(game, 3, 'pid1')
+    game.buildRoad.bind(game, 3, 'pid1', false)
       .should.throw(Error, 'Roads have to be built next to other roads or buildings you own.');    
 
     // But we can build there if we first build the connecting road
-    game = game.buildRoad(2, 'pid1');
-    game = game.buildRoad(3, 'pid1');
+    game = game.buildRoad(2, 'pid1', false);
+    game = game.buildRoad(3, 'pid1', false);
 
     // This connects to the other side of the building
-    game = game.buildRoad(0, 'pid1');
+    game = game.buildRoad(0, 'pid1', false);
 
   });
 
@@ -321,8 +321,8 @@ describe('Hexagon Island', function() {
     let game = selectGame('Hexagon Island');
     game = game.setup(3);
 
-    game = game.makeBuilding(0, 'pid1', 'village');
-    game = game.buildRoad(1, 'pid1');
+    game = game.makeBuilding(0, 'pid1', 'village', false);
+    game = game.buildRoad(1, 'pid1', false);
 
     game.buildRoad.bind(game, 1, 'pid2')
       .should.throw(Error, 'Cannot build a road on top of an existing road.');
@@ -487,7 +487,6 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: Should move to setup phase when enough players have joined
   it('Should move to setup once enough players have been added.', function() {
     let game = selectGame('Hexagon Island', {configNumPlayers: 2});
     game = game.addPlayer('name1','id1')
@@ -498,7 +497,24 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: setup-village-and-road action
+  it('Should implement the setup-village-and-road action', function() {
+    let game = selectGame('Hexagon Island', {configNumPlayers: 2});
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2');
+
+    game = game.processActions({
+      'setup-villages-and-roads': {
+        pid: 'id1',
+        nodeIndex: 0,
+        roadIndex: 0
+      }
+    });
+
+    game.state.nodes[0].playerId.should.equal('id1');
+    game.state.roads[0].playerId.should.equal('id1');
+
+  });
+
 
   // TODO: Should progress through setup
   
