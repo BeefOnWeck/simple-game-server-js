@@ -471,6 +471,7 @@ export const game0 = {
      * 
      */
      getGameStatus(playerId, gameToDecorate) {
+       // TODO: Hide resources from other players
       return {
         theWinner: gameToDecorate.theWinner ?? null
       };
@@ -493,11 +494,12 @@ export const game0 = {
 
       if (actionName == 'setup-villages-and-roads'){
         const pid = action.pid;
-        const nodeIndex = action.nodeIndex;
-        const roadIndex = action.roadIndex;
+        const nodeIndex = action.nodes[0];
+        const roadIndex = action.roads[0];
         return gameToDecorate
           .makeBuilding(nodeIndex, pid, 'village', false)
-          .buildRoad(roadIndex, pid, false);
+          .buildRoad(roadIndex, pid, false)
+          .nextPlayer();
       }
 
     }
