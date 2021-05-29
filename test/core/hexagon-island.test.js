@@ -505,8 +505,8 @@ describe('Hexagon Island', function() {
     game = game.processActions({
       'setup-villages-and-roads': {
         pid: 'id1',
-        nodeIndex: 0,
-        roadIndex: 0
+        nodes: [0],
+        roads: [0]
       }
     });
 
@@ -515,8 +515,43 @@ describe('Hexagon Island', function() {
 
   });
 
+  it('Should progress through setup and then enter the play phase', function() {
+    let game = selectGame('Hexagon Island', {configNumPlayers: 2});
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2');
 
-  // TODO: Should progress through setup
+    game.phase.should.equal('setup');
+
+    game = game.processActions({
+      'setup-villages-and-roads': {
+        pid: 'id1',
+        nodes: [43],
+        roads: [57]
+      }
+    }).processActions({
+      'setup-villages-and-roads': {
+        pid: 'id2',
+        nodes: [15],
+        roads: [18]
+      }
+    }).processActions({
+      'setup-villages-and-roads': {
+        pid: 'id2',
+        nodes: [1],
+        roads: [1]
+      }
+    }).processActions({
+      'setup-villages-and-roads': {
+        pid: 'id1',
+        nodes: [33],
+        roads: [58]
+      }
+    });
+
+    game.phase.should.equal('play');
+    game.activePlayerId.should.equal('id1');
+
+  });
   
   // TODO: Trade resources
   // TODO: End turn is a thing again (configurable)

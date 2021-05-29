@@ -133,6 +133,10 @@ export const game0 = {
 
     let updatedGame = {...game};
 
+    if (updatedGame.activePlayerId && playerId != updatedGame.activePlayerId) {
+      throw new Error('It is not your turn.');
+    }
+
     if (requirePayment) {
       updatedGame = updatedGame.deductResources(playerId,['block','timber']);
     }
@@ -183,6 +187,10 @@ export const game0 = {
 
     let updatedGame = {...game};
     let nodes = updatedGame.state.nodes;
+
+    if (updatedGame.activePlayerId && playerId != updatedGame.activePlayerId) {
+      throw new Error('It is not your turn.');
+    }
 
     if (requirePayment) {
       if (buildingType == 'village') {
@@ -475,6 +483,55 @@ export const game0 = {
       return {
         theWinner: gameToDecorate.theWinner ?? null
       };
+    },
+
+    /**
+     * 
+     */
+     nextPlayer(gameToDecorate) {
+      // NOTE: We do not need to create a copy of game since that has 
+      //       already been done in gameCore.nextPlayer().
+
+      // Gather the currentActions and round so we can update them
+      let currentActions = gameToDecorate.currentActions;
+      let phase = gameToDecorate.phase;
+      let players = gameToDecorate.players;
+      let activePlayerId = gameToDecorate.activePlayerId;
+
+      // During setup the players take turns in order setting up a village and a road.
+      // When the last player goes, they go again the rest of the players go in reverse 
+      // order until we reach the first player again.
+      if (phase == 'setup' && currentActions.includes('setup-villages-and-roads')) {
+        // This should happen twice during setup, first when everyone has gone once 
+        // and we return to the first player and again when we go back through a 
+        // second time. The first time this gets triggered we reverse the order of 
+        // the players so that last player can go twice in a row. The second time 
+        // this gets triggered is when the first player makese the last action of 
+        // the setup phase, which will put the players back in their original order.
+        if (activePlayerId == gameToDecorate.firstPlayerId) {
+          players = players.reverse();
+          activePlayerId = players[0].id;
+        }
+
+        // If all players have two roads and two villages, that means setup is over.
+        const allPlayersHaveSetup = players.reduce((acc, p) => {
+          const hasTwoRoads = gameToDecorate.state.roads.filter(r => r.playerId == p.id).length == 2;
+          const hasTwoVillages = gameToDecorate.state.nodes.filter(v => v.playerId == p.id).length == 2;
+          return acc && hasTwoRoads && hasTwoVillages;
+        },true);
+
+        if (allPlayersHaveSetup) {
+          phase = 'play';
+          activePlayerId = gameToDecorate.firstPlayerId;
+        }
+      }
+
+      return {
+        ...gameToDecorate,
+        phase: phase,
+        players: players,
+        activePlayerId: activePlayerId
+      }
     },
 
     /**
