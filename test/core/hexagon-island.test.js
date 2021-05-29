@@ -551,6 +551,14 @@ describe('Hexagon Island', function() {
     game.phase.should.equal('play');
     game.activePlayerId.should.equal('id1');
 
+    const numPlayerOneResources = Object.values(game.state.playerResources['id1']).reduce((acc,v) => acc + v, 0);
+    const numPlayerTwoResources = Object.values(game.state.playerResources['id2']).reduce((acc,v) => acc + v, 0);
+
+    // Each node should neighbor three hexagons, which means up to six resources per player.
+    // But if one of the hexagons is a desert, then the total will be reduced to no less than 4.
+    numPlayerOneResources.should.be.greaterThanOrEqual(4);
+    numPlayerTwoResources.should.be.greaterThanOrEqual(4);
+
   });
   
   // TODO: Trade resources

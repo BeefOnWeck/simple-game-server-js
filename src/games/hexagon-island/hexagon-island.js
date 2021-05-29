@@ -454,13 +454,11 @@ export const game0 = {
       let currentActions = gameToDecorate.currentActions;
 
       // Do we have the configured number of players yet?
-      // Skip setup and move directly to the play phase and the first round.
+      // If yes, setup the board and start the setup phase.
       if (gameToDecorate.numPlayers == configNumPlayers) {
         let boardWidth = Math.max(5, configNumPlayers + 1);
         gameToDecorate = gameToDecorate.setup(boardWidth).nextPhase();
         currentActions = ['setup-villages-and-roads'];
-
-        // TODO: Allow player order to be randomized here
       }
 
       // Return the updated game with the updated players mixed in.
@@ -497,6 +495,7 @@ export const game0 = {
       let phase = gameToDecorate.phase;
       let players = gameToDecorate.players;
       let activePlayerId = gameToDecorate.activePlayerId;
+      let playerResources = gameToDecorate.state.playerResources;
 
       // During setup the players take turns in order setting up a village and a road.
       // When the last player goes, they go again the rest of the players go in reverse 
@@ -521,6 +520,27 @@ export const game0 = {
         },true);
 
         if (allPlayersHaveSetup) {
+          // Final step of setup is to assign players resources based upon where they 
+          // have built their villages.
+          playerResources = players.reduce((acc,p) => {
+            // For each player figure out what resources they should get
+            const resourcesToAdd = gameToDecorate.state.nodes
+              .map((n,ind) => { return {id: n.playerId, ind: ind} })
+              .filter(n => n.id == p.id)
+              .reduce((r,n) => {
+                const neighborHexs = gameToDecorate.findNeighboringHexagons(n.ind);
+                neighborHexs.forEach(h => {
+                  r.push(gameToDecorate.state.hexagons[h].resource);
+                });
+                return r;
+              },[]);
+
+            // Then assign these resources to them
+            resourcesToAdd.forEach(r => {
+              if (r in acc[p.id]) acc[p.id][r] = acc[p.id][r] + 1;
+            });
+            return acc;
+          },playerResources);
           phase = 'play';
           activePlayerId = gameToDecorate.firstPlayerId;
         }
@@ -530,7 +550,11 @@ export const game0 = {
         ...gameToDecorate,
         phase: phase,
         players: players,
-        activePlayerId: activePlayerId
+        activePlayerId: activePlayerId,
+        state: {
+          ...gameToDecorate.state,
+          playerResources: playerResources
+        }
       }
     },
 
