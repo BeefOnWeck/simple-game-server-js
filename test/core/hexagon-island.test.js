@@ -127,6 +127,8 @@ describe('Hexagon Island', function() {
   it('Should allow dice to be rolled', function() {
 
     let game = selectGame('Hexagon Island');
+
+    game.currentActions = ['roll-dice'];
     
     game.state.rollResult.should.equal(0);
     game = game.rollDice();
@@ -149,6 +151,8 @@ describe('Hexagon Island', function() {
     // Dice total --> | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 |
 
     let game = selectGame('Hexagon Island');
+
+    game.currentActions = ['roll-dice'];
 
     const N = 10000; // Number of trials
 
@@ -457,6 +461,8 @@ describe('Hexagon Island', function() {
       return n;
     });
 
+    game.currentActions = ['roll-dice'];
+
     game = game.processActions({
       'roll-dice': {}
     });
@@ -558,6 +564,72 @@ describe('Hexagon Island', function() {
     // But if one of the hexagons is a desert, then the total will be reduced to no less than 4.
     numPlayerOneResources.should.be.greaterThanOrEqual(4);
     numPlayerTwoResources.should.be.greaterThanOrEqual(4);
+
+  });
+
+  it('Should correctly handle turns during the play phase', function() {
+    let game = selectGame('Hexagon Island', {configNumPlayers: 2});
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2');
+
+    game.phase.should.equal('setup');
+
+    game = game.processActions({
+      'setup-villages-and-roads': {
+        pid: 'id1',
+        nodes: [43],
+        roads: [57]
+      }
+    }).processActions({
+      'setup-villages-and-roads': {
+        pid: 'id2',
+        nodes: [15],
+        roads: [18]
+      }
+    }).processActions({
+      'setup-villages-and-roads': {
+        pid: 'id2',
+        nodes: [1],
+        roads: [1]
+      }
+    }).processActions({
+      'setup-villages-and-roads': {
+        pid: 'id1',
+        nodes: [33],
+        roads: [58]
+      }
+    });
+
+    game.phase.should.equal('play');
+    game.round.should.equal(1);
+
+    // Cheat here so the players actually have resources to build stuff
+    game = game.assignResources('id1', ['block','timber','block','timber','block','timber','fiber','cereal']);
+    game = game.assignResources('id2', ['block','timber','block','timber','block','timber','fiber','cereal']);
+
+    game = game.processActions({
+      'roll-dice': {
+        pid: 'id1'
+      }
+    }).processActions({
+      'build-stuff': {
+        pid: 'id1',
+        nodes: [22],
+        roads: [43, 44]
+      }
+    }).processActions({
+      'roll-dice': {
+        pid: 'id2'
+      }
+    }).processActions({
+      'build-stuff': {
+        pid: 'id2',
+        nodes: [7],
+        roads: [6, 7]
+      }
+    });
+
+    game.round.should.equal(2);
 
   });
   

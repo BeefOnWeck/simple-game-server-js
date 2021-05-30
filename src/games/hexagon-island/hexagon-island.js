@@ -91,6 +91,10 @@ export const game0 = {
   rollDice(game = this) {
     let updatedGame = {...game};
 
+    if (!updatedGame.currentActions.includes('roll-dice')) {
+      throw new Error('It is not time to roll the dice.');
+    }
+
     const dieResult1 = Math.floor(Math.random() * 6) + 1;
     const dieResult2 = Math.floor(Math.random() * 6) + 1;
 
@@ -389,6 +393,22 @@ export const game0 = {
 
   },
 
+  /**
+   * 
+   */
+  setCurrentAction(nameOfAction, game=this) {
+
+    let updatedGame = {...game};
+
+    // TODO: Check nameOfAction is an allowed action
+    updatedGame.currentActions = [nameOfAction];
+
+    return {
+      ...updatedGame
+    };
+
+  },
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
@@ -493,6 +513,7 @@ export const game0 = {
       // Gather the currentActions and round so we can update them
       let currentActions = gameToDecorate.currentActions;
       let phase = gameToDecorate.phase;
+      let round = gameToDecorate.round;
       let players = gameToDecorate.players;
       let activePlayerId = gameToDecorate.activePlayerId;
       let playerResources = gameToDecorate.state.playerResources;
@@ -542,14 +563,22 @@ export const game0 = {
             return acc;
           },playerResources);
           phase = 'play';
+          round = 1;
+          currentActions = ['roll-dice'];
           activePlayerId = gameToDecorate.firstPlayerId;
+        }
+      } else if (phase == 'play') {
+        if (activePlayerId == gameToDecorate.firstPlayerId) {
+          round = round + 1;
         }
       }
 
       return {
         ...gameToDecorate,
         phase: phase,
+        round: round,
         players: players,
+        currentActions: currentActions,
         activePlayerId: activePlayerId,
         state: {
           ...gameToDecorate.state,
@@ -570,10 +599,22 @@ export const game0 = {
       if (actionName == 'roll-dice') {
         return gameToDecorate
           .rollDice()
-          .resolveRoll();
-      }
-
-      if (actionName == 'setup-villages-and-roads'){
+          .resolveRoll()
+          .setCurrentAction('build-stuff');
+      } else if (actionName == 'build-stuff') {
+        const pid = action.pid;
+        const nodeIndices = action.nodes;
+        const roadIndices = action.roads;
+        nodeIndices.forEach(n => {
+          gameToDecorate = gameToDecorate.makeBuilding(n, pid, 'village');
+        });
+        roadIndices.forEach(r => {
+          gameToDecorate = gameToDecorate.buildRoad(r, pid);
+        })
+        return gameToDecorate
+          .setCurrentAction('roll-dice')
+          .nextPlayer();
+      } else if (actionName == 'setup-villages-and-roads'){
         const pid = action.pid;
         const nodeIndex = action.nodes[0];
         const roadIndex = action.roads[0];
