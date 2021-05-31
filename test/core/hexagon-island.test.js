@@ -634,12 +634,48 @@ describe('Hexagon Island', function() {
   });
 
   // TODO: If a player ends their turn without building, currentActions is reset to roll dice
+  it('Should throw an error if a player ends their turn without rolling the dice', function() {
+    let game = selectGame('Hexagon Island', {configNumPlayers: 2});
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2')
+      .processActions({
+      'setup-villages-and-roads': {
+        pid: 'id1',
+        nodes: [43],
+        roads: [57]
+      }
+      })
+      .processActions({
+        'setup-villages-and-roads': {
+          pid: 'id2',
+          nodes: [15],
+          roads: [18]
+        }
+      })
+      .processActions({
+        'setup-villages-and-roads': {
+          pid: 'id2',
+          nodes: [1],
+          roads: [1]
+        }
+      })
+      .processActions({
+        'setup-villages-and-roads': {
+          pid: 'id1',
+          nodes: [33],
+          roads: [58]
+        }
+      });
+
+    game.nextPlayer.bind(game).should.throw(Error,'Cannot end your turn without at least rolling the dice');
+  });
 
   // TODO: A player cannot end their turn without rolling the dice
 
-  // TODO: Throw an error if a player tries to setup without a selected road and building
+  // TODO: Throw an error if a player tries to setup without both a selected road and building
+
+  // TODO: Should keep score
   
   // TODO: Trade resources
-  // TODO: End turn is a thing again (configurable)
 
 });

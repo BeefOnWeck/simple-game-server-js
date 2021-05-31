@@ -135,8 +135,6 @@ export const game0 = {
    */
   buildRoad(roadIndex, playerId, requirePayment = true, game = this) {
 
-    console.log('road: ', roadIndex);
-
     let updatedGame = {...game};
 
     if (updatedGame.activePlayerId && playerId != updatedGame.activePlayerId) {
@@ -190,8 +188,6 @@ export const game0 = {
    * 
    */
    makeBuilding(nodeIndex, playerId, buildingType, requirePayment = true, game = this) {
-
-    console.log('building: ', nodeIndex, buildingType);
 
     let updatedGame = {...game};
     let nodes = updatedGame.state.nodes;
@@ -583,6 +579,10 @@ export const game0 = {
         }
         if (currentActions.includes('build-stuff')) {
           currentActions = ['roll-dice'];
+        } else if (currentActions.includes('roll-dice')) {
+          // If we went to the next player but the current action is still 
+          // to roll the dice, that means the previous player never rolled.
+          throw new Error('Cannot end your turn without at least rolling the dice');
         }
       }
 
@@ -609,8 +609,6 @@ export const game0 = {
       const actionName = Object.keys(actions)[0];
       const action = actions[actionName];
 
-      console.log(actionName);
-
       if (actionName == 'roll-dice') {
         return gameToDecorate
           .rollDice()
@@ -620,19 +618,15 @@ export const game0 = {
         const pid = action.pid;
         const nodeIndices = action.nodes;
         const roadIndices = action.roads;
-        console.log(nodeIndices);
-        console.log(roadIndices);
         nodeIndices.forEach(n => {
-          console.log(n);
           gameToDecorate = gameToDecorate.makeBuilding(n, pid, 'village');
         });
         roadIndices.forEach(r => {
-          console.log(r);
           gameToDecorate = gameToDecorate.buildRoad(r, pid);
         })
         return gameToDecorate
-          .setCurrentAction('roll-dice')
-          .nextPlayer();
+          .nextPlayer()
+          .setCurrentAction('roll-dice');
       } else if (actionName == 'setup-villages-and-roads'){
         const pid = action.pid;
         const nodeIndex = action.nodes[0];
