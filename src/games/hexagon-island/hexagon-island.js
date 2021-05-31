@@ -135,6 +135,8 @@ export const game0 = {
    */
   buildRoad(roadIndex, playerId, requirePayment = true, game = this) {
 
+    console.log('road: ', roadIndex);
+
     let updatedGame = {...game};
 
     if (updatedGame.activePlayerId && playerId != updatedGame.activePlayerId) {
@@ -189,6 +191,8 @@ export const game0 = {
    */
    makeBuilding(nodeIndex, playerId, buildingType, requirePayment = true, game = this) {
 
+    console.log('building: ', nodeIndex, buildingType);
+
     let updatedGame = {...game};
     let nodes = updatedGame.state.nodes;
 
@@ -204,7 +208,7 @@ export const game0 = {
       }
     }
 
-    if (buildingType == 'village' && nodes[nodeIndex].buildingType == 'village') {
+    if (buildingType == 'village' && nodes[nodeIndex]?.buildingType == 'village') {
       throw new Error('Cannot place a village on a space that already has a village.');
     }
 
@@ -222,7 +226,7 @@ export const game0 = {
     // Check if there are buildings in adjacent spaces
     let adjacentBuilding = false;
     adjacentNodes.forEach(n => {
-      if (nodes[n].buildingType != null) adjacentBuilding = true;
+      if (nodes[n]?.buildingType != null) adjacentBuilding = true;
     });
 
     if (adjacentBuilding == true) {
@@ -494,12 +498,18 @@ export const game0 = {
     },
 
     /** 
-     * 
+     *
      */
      getGameStatus(playerId, gameToDecorate) {
-       // TODO: Hide resources from other players
+
+      let prunedPlayerResources = gameToDecorate.state.playerResources[playerId];
+
       return {
-        theWinner: gameToDecorate.theWinner ?? null
+        theWinner: gameToDecorate.theWinner ?? null,
+        state: {
+          ...gameToDecorate.state,
+          playerResources: prunedPlayerResources
+        }
       };
     },
 
@@ -571,6 +581,9 @@ export const game0 = {
         if (activePlayerId == gameToDecorate.firstPlayerId) {
           round = round + 1;
         }
+        if (currentActions.includes('build-stuff')) {
+          currentActions = ['roll-dice'];
+        }
       }
 
       return {
@@ -596,6 +609,8 @@ export const game0 = {
       const actionName = Object.keys(actions)[0];
       const action = actions[actionName];
 
+      console.log(actionName);
+
       if (actionName == 'roll-dice') {
         return gameToDecorate
           .rollDice()
@@ -605,10 +620,14 @@ export const game0 = {
         const pid = action.pid;
         const nodeIndices = action.nodes;
         const roadIndices = action.roads;
+        console.log(nodeIndices);
+        console.log(roadIndices);
         nodeIndices.forEach(n => {
+          console.log(n);
           gameToDecorate = gameToDecorate.makeBuilding(n, pid, 'village');
         });
         roadIndices.forEach(r => {
+          console.log(r);
           gameToDecorate = gameToDecorate.buildRoad(r, pid);
         })
         return gameToDecorate

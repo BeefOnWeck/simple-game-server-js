@@ -632,6 +632,12 @@ describe('Hexagon Island', function() {
     game.round.should.equal(2);
 
   });
+
+  // TODO: If a player ends their turn without building, currentActions is reset to roll dice
+
+  // TODO: A player cannot end their turn without rolling the dice
+
+  // TODO: Throw an error if a player tries to setup without a selected road and building
   
   // TODO: Trade resources
   // TODO: End turn is a thing again (configurable)
