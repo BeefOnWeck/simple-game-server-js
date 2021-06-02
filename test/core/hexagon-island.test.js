@@ -633,7 +633,6 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: If a player ends their turn without building, currentActions is reset to roll dice
   it('Should throw an error if a player ends their turn without rolling the dice', function() {
     let game = selectGame('Hexagon Island', {configNumPlayers: 2});
     game = game.addPlayer('name1','id1')
@@ -670,9 +669,63 @@ describe('Hexagon Island', function() {
     game.nextPlayer.bind(game).should.throw(Error,'Cannot end your turn without at least rolling the dice');
   });
 
-  // TODO: A player cannot end their turn without rolling the dice
+  it('Should throw an error if a player tries to setup with selecting both a road and a building.', function() {
+    let game = selectGame('Hexagon Island', {configNumPlayers: 2});
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2');
 
-  // TODO: Throw an error if a player tries to setup without both a selected road and building
+    game.processActions.bind(
+      game,
+      {
+        'setup-villages-and-roads': {
+          pid: 'id1',
+          nodes: [0],
+          roads: []
+        }
+      }
+    ).should.throw(Error, 'Must select one building and one road during setup.');
+
+    game.processActions.bind(
+      game,
+      {
+        'setup-villages-and-roads': {
+          pid: 'id1',
+          nodes: [],
+          roads: [0]
+        }
+      }
+    ).should.throw(Error, 'Must select one building and one road during setup.');
+
+    game.processActions.bind(
+      game,
+      {
+        'setup-villages-and-roads': {
+          pid: 'id1',
+          nodes: [0]
+        }
+      }
+    ).should.throw(Error, 'Must select one building and one road during setup.');
+
+    game.processActions.bind(
+      game,
+      {
+        'setup-villages-and-roads': {
+          pid: 'id1',
+          roads: [0]
+        }
+      }
+    ).should.throw(Error, 'Must select one building and one road during setup.');
+
+    game.processActions.bind(
+      game,
+      {
+        'setup-villages-and-roads': {
+          pid: 'id1'
+        }
+      }
+    ).should.throw(Error, 'Must select one building and one road during setup.');
+
+  });
 
   // TODO: Should keep score
   

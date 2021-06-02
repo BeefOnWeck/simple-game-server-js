@@ -629,12 +629,17 @@ export const game0 = {
           .setCurrentAction('roll-dice');
       } else if (actionName == 'setup-villages-and-roads'){
         const pid = action.pid;
-        const nodeIndex = action.nodes[0];
-        const roadIndex = action.roads[0];
-        return gameToDecorate
-          .makeBuilding(nodeIndex, pid, 'village', false)
-          .buildRoad(roadIndex, pid, false)
+        const oneNode = action.nodes;
+        const oneRoad = action.roads;
+        if (oneNode?.length == 1 && oneRoad?.length == 1) {
+          return gameToDecorate
+          .makeBuilding(oneNode[0], pid, 'village', false)
+          .buildRoad(oneRoad[0], pid, false)
           .nextPlayer();
+        } else {
+          throw new Error('Must select one building and one road during setup.');
+        }
+        
       }
 
     }
