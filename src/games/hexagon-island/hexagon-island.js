@@ -39,6 +39,8 @@ export const game0 = {
     config: {
       /** The number of players that will join the game. */
       configNumPlayers: 2,
+      /** */
+      scoreToWin: 10
     },
   
     /**
@@ -409,6 +411,31 @@ export const game0 = {
 
   },
 
+  /**
+   * 
+   */
+  findTheWinner(game=this) {
+
+    let updatedGame = {...game};
+
+    const theWinner = updatedGame.players.reduce((acc,p) => {
+
+      const buildingScore = updatedGame.state.nodes.filter(n => n.playerId == p.id).length;
+
+      const score = buildingScore; // TODO: Add bonuses (e.g., longest road)
+
+      if (score >= updatedGame.config.scoreToWin) return p.id;
+      else return acc;
+
+    },null);
+
+    return {
+      ...updatedGame,
+      theWinner: theWinner
+    };
+
+  },
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
@@ -625,6 +652,7 @@ export const game0 = {
           gameToDecorate = gameToDecorate.buildRoad(r, pid);
         })
         return gameToDecorate
+          .findTheWinner()
           .nextPlayer()
           .setCurrentAction('roll-dice');
       } else if (actionName == 'setup-villages-and-roads'){

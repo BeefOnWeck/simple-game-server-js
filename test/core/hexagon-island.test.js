@@ -728,7 +728,74 @@ describe('Hexagon Island', function() {
   });
 
   // TODO: Should keep score
+  it('Should find the winning player', function() {
+    let game = selectGame('Hexagon Island', {
+      configNumPlayers: 2,
+      scoreToWin: 3
+    });
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2');
+
+    game.phase.should.equal('setup');
+
+    game = game.processActions({
+      'setup-villages-and-roads': {
+        pid: 'id1',
+        nodes: [43],
+        roads: [57]
+      }
+    }).processActions({
+      'setup-villages-and-roads': {
+        pid: 'id2',
+        nodes: [15],
+        roads: [18]
+      }
+    }).processActions({
+      'setup-villages-and-roads': {
+        pid: 'id2',
+        nodes: [1],
+        roads: [1]
+      }
+    }).processActions({
+      'setup-villages-and-roads': {
+        pid: 'id1',
+        nodes: [33],
+        roads: [58]
+      }
+    });
+
+    game.phase.should.equal('play');
+    game.round.should.equal(1);
+
+    // Cheat here so the players actually have resources to build stuff
+    game = game.assignResources('id1', ['block','timber','block','timber','block','timber','fiber','cereal']);
+    game = game.assignResources('id2', ['block','timber','block','timber','block','timber','fiber','cereal']);
+
+    game = game.processActions({
+      'roll-dice': {
+        pid: 'id1'
+      }
+    }).processActions({
+      'build-stuff': {
+        pid: 'id1',
+        nodes: [22],
+        roads: [43, 44]
+      }
+    });
+
+    game.theWinner.should.equal('id1');
+
+  });
+
   
   // TODO: Trade resources
+
+  // TODO: Cards
+
+  // TODO: Longest road bonus
+
+  // TODO: Largest militia bonus
+
+  // TODO: The brigand
 
 });
