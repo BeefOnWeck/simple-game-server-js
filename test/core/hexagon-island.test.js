@@ -15,7 +15,8 @@ describe('Hexagon Island', function() {
       numbers: [],
       roads: [],
       rollResult: 0,
-      playerResources: {}
+      playerResources: {},
+      brigandIndex: null
     });
   });
 
@@ -50,7 +51,8 @@ describe('Hexagon Island', function() {
       numbers: [],
       roads: [],
       rollResult: 0,
-      playerResources: {}
+      playerResources: {},
+      brigandIndex: null
     });    
 
   });
@@ -727,7 +729,6 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: Should keep score
   it('Should find the winning player', function() {
     let game = selectGame('Hexagon Island', {
       configNumPlayers: 2,
@@ -787,8 +788,65 @@ describe('Hexagon Island', function() {
 
   });
 
-  
-  // TODO: Trade resources
+  it('The brigand should block resources on its hexagon.', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(5);
+
+    game = game.addPlayer('name1','id1');
+    
+    game.state.nodes.forEach((_,i,a) => {
+      a[i].playerId = 'id1';
+      a[i].buildingType = 'village';
+    });
+
+    game.state.hexagons.forEach((hex,ind) => {
+      game.state.playerResources = {
+        id1: {
+          block: 0,
+          timber: 0,
+          fiber: 0,
+          cereal: 0,
+          rock: 0
+        }
+      };
+
+      game = game.moveBrigand(ind);
+
+      const diceResult = hex.number;
+      if (diceResult) {
+        game.state.rollResult = diceResult;
+        game = game.resolveRoll();
+
+        const rolledResources = game.state.hexagons.filter((h,i) => {
+          return h.number == diceResult && i != game.state.brigandIndex;
+        }).map(h => {
+          return h.resource;
+        });
+    
+        const numBlock = rolledResources.filter(r => r == 'block').length * 6;
+        const numTimber = rolledResources.filter(r => r == 'timber').length * 6;
+        const numFiber = rolledResources.filter(r => r == 'fiber').length * 6;
+        const numCereal = rolledResources.filter(r => r == 'cereal').length * 6;
+        const numRock = rolledResources.filter(r => r == 'rock').length * 6;
+    
+        game.state.playerResources.should.deep.equal({
+          id1: {
+            block: numBlock,
+            timber: numTimber,
+            fiber: numFiber,
+            cereal: numCereal,
+            rock: numRock
+          }
+        });
+
+      }
+
+    });
+
+  });
+
+  // TODO: The brigand moves on 7's
 
   // TODO: Cards
 
@@ -796,6 +854,6 @@ describe('Hexagon Island', function() {
 
   // TODO: Largest militia bonus
 
-  // TODO: The brigand
+  // TODO: Trade resources
 
 });

@@ -60,7 +60,8 @@ export const game0 = {
       numbers: [],
       roads: [],
       rollResult: 0,
-      playerResources: {}
+      playerResources: {},
+      brigandIndex: null
     },
 
     /**
@@ -74,6 +75,11 @@ export const game0 = {
       const { centroids, nodes, hexagons, numbers, roads } = 
         setupGameBoard(centroidSpacing, numCentroidsAcross);
 
+      const brigandIndex = hexagons
+        .map((h,i) => ({ind: i, resource: h.resource}))
+        .filter(h => h.resource === 'desert')
+        .map(h => h.ind)[0];
+
       return {
         ...updatedGame,
         state: {
@@ -82,7 +88,8 @@ export const game0 = {
           nodes: nodes,
           hexagons: hexagons,
           numbers: numbers,
-          roads: roads
+          roads: roads,
+          brigandIndex: brigandIndex
         }
       }
     },
@@ -369,7 +376,7 @@ export const game0 = {
 
     const rolledHexagons = updatedGame.state.hexagons.reduce((acc, h, ind) => {
       let updatedAccumulator = [...acc];
-      if (h.number == rollResult) {
+      if (h.number == rollResult && ind != updatedGame.state.brigandIndex) {
         updatedAccumulator = [
           ...updatedAccumulator,
           {
@@ -436,6 +443,23 @@ export const game0 = {
 
   },
 
+  /**
+   * 
+   */
+  moveBrigand(index, game=this) {
+    const updatedGame = {...game};
+
+    // TODO: Check that the new index fits
+
+    return {
+      ...updatedGame,
+      state: {
+        ...updatedGame.state,
+        brigandIndex: index
+      }
+    }
+  },
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
@@ -462,7 +486,8 @@ export const game0 = {
           numbers: [],
           roads: [],
           rollResult: 0,
-          playerResources: {}
+          playerResources: {},
+          brigandIndex: null
         }
       }
     },
