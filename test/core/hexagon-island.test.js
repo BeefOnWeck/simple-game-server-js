@@ -788,18 +788,21 @@ describe('Hexagon Island', function() {
 
   });
 
-  it('The brigand should block resources on its hexagon.', function() {
+  it('Should block resources from whichever hexagon contains the brigand.', function() {
 
     let game = selectGame('Hexagon Island');
     game = game.setup(5);
 
     game = game.addPlayer('name1','id1');
     
+    // Add a village for player 1 on all nodes
     game.state.nodes.forEach((_,i,a) => {
       a[i].playerId = 'id1';
       a[i].buildingType = 'village';
     });
 
+    // Loop over all hexagons, move the brigand to each one, 
+    // and then verify that the appropriate resource is blocked.
     game.state.hexagons.forEach((hex,ind) => {
       game.state.playerResources = {
         id1: {
@@ -846,7 +849,31 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: The brigand moves on 7's
+  it('Should have the brigand move every time a 7 is rolled', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(5);
+
+    game = game.addPlayer('name1','id1');
+
+    game.currentActions = ['roll-dice'];
+    game.state.rollResult = 7;
+    game = game.resolveRoll();
+
+    game.currentActions.should.deep.equal(['move-brigand']);
+
+    game = game.processActions({
+      'move-brigand': {
+        'hexInd': 16
+      }
+    });
+
+    game.state.brigandIndex.should.equal(16);
+
+    game.currentActions.should.deep.equal(['build-stuff']);
+
+  });
+
 
   // TODO: Cards
 

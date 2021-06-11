@@ -374,6 +374,10 @@ export const game0 = {
 
     const rollResult = updatedGame.state.rollResult;
 
+    if (rollResult == 7) {
+      updatedGame.currentActions = ['move-brigand'];
+    }
+
     const rolledHexagons = updatedGame.state.hexagons.reduce((acc, h, ind) => {
       let updatedAccumulator = [...acc];
       if (h.number == rollResult && ind != updatedGame.state.brigandIndex) {
@@ -662,10 +666,14 @@ export const game0 = {
       const action = actions[actionName];
 
       if (actionName == 'roll-dice') {
-        return gameToDecorate
+        gameToDecorate = gameToDecorate
           .rollDice()
-          .resolveRoll()
-          .setCurrentAction('build-stuff');
+          .resolveRoll();
+        if (gameToDecorate.state.rollResult == 7) {
+          return gameToDecorate.setCurrentAction('move-brigand');
+        } else {
+          return gameToDecorate.setCurrentAction('build-stuff');
+        }
       } else if (actionName == 'build-stuff') {
         const pid = action.pid;
         const nodeIndices = action.nodes;
@@ -680,7 +688,7 @@ export const game0 = {
           .findTheWinner()
           .nextPlayer()
           .setCurrentAction('roll-dice');
-      } else if (actionName == 'setup-villages-and-roads'){
+      } else if (actionName == 'setup-villages-and-roads') {
         const pid = action.pid;
         const oneNode = action.nodes;
         const oneRoad = action.roads;
@@ -693,6 +701,13 @@ export const game0 = {
           throw new Error('Must select one building and one road during setup.');
         }
         
+      } else if (actionName == 'move-brigand') {
+        const hexagonIndex = action.hexInd;
+        return gameToDecorate
+          .moveBrigand(hexagonIndex)
+          .setCurrentAction('build-stuff');
+      } else {
+        // TODO: Throw error on unsupported action
       }
 
     }
