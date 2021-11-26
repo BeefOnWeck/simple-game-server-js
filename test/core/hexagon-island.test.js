@@ -874,13 +874,14 @@ describe('Hexagon Island', function() {
 
   });
 
-
-  // TODO: Cards
+  // TODO: Can buy cards (also need deck in initial state)
 
   // TODO: Longest road bonus
 
   // TODO: Largest militia bonus
 
   // TODO: Trade resources
+
+  // TODO: Ports
 
 });

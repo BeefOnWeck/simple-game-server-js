@@ -1,24 +1,35 @@
 
 import { shuffle } from '../blackjack/standardDeck52.js';
 
-// TODO: Describe coordinate system
+/**
+ * Computes the centroids for all hexagons on the island.
+ * @param {number} centroidSpacing - Arbitrary spacing unit
+ * @param {number} numCentroidsAcross - Width of island at center
+ * @returns {Object[]} - Array of centroid coordinates
+ */
 function computeHexGridCentroids(centroidSpacing=1, numCentroidsAcross=5) {
   let hexGridCentroids = [];
-  let maxOffset = (numCentroidsAcross - 1)/2;
-  for (let offset=-maxOffset; offset<=maxOffset; offset++){
-    let numSteps = numCentroidsAcross - Math.abs(offset);
-    let verticalOffset = offset * Math.sqrt(3/4);
-    let horizontalOffset = Math.abs(offset) / 2;
-    for (let step=0; step<numSteps; step++){
+  let numOffCenterRows = (numCentroidsAcross - 1)/2; // e.g. (5-1)/2 = 2
+  // Loop over the rows (e.g., -2, -1, 0, 1, 2)
+  for (let row=-numOffCenterRows; row<=numOffCenterRows; row++){
+    let numHexInRow = numCentroidsAcross - Math.abs(row);
+    let verticalOffset = row * Math.sqrt(3/4);
+    let horizontalOffset = Math.abs(row) / 2;
+    for (let hex=0; hex<numHexInRow; hex++){
       hexGridCentroids.push({
-        x: centroidSpacing * (horizontalOffset + step),
-        y: centroidSpacing * (verticalOffset + maxOffset)
+        x: centroidSpacing * (horizontalOffset + hex),
+        y: centroidSpacing * (verticalOffset + numOffCenterRows)
       });
     }
   }
   return hexGridCentroids;
 }
 
+/**
+ * Takes an array of centroids and computes the resources and numbers for each hexagon
+ * @param {Object[]} centroids An array of centroid coordinates
+ * @returns {Array.<Array<string>>} Arrays containing the numbers and resources for each hexagon
+ */
 function assignResourcesAndRolls(centroids) {
   
   // Resource ratios
@@ -94,6 +105,7 @@ function assignResourcesAndRolls(centroids) {
   numbers.push('');
   numbers = shuffle(numbers);
 
+  // Make sure the hexagon with the desert doesn't get a number
   let desertIndex = resources.indexOf('desert');
   let blankIndex = numbers.indexOf('');
   if (desertIndex != blankIndex) {
@@ -104,10 +116,20 @@ function assignResourcesAndRolls(centroids) {
   return {resources, numbers};
 }
 
+/**
+ * Computes the nodes (vertices) for each hexagon and the roads connecting the nodes.
+ * @param {Array.<Object>} centroids An array of centroid coordinates
+ * @param {number} centroidSpacing Arbitrary spacing unit
+ * @param {Array.<string>} resources An array hexagon resource types
+ * @param {Array.<string>} numbers An array of hexagon numbers
+ * @returns {Array.<Object>} Arrays for nodes (vertices), hexagons, and roads.
+ */
 function computeNodesAndRoads(centroids, centroidSpacing=1, resources, numbers) {
-  let nodes = [];
-  let hexagons = [];
-  let roads = [];
+  let nodes = []; // the vertices for all the hexagons
+  let hexagons = []; // objects defining each hexagon
+  let roads = []; // the roads connecting each node
+
+  // Distance from each centroid to their surrounding nodes (vertices)
   let radius = centroidSpacing / Math.sqrt(3.0);
 
   // Loop over centroids and construct the nodes, roads, and hexagons
@@ -135,7 +157,7 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources, numbers) 
       }
     }
     hexagons.push({
-      poly: hex, // TODO: Rename to vertices
+      vertices: hex, // TODO: Rename to vertices
       resource: resources[idx],
       number: numbers[idx]
     });
@@ -189,10 +211,10 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources, numbers) 
 }
 
 /**
- * 
- * @param {Number} centroidSpacing 
- * @param {Number} numCentroidsAcross 
- * @returns {Object}
+ * Builds the hexagon island game board.
+ * @param {Number} centroidSpacing Arbitrary spacing unit
+ * @param {Number} numCentroidsAcross Width of island at center
+ * @returns {Array.<Array>} Arrays for centroids, nodes (vertices), hexagons, numbers, and roads.
  */
 export function setupGameBoard(centroidSpacing = 1, numCentroidsAcross = 5) {
 

@@ -321,7 +321,7 @@ export const game0 = {
    */
   findNeighboringNodes(hexagonIndex, game=this) {
 
-    let vertices = game.state.hexagons[hexagonIndex].poly;
+    let vertices = game.state.hexagons[hexagonIndex].vertices;
 
     return game.state.nodes.reduce((acc, n, ind) => {
       let updatedAccumulator = [...acc];
@@ -350,7 +350,7 @@ export const game0 = {
 
     return game.state.hexagons.reduce((acc, h, ind) => {
       let updatedAccumulator = [...acc];
-      if (h.poly.some(v => { 
+      if (h.vertices.some(v => { 
         return v.x === nodeCoordinates.x && v.y === nodeCoordinates.y; 
       })) {
         updatedAccumulator = [
