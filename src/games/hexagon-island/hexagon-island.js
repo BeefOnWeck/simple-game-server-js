@@ -27,7 +27,9 @@ let colorArray = [
 
 /** Hexagon Island */
 export const game0 = {
-    ...gameCore, // Copy core game object and mixin (last in wins)
+    
+    // Copy core game object and mixin (last in wins)
+    ...gameCore,
   
     /** Metadata for describing a particular game */
     meta: {
@@ -65,9 +67,14 @@ export const game0 = {
     },
 
     /**
-     * 
+     * Sets up the hexagon island gameboard and adds it to the game state.
+     * @param {Number} numCentroidsAcross Width of island at center
+     * @param {game} game 
+     * @returns {game}
      */
     setup(numCentroidsAcross = 5, game = this) {
+      
+      // NOTE: game = this (the object calling this method)
       let updatedGame = {...game};
 
       const centroidSpacing = 100;
@@ -95,9 +102,13 @@ export const game0 = {
     },
 
   /**
-   * 
+   * Roll two dice, combine the numbers, and add the result to the game state.
+   * @param {game} game 
+   * @returns {game}
    */
   rollDice(game = this) {
+    
+    // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
     if (!updatedGame.currentActions.includes('roll-dice')) {
@@ -120,7 +131,8 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Object containing the resources necessary for building different structures.
+   * @type {Object}
    */
   requiredResources: {
     road: {
@@ -140,10 +152,16 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Builds a road for a particular player.
+   * @param {number} roadIndex The index for the road being built
+   * @param {string} playerId The ID for the player building the road
+   * @param {boolean} requirePayment Is payment required?
+   * @param {game} game 
+   * @returns {game}
    */
   buildRoad(roadIndex, playerId, requirePayment = true, game = this) {
-
+    
+    // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
     if (updatedGame.activePlayerId && playerId != updatedGame.activePlayerId) {
@@ -194,11 +212,19 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Constructs a building for a particular player.
+   * @param {number} roadIndex The index for the building being constructed
+   * @param {string} playerId The ID for the player doing the construction
+   * @param {string} buildingType The type of building to construct
+   * @param {boolean} requirePayment Is payment required?
+   * @param {game} game 
+   * @returns {game}
    */
    makeBuilding(nodeIndex, playerId, buildingType, requirePayment = true, game = this) {
 
+    // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
+
     let nodes = updatedGame.state.nodes;
 
     if (updatedGame.activePlayerId && playerId != updatedGame.activePlayerId) {
@@ -253,15 +279,20 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Assigns one or more resources to a player.
+   * @param {string} playerId The ID of the player getting the resources
+   * @param {Array.<string>} resourceTypes An array of resource types to give the player
+   * @param {game} game 
+   * @returns {game}
    */
   assignResources(playerId, resourceTypes=[], game = this) {
 
+    // NOTE: game = this (the object calling this method)
+    let updatedGame = {...game};
+    
     if (Array.isArray(resourceTypes) == false) {
       resourceTypes = [resourceTypes];
     }
-
-    let updatedGame = {...game};
 
     let playerResources = updatedGame.state.playerResources;
 
@@ -283,15 +314,20 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Deduct resources from a player.
+   * @param {string} playerId The ID of player
+   * @param {Array.<string>} resourceTypes An array of resource types to deduct
+   * @param {game} game 
+   * @returns 
    */
-   deductResources(playerId, resourceTypes=[], game = this) {
+  deductResources(playerId, resourceTypes=[], game = this) {
+
+    // NOTE: game = this (the object calling this method)
+    let updatedGame = {...game};
 
     if (Array.isArray(resourceTypes) == false) {
       resourceTypes = [resourceTypes];
     }
-
-    let updatedGame = {...game};
 
     let playerResources = updatedGame.state.playerResources;
 
@@ -317,31 +353,37 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Given a hexagon, find the indices for the surrounding nodes (vertices).
+   * @param {number} hexagonIndex The index of the hexagon in question
+   * @param {game} game 
+   * @returns 
    */
   findNeighboringNodes(hexagonIndex, game=this) {
 
-    let vertices = game.state.hexagons[hexagonIndex].vertices;
+    const vertices = game.state.hexagons[hexagonIndex].vertices;
 
     return game.state.nodes.reduce((acc, n, ind) => {
-      let updatedAccumulator = [...acc];
+      // If this node matches any of the vertices for this hexagon...
       if (vertices.some(v => { return v.x === n.x && v.y === n.y; })) {
-        updatedAccumulator = [
-          ...updatedAccumulator,
+        // ... add its index to the list.
+        acc = [
+          ...acc,
           ind
         ];
       }
-
-      return updatedAccumulator;
-
-    },[]);
+      return acc;
+    }, []);
 
   },
 
+
   /**
-   * 
+   * Given a node, find the indices of the neighboring hexagons.
+   * @param {number} nodeIndex 
+   * @param {game} game 
+   * @returns 
    */
-   findNeighboringHexagons(nodeIndex, game=this) {
+  findNeighboringHexagons(nodeIndex, game=this) {
 
     let nodeCoordinates = {
       x: game.state.nodes[nodeIndex].x,
@@ -349,27 +391,29 @@ export const game0 = {
     };
 
     return game.state.hexagons.reduce((acc, h, ind) => {
-      let updatedAccumulator = [...acc];
+      // If one of the vertices for this hexagon matches the node...
       if (h.vertices.some(v => { 
         return v.x === nodeCoordinates.x && v.y === nodeCoordinates.y; 
       })) {
-        updatedAccumulator = [
-          ...updatedAccumulator,
+        // ... add its index to the list.
+        acc = [
+          ...acc,
           ind
         ];
       }
-
-      return updatedAccumulator;
-
-    },[]);
+      return acc;
+    }, []);
 
   },
 
   /**
-   * 
+   * Resolve the effects from rolling the dice.
+   * @param {game} game 
+   * @returns {game}
    */
   resolveRoll(game = this) {
 
+    // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
     const rollResult = updatedGame.state.rollResult;
@@ -379,19 +423,22 @@ export const game0 = {
     }
 
     const rolledHexagons = updatedGame.state.hexagons.reduce((acc, h, ind) => {
-      let updatedAccumulator = [...acc];
+      // If this hexagon's number matches the roll and the brigand isn't here...
       if (h.number == rollResult && ind != updatedGame.state.brigandIndex) {
-        updatedAccumulator = [
-          ...updatedAccumulator,
+        // ... add it to the list.
+        acc = [
+          ...acc,
           {
             ind: ind,
             resource: h.resource
           }
         ];
       }
-      return updatedAccumulator;
-    },[]);
+      return acc;
+    }, []);
 
+    // Loop over the hexagons with matching numbers and assign the appropriate 
+    // resources to players on each node.
     rolledHexagons.forEach(h => {
       const neighborNodes = updatedGame.findNeighboringNodes(h.ind);
       neighborNodes.forEach(n => {
@@ -407,10 +454,14 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Sets the current action.
+   * @param {string} nameOfAction 
+   * @param {game} game 
+   * @returns 
    */
   setCurrentAction(nameOfAction, game=this) {
 
+    // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
     // TODO: Check nameOfAction is an allowed action
@@ -423,22 +474,23 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Called after each build action, this function checks to see if anyone has 
+   * accumlated enough points to win the game.
+   * @param {game} game 
+   * @returns {game}
    */
   findTheWinner(game=this) {
 
+    // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
     const theWinner = updatedGame.players.reduce((acc,p) => {
-
+      // The score for this player based upon their buildings and roads
       const buildingScore = updatedGame.state.nodes.filter(n => n.playerId == p.id).length;
-
       const score = buildingScore; // TODO: Add bonuses (e.g., longest road)
-
       if (score >= updatedGame.config.scoreToWin) return p.id;
       else return acc;
-
-    },null);
+    }, null);
 
     return {
       ...updatedGame,
@@ -448,7 +500,10 @@ export const game0 = {
   },
 
   /**
-   * 
+   * Moves the brigand to the specified index.
+   * @param {number} index 
+   * @param {game} game 
+   * @returns 
    */
   moveBrigand(index, game=this) {
     const updatedGame = {...game};
@@ -496,10 +551,12 @@ export const game0 = {
       }
     },
 
-    /** 
-     * 
+    /**
+     * Hexagon Island specific `addPlayer()` logic.
+     * @param {game} gameToDecorate game object to decorate
+     * @returns {game}
      */
-     addPlayer(gameToDecorate) {
+    addPlayer(gameToDecorate) {
       // TODO: Throw an error if someone tries to pick "DEALER" as their username
 
       const configNumPlayers = parseInt(gameToDecorate.config.configNumPlayers);
@@ -508,12 +565,14 @@ export const game0 = {
         throw new Error('Cannot add player; exceeds maximum number of players.');
       }
 
+      // Assign player colors
       let updatedPlayerList = gameToDecorate.players
         .map((p,i) => ({
           ...p,
           color: colorArray[i]
         }));
 
+      // Initialize player resources
       let playerResources = updatedPlayerList.reduce((acc,cv) => {
         return {
           ...acc,
@@ -549,11 +608,15 @@ export const game0 = {
       };
     },
 
-    /** 
-     *
+    /**
+     * Hexagon Island specific `getGameStatus()` logic.
+     * @param {string} playerId The ID of the player that this status is for
+     * @param {game} gameToDecorate 
+     * @returns {game}
      */
-     getGameStatus(playerId, gameToDecorate) {
+    getGameStatus(playerId, gameToDecorate) {
 
+      // Each player only needs to see their own list of resources
       let prunedPlayerResources = gameToDecorate.state.playerResources[playerId];
 
       return {
@@ -566,9 +629,11 @@ export const game0 = {
     },
 
     /**
-     * 
+     * Hexagon Island specific `nextPlayer()` logic.
+     * @param {game} gameToDecorate 
+     * @returns {game}
      */
-     nextPlayer(gameToDecorate) {
+    nextPlayer(gameToDecorate) {
       // NOTE: We do not need to create a copy of game since that has 
       //       already been done in gameCore.nextPlayer().
 
@@ -600,7 +665,7 @@ export const game0 = {
           const hasTwoRoads = gameToDecorate.state.roads.filter(r => r.playerId == p.id).length == 2;
           const hasTwoVillages = gameToDecorate.state.nodes.filter(v => v.playerId == p.id).length == 2;
           return acc && hasTwoRoads && hasTwoVillages;
-        },true);
+        }, true);
 
         if (allPlayersHaveSetup) {
           // Final step of setup is to assign players resources based upon where they 
@@ -616,14 +681,15 @@ export const game0 = {
                   r.push(gameToDecorate.state.hexagons[h].resource);
                 });
                 return r;
-              },[]);
+              }, []);
 
             // Then assign these resources to them
             resourcesToAdd.forEach(r => {
               if (r in acc[p.id]) acc[p.id][r] = acc[p.id][r] + 1;
             });
             return acc;
-          },playerResources);
+          }, playerResources);
+
           phase = 'play';
           round = 1;
           currentActions = ['roll-dice'];
@@ -657,9 +723,11 @@ export const game0 = {
     },
 
     /**
-     * Players are only allowed to adjust the game via a set of pre-defined actions.
+     * Hexagon Island specific `processActions()` logic.
+     * @param {game} gameToDecorate 
+     * @returns {game}
      */
-     processActions(gameToDecorate) {
+    processActions(gameToDecorate) {
       // TODO: Handle multiple actions
       const actions = gameToDecorate.actions;
       const actionName = Object.keys(actions)[0];
