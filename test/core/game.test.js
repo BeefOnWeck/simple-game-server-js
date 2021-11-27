@@ -29,19 +29,19 @@ describe('Game Core', function() {
     game.should.have.property('round').equal(0);
   });
 
-  it('Should clear the player, state, and actions properties on reset()', function() {
+  it('Should clear the player, state, and currentAction properties on reset()', function() {
     let game = {...gameCore}; // shallow copy
     game = game.addPlayer('name1', 'id1').addPlayer('name2', 'id2');
     game.state = { foo: 'bar' };
-    game.actions = { baz: 'qux' };
+    game.currentAction = { baz: 'qux' };
     game.should.have.property('players').that.is.not.empty;
     game.should.have.property('state').that.is.not.empty;
-    game.should.have.property('actions').that.is.not.empty;
+    game.should.have.property('currentAction').that.is.not.empty;
     game = game.reset();
     game.should.have.property('players').that.is.empty;
     // Each game is responsible for resetting state
     game.should.have.property('state').that.is.not.empty;
-    game.should.have.property('actions').that.is.empty;
+    game.should.have.property('currentAction').that.is.empty;
   });
 
   it('Should add players when we ask it to', function() {
@@ -121,7 +121,7 @@ describe('Game Core', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id2',
-      currentActions: [],
+      allowableActions: [],
       players: [
         {
           name: 'name1',
@@ -144,10 +144,10 @@ describe('Game Core', function() {
     });
   });
 
-  it('Should allow processActions to be called without decorators', function() {
+  it('Should allow processAction to be called without decorators', function() {
     let game = {...gameCore}; // shallow copy
-    game = game.processActions({test: 'action'});
-    game.should.have.property('actions').deep.equal({});
+    game = game.processAction({test: 'action'});
+    game.should.have.property('currentAction').deep.equal({});
   });
 
   it('Should throw an error if configureGame() is called outside of boot phase', function() {

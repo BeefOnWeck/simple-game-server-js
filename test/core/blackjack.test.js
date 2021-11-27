@@ -191,7 +191,7 @@ describe('Blackjack', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
-      currentActions: ['make-initial-bet'],
+      allowableActions: ['make-initial-bet'],
       players: [
         {
           name: 'player1',
@@ -234,7 +234,7 @@ describe('Blackjack', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
-      currentActions: ['make-initial-bet'],
+      allowableActions: ['make-initial-bet'],
       players: [
         {
           name: 'player1',
@@ -285,7 +285,7 @@ describe('Blackjack', function() {
   it('Should deal a player two cards after they submit a bet action.', function() {
     let game = selectGame('Blackjack');
     game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
-    game = game.processActions({
+    game = game.processAction({
       'make-initial-bet': {
         pid: 'id1',
         amount: 10
@@ -303,14 +303,14 @@ describe('Blackjack', function() {
   it('Should deal the dealer after dealing the last player.', function() {
     let game = selectGame('Blackjack');
     game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
-    game = game.processActions({
+    game = game.processAction({
       'make-initial-bet': {
         pid: 'id1',
         amount: 10
       }
     });
     game = game.nextPlayer();
-    game = game.processActions({
+    game = game.processAction({
       'make-initial-bet': {
         pid: 'id2',
         amount: 5
@@ -329,14 +329,14 @@ describe('Blackjack', function() {
 
   it('Should specify the correct current action.', function() {
     let game = selectGame('Blackjack');
-    game.currentActions.should.deep.equal([]);
+    game.allowableActions.should.deep.equal([]);
     game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
-    game.currentActions.should.deep.equal([
+    game.allowableActions.should.deep.equal([
       'make-initial-bet'
     ]);
     game = game.makeBet('id1', 10).nextPlayer();
     game = game.makeBet('id2', 10).nextPlayer();
-    game.currentActions.should.deep.equal([
+    game.allowableActions.should.deep.equal([
       'make-move'
     ]);
   });
@@ -716,20 +716,20 @@ describe('Blackjack', function() {
       .should.throw(Error, 'There are no more cards left to draw.');
   });
 
-  it('Should be able to handle a whole round with just nextPlayer() and processActions().', function() {
+  it('Should be able to handle a whole round with just nextPlayer() and processAction().', function() {
     let game = selectGame('Blackjack');
     game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
 
     // Round 1
 
     // Make bets
-    game = game.processActions({
+    game = game.processAction({
       'make-initial-bet': {
         pid: 'id1',
         amount: 10
       }
     }).nextPlayer();
-    game = game.processActions({
+    game = game.processAction({
       'make-initial-bet': {
         pid: 'id2',
         amount: 10
@@ -737,13 +737,13 @@ describe('Blackjack', function() {
     }).nextPlayer(); // <- DEALER is delt cards here
 
     // Make moves
-    game = game.processActions({
+    game = game.processAction({
       'make-move': {
         pid: 'id1',
         move: 'Stand'
       }
     }).nextPlayer();
-    game = game.processActions({
+    game = game.processAction({
       'make-move': {
         pid: 'id2',
         move: 'Stand'
@@ -796,10 +796,10 @@ describe('Blackjack', function() {
 
     let tenRounds = Array.from({length: 10}, (v,i) => i);
     tenRounds.forEach(t => {
-      game = game.processActions(playerOneBet).nextPlayer()
-      .processActions(playerTwoBet).nextPlayer()
-      .processActions(playerOneMove).nextPlayer()
-      .processActions(playerTwoMove).nextPlayer();
+      game = game.processAction(playerOneBet).nextPlayer()
+      .processAction(playerTwoBet).nextPlayer()
+      .processAction(playerOneMove).nextPlayer()
+      .processAction(playerTwoMove).nextPlayer();
     });
 
     game.phase.should.equal('end');

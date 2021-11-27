@@ -85,7 +85,7 @@ describe('Tic Tac Toe', function() {
     game.should.have.property('phase').equal('end');
   });
 
-  it('Should decorate processActions().', function() {
+  it('Should decorate processAction().', function() {
     let game = selectGame('Tic Tac Toe');
     game = game.addPlayer('First','1').addPlayer('Second','2');
     let action = {
@@ -94,7 +94,7 @@ describe('Tic Tac Toe', function() {
         ind: 0
       }
     };
-    game = game.processActions(action);
+    game = game.processAction(action);
     game.should.have.property('state').deep.equal({
       grid: [
         { mark: 'x', row: 0, col: 0}, { mark: null, row: 0, col: 1}, { mark: null, row: 0, col: 2},
@@ -115,7 +115,7 @@ describe('Tic Tac Toe', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
-      currentActions: [],
+      allowableActions: [],
       players: [
         {
           name: 'name1',
@@ -152,7 +152,7 @@ describe('Tic Tac Toe', function() {
       phase: 'end',
       round: 1,
       activePlayer: 'id1',
-      currentActions: [],
+      allowableActions: [],
       players: [
         {
           name: 'name1',

@@ -195,11 +195,10 @@ export const game0 = {
     },
 
     /** Handle make-mark action */
-    processActions(gameToDecorate) {
-      // TODO: Handle multiple actions
-      if ('make-mark' in gameToDecorate.actions) {
-        let pid = gameToDecorate.actions['make-mark'].pid;
-        let ind = gameToDecorate.actions['make-mark'].ind;
+    processAction(gameToDecorate) {
+      if ('make-mark' in gameToDecorate.currentAction) {
+        let pid = gameToDecorate.currentAction['make-mark'].pid;
+        let ind = gameToDecorate.currentAction['make-mark'].ind;
         let row = Math.floor(ind / 3);
         let col = ind % 3;
         return gameToDecorate.makeMark(pid, row, col).findTheWinner();

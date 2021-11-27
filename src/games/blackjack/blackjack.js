@@ -305,7 +305,7 @@ export const game0 = {
   makeBet(playerId, betAmount, game = this) {
 
     // TODO: Bet cannot be larger than what the player has
-    if (game.currentActions != 'make-initial-bet') {
+    if (game.allowableActions != 'make-initial-bet') {
       throw new Error('It is not the time for making bets.')
     }
 
@@ -541,14 +541,14 @@ export const game0 = {
         throw new Error('Cannot add player; exceeds maximum number of players.');
       }
 
-      let currentActions = gameToDecorate.currentActions;
+      let allowableActions = gameToDecorate.allowableActions;
 
       // Do we have the configured number of players yet?
       // Skip setup and move directly to the play phase and the first round.
       if (gameToDecorate.numPlayers == configNumPlayers) {
         gameToDecorate = gameToDecorate.nextPhase().shuffleDeck();
         gameToDecorate = gameToDecorate.nextPhase().nextRound();
-        currentActions = ['make-initial-bet'];
+        allowableActions = ['make-initial-bet'];
       }
 
       let playerList = gameToDecorate.players;
@@ -573,7 +573,7 @@ export const game0 = {
       // Return the updated game with the updated players mixed in.
       return {
         ...gameToDecorate,
-        currentActions: currentActions,
+        allowableActions: allowableActions,
         state: {
           ...gameToDecorate.state,
           playerHands: {
@@ -640,24 +640,24 @@ export const game0 = {
         return p.id === gameToDecorate.activePlayerId
       });
 
-      // Gather the currentActions and round so we can update them
-      let currentActions = gameToDecorate.currentActions;
+      // Gather the allowableActions and round so we can update them
+      let allowableActions = gameToDecorate.allowableActions;
       let round = gameToDecorate.round;
 
       // If we're back at the first player
       if (activePlayerIndex == 0) {
-        // If currentActions is already set to 'make-move' this means that 
+        // If allowableActions is already set to 'make-move' this means that 
         // all players have already made their moves for the last round and 
         // that we're starting a new round.
-        if (currentActions.includes('make-move')) {
+        if (allowableActions.includes('make-move')) {
           
           // So we need to finish up the last round, ...
           gameToDecorate = gameToDecorate.resolveDealerHand()
             .turnAllCardsFaceUp()
             .resolvePlayerBets();
 
-          // ...reset currentActions to 'make-initial-bet', ...
-          currentActions = [
+          // ...reset allowableActions to 'make-initial-bet', ...
+          allowableActions = [
             'make-initial-bet'
           ];
 
@@ -670,7 +670,7 @@ export const game0 = {
             gameToDecorate = gameToDecorate.findTheWinner();
           }
 
-        } else if (currentActions.includes('make-initial-bet')) {
+        } else if (allowableActions.includes('make-initial-bet')) {
           // If we have moved back to the first player and all players have placed 
           // their bets, that means it is time for players to make their moves.
           if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
@@ -678,7 +678,7 @@ export const game0 = {
             gameToDecorate = gameToDecorate.discardCards('DEALER');
             gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
             // This will indicate to the players they need to make their move.
-            currentActions = [
+            allowableActions = [
               'make-move'
             ];
           }
@@ -688,32 +688,29 @@ export const game0 = {
       return {
         ...gameToDecorate,
         round: round,
-        currentActions: currentActions
+        allowableActions: allowableActions
       }
     },
 
     /**
      * Players are only allowed to adjust the game via a set of pre-defined actions.
      */
-    processActions(gameToDecorate) {
-      // TODO: Handle multiple actions
-      let actions = gameToDecorate.actions;
-      let actionName = Object.keys(actions)[0];
-      let action = actions[actionName];
+    processAction(gameToDecorate) {
+      let action = gameToDecorate.currentAction;
+      let actionName = Object.keys(action)[0];
+      let actionValue = action[actionName];
 
       if (actionName == 'make-initial-bet') {
-        let pid = action.pid;
-        let amount = action.amount;
+        let pid = actionValue.pid;
+        let amount = actionValue.amount;
         return gameToDecorate
           .discardCards(pid) // discard cards from last round
           .makeBet(pid, amount)
           .drawCard(pid)
           .drawCard(pid, 'faceUp');
-      }
-
-      if (actionName = 'make-move') {
-        let pid = action.pid;
-        let move = action.move;
+      } else if (actionName == 'make-move') {
+        let pid = actionValue.pid;
+        let move = actionValue.move;
         return gameToDecorate
           .makeMove(pid, move);
       }

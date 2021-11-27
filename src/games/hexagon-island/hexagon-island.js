@@ -111,7 +111,7 @@ export const game0 = {
     // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
-    if (!updatedGame.currentActions.includes('roll-dice')) {
+    if (!updatedGame.allowableActions.includes('roll-dice')) {
       throw new Error('It is not time to roll the dice.');
     }
 
@@ -419,7 +419,7 @@ export const game0 = {
     const rollResult = updatedGame.state.rollResult;
 
     if (rollResult == 7) {
-      updatedGame.currentActions = ['move-brigand'];
+      updatedGame.allowableActions = ['move-brigand'];
     }
 
     const rolledHexagons = updatedGame.state.hexagons.reduce((acc, h, ind) => {
@@ -459,13 +459,13 @@ export const game0 = {
    * @param {game} game 
    * @returns 
    */
-  setCurrentAction(nameOfAction, game=this) {
+  setAllowableActions(nameOfAction, game=this) {
 
     // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
     // TODO: Check nameOfAction is an allowed action
-    updatedGame.currentActions = [nameOfAction];
+    updatedGame.allowableActions = [nameOfAction];
 
     return {
       ...updatedGame
@@ -586,20 +586,20 @@ export const game0 = {
         }
       }, {});
 
-      let currentActions = gameToDecorate.currentActions;
+      let allowableActions = gameToDecorate.allowableActions;
 
       // Do we have the configured number of players yet?
       // If yes, setup the board and start the setup phase.
       if (gameToDecorate.numPlayers == configNumPlayers) {
         let boardWidth = Math.max(5, configNumPlayers + 1);
         gameToDecorate = gameToDecorate.setup(boardWidth).nextPhase();
-        currentActions = ['setup-villages-and-roads'];
+        allowableActions = ['setup-villages-and-roads'];
       }
 
       // Return the updated game with the updated players mixed in.
       return {
         ...gameToDecorate,
-        currentActions: currentActions,
+        allowableActions: allowableActions,
         players: updatedPlayerList,
         state: {
           ...gameToDecorate.state,
@@ -637,8 +637,8 @@ export const game0 = {
       // NOTE: We do not need to create a copy of game since that has 
       //       already been done in gameCore.nextPlayer().
 
-      // Gather the currentActions and round so we can update them
-      let currentActions = gameToDecorate.currentActions;
+      // Gather the allowableActions and round so we can update them
+      let allowableActions = gameToDecorate.allowableActions;
       let phase = gameToDecorate.phase;
       let round = gameToDecorate.round;
       let players = gameToDecorate.players;
@@ -648,7 +648,7 @@ export const game0 = {
       // During setup the players take turns in order setting up a village and a road.
       // When the last player goes, they go again the rest of the players go in reverse 
       // order until we reach the first player again.
-      if (phase == 'setup' && currentActions.includes('setup-villages-and-roads')) {
+      if (phase == 'setup' && allowableActions.includes('setup-villages-and-roads')) {
         // This should happen twice during setup, first when everyone has gone once 
         // and we return to the first player and again when we go back through a 
         // second time. The first time this gets triggered we reverse the order of 
@@ -692,16 +692,16 @@ export const game0 = {
 
           phase = 'play';
           round = 1;
-          currentActions = ['roll-dice'];
+          allowableActions = ['roll-dice'];
           activePlayerId = gameToDecorate.firstPlayerId;
         }
       } else if (phase == 'play') {
         if (activePlayerId == gameToDecorate.firstPlayerId) {
           round = round + 1;
         }
-        if (currentActions.includes('build-stuff')) {
-          currentActions = ['roll-dice'];
-        } else if (currentActions.includes('roll-dice')) {
+        if (allowableActions.includes('build-stuff')) {
+          allowableActions = ['roll-dice'];
+        } else if (allowableActions.includes('roll-dice')) {
           // If we went to the next player but the current action is still 
           // to roll the dice, that means the previous player never rolled.
           throw new Error('Cannot end your turn without at least rolling the dice');
@@ -713,7 +713,7 @@ export const game0 = {
         phase: phase,
         round: round,
         players: players,
-        currentActions: currentActions,
+        allowableActions: allowableActions,
         activePlayerId: activePlayerId,
         state: {
           ...gameToDecorate.state,
@@ -723,29 +723,28 @@ export const game0 = {
     },
 
     /**
-     * Hexagon Island specific `processActions()` logic.
+     * Hexagon Island specific `processAction()` logic.
      * @param {game} gameToDecorate 
      * @returns {game}
      */
-    processActions(gameToDecorate) {
-      // TODO: Handle multiple actions
-      const actions = gameToDecorate.actions;
-      const actionName = Object.keys(actions)[0];
-      const action = actions[actionName];
+    processAction(gameToDecorate) {
+      let action = gameToDecorate.currentAction;
+      let actionName = Object.keys(action)[0];
+      let actionValue = action[actionName];
 
       if (actionName == 'roll-dice') {
         gameToDecorate = gameToDecorate
           .rollDice()
           .resolveRoll();
         if (gameToDecorate.state.rollResult == 7) {
-          return gameToDecorate.setCurrentAction('move-brigand');
+          return gameToDecorate.setAllowableActions('move-brigand');
         } else {
-          return gameToDecorate.setCurrentAction('build-stuff');
+          return gameToDecorate.setAllowableActions('build-stuff');
         }
       } else if (actionName == 'build-stuff') {
-        const pid = action.pid;
-        const nodeIndices = action.nodes;
-        const roadIndices = action.roads;
+        const pid = actionValue.pid;
+        const nodeIndices = actionValue.nodes;
+        const roadIndices = actionValue.roads;
         nodeIndices.forEach(n => {
           gameToDecorate = gameToDecorate.makeBuilding(n, pid, 'village');
         });
@@ -755,11 +754,11 @@ export const game0 = {
         return gameToDecorate
           .findTheWinner()
           .nextPlayer()
-          .setCurrentAction('roll-dice');
+          .setAllowableActions('roll-dice');
       } else if (actionName == 'setup-villages-and-roads') {
-        const pid = action.pid;
-        const oneNode = action.nodes;
-        const oneRoad = action.roads;
+        const pid = actionValue.pid;
+        const oneNode = actionValue.nodes;
+        const oneRoad = actionValue.roads;
         if (oneNode?.length == 1 && oneRoad?.length == 1) {
           return gameToDecorate
           .makeBuilding(oneNode[0], pid, 'village', false)
@@ -770,10 +769,10 @@ export const game0 = {
         }
         
       } else if (actionName == 'move-brigand') {
-        const hexagonIndex = action.hexInd;
+        const hexagonIndex = actionValue.hexInd;
         return gameToDecorate
           .moveBrigand(hexagonIndex)
-          .setCurrentAction('build-stuff');
+          .setAllowableActions('build-stuff');
       } else {
         // TODO: Throw error on unsupported action
       }

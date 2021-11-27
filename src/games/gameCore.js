@@ -35,10 +35,10 @@ export const gameCore = {
   activePlayerId: null,
 
   /**
-   * What actions are the current player being asked to take?
+   * What actions are the current player allowed to take?
    * @type {string[]}
    */
-  currentActions: [],
+  allowableActions: [],
 
   /**
    * The socket ID of the first player.
@@ -55,8 +55,8 @@ export const gameCore = {
   /** Decorators are used overide core game properties and methods. */
   decorators: {},
 
-  /** Game-specific actions players can take. */
-  actions: {},
+  /** The current action. */
+  currentAction: {},
 
   /**
    * Reset the game.
@@ -76,7 +76,7 @@ export const gameCore = {
       numPlayers: 0,
       firstPlayerId: null,
       // state: {}, // Don't clear this out, let the game do it cleanly
-      actions: {},
+      currentAction: {},
       ...decorators(game)
     };
 
@@ -94,7 +94,7 @@ export const gameCore = {
       phase: game.phase, // NOTE: game = this (object calling this method)
       round: game.round,
       activePlayer: game.activePlayerId,
-      currentActions: game.currentActions,
+      allowableActions: game.allowableActions,
       players: game.players,
       state: game.state
     };
@@ -256,23 +256,23 @@ export const gameCore = {
   /** 
    * For handling actions defined as a key:value dictionary.
    * @function
-   * @param {object} actions - Actions defined by key:value pairs.
+   * @param {object} action - Actions defined by key:value pairs.
    * @returns {game}
    */
-  processActions(actions, game = this) {
+  processAction(action, game = this) {
     // Games must define a decorator to implement player actions.
-    const decorators = game.decorators['processActions'] ?? function(){};
+    const decorators = game.decorators['processAction'] ?? function(){};
 
     // If a game does not define any processAction decorators, 
     const returnObject = {
       ...game, // NOTE: game = this (object calling this method)
-      actions: actions // This is how actions are passed to decorator
+      currentAction: action // This is how actions are passed to decorator
     };
 
     return {
       ...game, // NOTE: game = this (object calling this method)
       ...decorators(returnObject),
-      actions: {}
+      currentAction: {} // Reset this
     };
   }
   
