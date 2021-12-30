@@ -38,7 +38,7 @@ export const gameCore = {
    * What actions are the current player allowed to take?
    * @type {string[]}
    */
-  allowableActions: [],
+  possibleActions: [],
 
   /**
    * The socket ID of the first player.
@@ -77,6 +77,7 @@ export const gameCore = {
       firstPlayerId: null,
       // state: {}, // Don't clear this out, let the game do it cleanly
       currentAction: {},
+      possibleActions: [],
       ...decorators(game)
     };
 
@@ -94,7 +95,7 @@ export const gameCore = {
       phase: game.phase, // NOTE: game = this (object calling this method)
       round: game.round,
       activePlayer: game.activePlayerId,
-      allowableActions: game.allowableActions,
+      possibleActions: game.possibleActions,
       players: game.players,
       state: game.state
     };

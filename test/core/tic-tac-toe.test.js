@@ -115,7 +115,7 @@ describe('Tic Tac Toe', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
-      allowableActions: [],
+      possibleActions: [],
       players: [
         {
           name: 'name1',
@@ -152,7 +152,7 @@ describe('Tic Tac Toe', function() {
       phase: 'end',
       round: 1,
       activePlayer: 'id1',
-      allowableActions: [],
+      possibleActions: [],
       players: [
         {
           name: 'name1',

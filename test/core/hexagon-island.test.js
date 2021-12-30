@@ -130,7 +130,7 @@ describe('Hexagon Island', function() {
 
     let game = selectGame('Hexagon Island');
 
-    game.allowableActions = ['roll-dice'];
+    game.possibleActions = ['rollDice'];
     
     game.state.rollResult.should.equal(0);
     game = game.rollDice();
@@ -154,7 +154,7 @@ describe('Hexagon Island', function() {
 
     let game = selectGame('Hexagon Island');
 
-    game.allowableActions = ['roll-dice'];
+    game.possibleActions = ['rollDice'];
 
     const N = 10000; // Number of trials
 
@@ -463,10 +463,10 @@ describe('Hexagon Island', function() {
       return n;
     });
 
-    game.allowableActions = ['roll-dice'];
+    game.possibleActions = ['rollDice'];
 
     game = game.processAction({
-      'roll-dice': {}
+      'rollDice': {}
     });
 
     const diceResult = game.state.rollResult;
@@ -501,7 +501,7 @@ describe('Hexagon Island', function() {
       .addPlayer('name2','id2');
 
     game.phase.should.equal('setup');
-    game.allowableActions.should.deep.equal(['setup-villages-and-roads']);
+    game.possibleActions.should.deep.equal(['setupVillagesAndRoads']);
 
   });
 
@@ -511,7 +511,7 @@ describe('Hexagon Island', function() {
       .addPlayer('name2','id2');
 
     game = game.processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id1',
         nodes: [0],
         roads: [0]
@@ -531,25 +531,25 @@ describe('Hexagon Island', function() {
     game.phase.should.equal('setup');
 
     game = game.processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id1',
         nodes: [43],
         roads: [57]
       }
     }).processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id2',
         nodes: [15],
         roads: [18]
       }
     }).processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id2',
         nodes: [1],
         roads: [1]
       }
     }).processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id1',
         nodes: [33],
         roads: [58]
@@ -577,25 +577,25 @@ describe('Hexagon Island', function() {
     game.phase.should.equal('setup');
 
     game = game.processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id1',
         nodes: [43],
         roads: [57]
       }
     }).processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id2',
         nodes: [15],
         roads: [18]
       }
     }).processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id2',
         nodes: [1],
         roads: [1]
       }
     }).processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id1',
         nodes: [33],
         roads: [58]
@@ -610,25 +610,29 @@ describe('Hexagon Island', function() {
     game = game.assignResources('id2', ['block','timber','block','timber','block','timber','fiber','cereal']);
 
     game = game.processAction({
-      'roll-dice': {
+      'rollDice': {
         pid: 'id1'
       }
     }).processAction({
-      'build-stuff': {
+      'buildStuff': {
         pid: 'id1',
         nodes: [22],
         roads: [43, 44]
       }
     }).processAction({
-      'roll-dice': {
+      'endTurn': {}
+    }).processAction({
+      'rollDice': {
         pid: 'id2'
       }
     }).processAction({
-      'build-stuff': {
+      'buildStuff': {
         pid: 'id2',
         nodes: [7],
         roads: [6, 7]
       }
+    }).processAction({
+      'endTurn': {}
     });
 
     game.round.should.equal(2);
@@ -640,28 +644,28 @@ describe('Hexagon Island', function() {
     game = game.addPlayer('name1','id1')
       .addPlayer('name2','id2')
       .processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id1',
         nodes: [43],
         roads: [57]
       }
       })
       .processAction({
-        'setup-villages-and-roads': {
+        'setupVillagesAndRoads': {
           pid: 'id2',
           nodes: [15],
           roads: [18]
         }
       })
       .processAction({
-        'setup-villages-and-roads': {
+        'setupVillagesAndRoads': {
           pid: 'id2',
           nodes: [1],
           roads: [1]
         }
       })
       .processAction({
-        'setup-villages-and-roads': {
+        'setupVillagesAndRoads': {
           pid: 'id1',
           nodes: [33],
           roads: [58]
@@ -679,7 +683,7 @@ describe('Hexagon Island', function() {
     game.processAction.bind(
       game,
       {
-        'setup-villages-and-roads': {
+        'setupVillagesAndRoads': {
           pid: 'id1',
           nodes: [0],
           roads: []
@@ -690,7 +694,7 @@ describe('Hexagon Island', function() {
     game.processAction.bind(
       game,
       {
-        'setup-villages-and-roads': {
+        'setupVillagesAndRoads': {
           pid: 'id1',
           nodes: [],
           roads: [0]
@@ -701,7 +705,7 @@ describe('Hexagon Island', function() {
     game.processAction.bind(
       game,
       {
-        'setup-villages-and-roads': {
+        'setupVillagesAndRoads': {
           pid: 'id1',
           nodes: [0]
         }
@@ -711,7 +715,7 @@ describe('Hexagon Island', function() {
     game.processAction.bind(
       game,
       {
-        'setup-villages-and-roads': {
+        'setupVillagesAndRoads': {
           pid: 'id1',
           roads: [0]
         }
@@ -721,7 +725,7 @@ describe('Hexagon Island', function() {
     game.processAction.bind(
       game,
       {
-        'setup-villages-and-roads': {
+        'setupVillagesAndRoads': {
           pid: 'id1'
         }
       }
@@ -740,25 +744,25 @@ describe('Hexagon Island', function() {
     game.phase.should.equal('setup');
 
     game = game.processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id1',
         nodes: [43],
         roads: [57]
       }
     }).processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id2',
         nodes: [15],
         roads: [18]
       }
     }).processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id2',
         nodes: [1],
         roads: [1]
       }
     }).processAction({
-      'setup-villages-and-roads': {
+      'setupVillagesAndRoads': {
         pid: 'id1',
         nodes: [33],
         roads: [58]
@@ -773,11 +777,11 @@ describe('Hexagon Island', function() {
     game = game.assignResources('id2', ['block','timber','block','timber','block','timber','fiber','cereal']);
 
     game = game.processAction({
-      'roll-dice': {
+      'rollDice': {
         pid: 'id1'
       }
     }).processAction({
-      'build-stuff': {
+      'buildStuff': {
         pid: 'id1',
         nodes: [22],
         roads: [43, 44]
@@ -856,21 +860,27 @@ describe('Hexagon Island', function() {
 
     game = game.addPlayer('name1','id1');
 
-    game.allowableActions = ['roll-dice'];
+    game.possibleActions = ['rollDice'];
     game.state.rollResult = 7;
     game = game.resolveRoll();
 
-    game.allowableActions.should.deep.equal(['move-brigand']);
+    game.possibleActions.should.deep.equal(['moveBrigand']);
 
     game = game.processAction({
-      'move-brigand': {
+      'moveBrigand': {
         'hexInd': 16
       }
     });
 
     game.state.brigandIndex.should.equal(16);
 
-    game.allowableActions.should.deep.equal(['build-stuff']);
+    game.possibleActions.should.deep.equal([
+      'trade',
+      'useDevCard',
+      'buildStuff',
+      'buyDevCard',
+      'endTurn'
+    ]);
 
   });
 

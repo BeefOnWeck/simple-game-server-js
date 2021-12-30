@@ -191,7 +191,7 @@ describe('Blackjack', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
-      allowableActions: ['make-initial-bet'],
+      possibleActions: ['make-initial-bet'],
       players: [
         {
           name: 'player1',
@@ -234,7 +234,7 @@ describe('Blackjack', function() {
       phase: 'play',
       round: 1,
       activePlayer: 'id1',
-      allowableActions: ['make-initial-bet'],
+      possibleActions: ['make-initial-bet'],
       players: [
         {
           name: 'player1',
@@ -329,14 +329,14 @@ describe('Blackjack', function() {
 
   it('Should specify the correct current action.', function() {
     let game = selectGame('Blackjack');
-    game.allowableActions.should.deep.equal([]);
+    game.possibleActions.should.deep.equal([]);
     game = game.shuffleDeck().addPlayer('player1','id1').addPlayer('player2','id2');
-    game.allowableActions.should.deep.equal([
+    game.possibleActions.should.deep.equal([
       'make-initial-bet'
     ]);
     game = game.makeBet('id1', 10).nextPlayer();
     game = game.makeBet('id2', 10).nextPlayer();
-    game.allowableActions.should.deep.equal([
+    game.possibleActions.should.deep.equal([
       'make-move'
     ]);
   });

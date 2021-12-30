@@ -305,7 +305,7 @@ export const game0 = {
   makeBet(playerId, betAmount, game = this) {
 
     // TODO: Bet cannot be larger than what the player has
-    if (game.allowableActions != 'make-initial-bet') {
+    if (game.possibleActions != 'make-initial-bet') {
       throw new Error('It is not the time for making bets.')
     }
 
@@ -541,14 +541,14 @@ export const game0 = {
         throw new Error('Cannot add player; exceeds maximum number of players.');
       }
 
-      let allowableActions = gameToDecorate.allowableActions;
+      let possibleActions = gameToDecorate.possibleActions;
 
       // Do we have the configured number of players yet?
       // Skip setup and move directly to the play phase and the first round.
       if (gameToDecorate.numPlayers == configNumPlayers) {
         gameToDecorate = gameToDecorate.nextPhase().shuffleDeck();
         gameToDecorate = gameToDecorate.nextPhase().nextRound();
-        allowableActions = ['make-initial-bet'];
+        possibleActions = ['make-initial-bet'];
       }
 
       let playerList = gameToDecorate.players;
@@ -573,7 +573,7 @@ export const game0 = {
       // Return the updated game with the updated players mixed in.
       return {
         ...gameToDecorate,
-        allowableActions: allowableActions,
+        possibleActions: possibleActions,
         state: {
           ...gameToDecorate.state,
           playerHands: {
@@ -640,24 +640,24 @@ export const game0 = {
         return p.id === gameToDecorate.activePlayerId
       });
 
-      // Gather the allowableActions and round so we can update them
-      let allowableActions = gameToDecorate.allowableActions;
+      // Gather the possibleActions and round so we can update them
+      let possibleActions = gameToDecorate.possibleActions;
       let round = gameToDecorate.round;
 
       // If we're back at the first player
       if (activePlayerIndex == 0) {
-        // If allowableActions is already set to 'make-move' this means that 
+        // If possibleActions is already set to 'make-move' this means that 
         // all players have already made their moves for the last round and 
         // that we're starting a new round.
-        if (allowableActions.includes('make-move')) {
+        if (possibleActions.includes('make-move')) {
           
           // So we need to finish up the last round, ...
           gameToDecorate = gameToDecorate.resolveDealerHand()
             .turnAllCardsFaceUp()
             .resolvePlayerBets();
 
-          // ...reset allowableActions to 'make-initial-bet', ...
-          allowableActions = [
+          // ...reset possibleActions to 'make-initial-bet', ...
+          possibleActions = [
             'make-initial-bet'
           ];
 
@@ -670,7 +670,7 @@ export const game0 = {
             gameToDecorate = gameToDecorate.findTheWinner();
           }
 
-        } else if (allowableActions.includes('make-initial-bet')) {
+        } else if (possibleActions.includes('make-initial-bet')) {
           // If we have moved back to the first player and all players have placed 
           // their bets, that means it is time for players to make their moves.
           if (gameToDecorate.state.playerBets.length == gameToDecorate.numPlayers) {
@@ -678,7 +678,7 @@ export const game0 = {
             gameToDecorate = gameToDecorate.discardCards('DEALER');
             gameToDecorate = gameToDecorate.drawCard('DEALER').drawCard('DEALER', 'faceUp');
             // This will indicate to the players they need to make their move.
-            allowableActions = [
+            possibleActions = [
               'make-move'
             ];
           }
@@ -688,7 +688,7 @@ export const game0 = {
       return {
         ...gameToDecorate,
         round: round,
-        allowableActions: allowableActions
+        possibleActions: possibleActions
       }
     },
 

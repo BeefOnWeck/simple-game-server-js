@@ -93,7 +93,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
         });
         // Tell player 1 it's their turn
         io.to(game.firstPlayerId).emit('it-is-your-turn', 
-          game.allowableActions
+          game.possibleActions
         );
 
         // This is a point where things could break (if player 1 doesn't get the message, we're stuck)
@@ -120,8 +120,8 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
               game.getGameStatus(player.id)
             );
           });
-          io.to(game.activePlayerId).emit('it-is-your-turn', // TODO: Rename message
-            game.allowableActions
+          io.to(game.activePlayerId).emit('it-is-your-turn',
+            game.possibleActions
           );
         } catch (e) {
           callback({status: e.message});
@@ -146,7 +146,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
             );
           });
           io.to(game.activePlayerId).emit('it-is-your-turn',
-            game.allowableActions
+            game.possibleActions
           );
         } catch (e) {
           callback({status: e.message});
