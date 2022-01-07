@@ -417,10 +417,12 @@ export const game0 = {
     let updatedGame = {...game};
 
     const rollResult = updatedGame.state.rollResult;
+    console.log(rollResult);
 
     if (rollResult == 7) {
       updatedGame.possibleActions = ['moveBrigand'];
     }
+    console.log(updatedGame.possibleActions);
 
     const rolledHexagons = updatedGame.state.hexagons.reduce((acc, h, ind) => {
       // If this hexagon's number matches the roll and the brigand isn't here...
@@ -461,7 +463,6 @@ export const game0 = {
       'rollDice'
     ],
     rollDice: [
-      'moveBrigand',
       'trade',
       'useDevCard',
       'buildStuff',
@@ -513,7 +514,14 @@ export const game0 = {
     let currentActionName = Object.keys(currentAction)[0];
     let possibleActions = updatedGame.possibleActions;
 
-    possibleActions = updatedGame.actionStateTransition[currentActionName];
+    // Using De Morgan's Law, update possibleActions only if a moveBrigand action 
+    // has been triggered but not acted upon yet.
+    if (
+      currentActionName == 'moveBrigand' || 
+      possibleActions.includes('moveBrigand') == false
+    ) {
+      possibleActions = updatedGame.actionStateTransition[currentActionName];
+    }
     
     return {
       ...updatedGame,
@@ -640,7 +648,7 @@ export const game0 = {
       // Do we have the configured number of players yet?
       // If yes, setup the board and start the setup phase.
       if (gameToDecorate.numPlayers == configNumPlayers) {
-        let boardWidth = Math.max(5, configNumPlayers + 1);
+        let boardWidth = Math.max(5, configNumPlayers + 5);
         gameToDecorate = gameToDecorate.setup(boardWidth).nextPhase();
         possibleActions = ['setupVillagesAndRoads'];
       }
