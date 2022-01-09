@@ -419,12 +419,10 @@ export const game0 = {
     let updatedGame = {...game};
 
     const rollResult = updatedGame.state.rollResult;
-    console.log(rollResult);
 
     if (rollResult == 7) {
       updatedGame.possibleActions = ['moveBrigand'];
     }
-    console.log(updatedGame.possibleActions);
 
     const rolledHexagons = updatedGame.state.hexagons.reduce((acc, h, ind) => {
       // If this hexagon's number matches the roll and the brigand isn't here...
@@ -823,9 +821,9 @@ export const game0 = {
         const oneRoad = actionValue.roads;
         if (oneNode?.length == 1 && oneRoad?.length == 1) {
           return gameToDecorate
-          .makeBuilding(oneNode[0], pid, 'village', false)
-          .buildRoad(oneRoad[0], pid, false)
-          .nextPlayer();
+            .makeBuilding(oneNode[0], pid, 'village', false)
+            .buildRoad(oneRoad[0], pid, false)
+            .nextPlayer();
         } else {
           throw new Error('Must select one building and one road during setup.');
         }
@@ -834,6 +832,14 @@ export const game0 = {
         return gameToDecorate
           .moveBrigand(hexagonIndex)
           .updatePossibleActions();
+      } else if (actionName == 'trade') {
+        const pid = actionValue.pid;
+        const resourceToGive = actionValue.have;
+        const resourceToGet = actionValue.want;
+        gameToDecorate = gameToDecorate
+          .deductResources(pid,[resourceToGive, resourceToGive, resourceToGive])
+          .assignResources(pid, [resourceToGet]);
+        return gameToDecorate.updatePossibleActions();
       } else if (actionName == 'endTurn') {
         return gameToDecorate
           .nextPlayer();
