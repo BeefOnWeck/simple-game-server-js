@@ -3,9 +3,12 @@ import { createServer } from 'http';
 import { Server as socketio } from 'socket.io';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
+import process from 'process';
+import dotenv from 'dotenv';
 import { selectGame, getMeta, getConfig } from './games/gameSelector.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
+dotenv.config();
 
 // Initialize empty game object
 let game = {};
@@ -53,14 +56,15 @@ const httpServer = createServer(app);
 // Attach a socket.io instance to our server
 const io = new socketio(httpServer, {
   cors: {
-    origin: 'http://localhost:8080',
+    origin: process.env.CLIENT_ORIGIN,
     methods: ["GET"]
   }
 });
 
 // Listen for incoming HTTP and WS requests
-httpServer.listen(3000);
-console.log('Listening on port 3000');
+const port = process.env.PORT || 3000;
+httpServer.listen(port);
+console.log('Listening on port', port);
 
 // When a player's client makes the socket.io connection
 io.on('connection', socket => { // TODO: Reject if we already have all the players
