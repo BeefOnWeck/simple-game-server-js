@@ -42,7 +42,9 @@ export const game0 = {
       /** The number of players that will join the game. */
       configNumPlayers: 2,
       /** */
-      scoreToWin: 10
+      scoreToWin: 10,
+      /** */
+      gameBoardWidth: 5
     },
   
     /**
@@ -591,7 +593,9 @@ export const game0 = {
      reset(gameToDecorate) {
       return {
         config: {
-          configNumPlayers: 2
+          configNumPlayers: 2,
+          scoreToWin: 10,
+          gameBoardWidth: 5
         },
         theWinner: null,
         state: {
@@ -617,6 +621,7 @@ export const game0 = {
       // TODO: Throw an error if someone tries to pick "DEALER" as their username
 
       const configNumPlayers = parseInt(gameToDecorate.config.configNumPlayers);
+      const gameBoardWidth = parseInt(gameToDecorate.config.gameBoardWidth);
 
       if (gameToDecorate.numPlayers > configNumPlayers) {
         throw new Error('Cannot add player; exceeds maximum number of players.');
@@ -648,7 +653,7 @@ export const game0 = {
       // Do we have the configured number of players yet?
       // If yes, setup the board and start the setup phase.
       if (gameToDecorate.numPlayers == configNumPlayers) {
-        let boardWidth = Math.max(5, configNumPlayers + 5);
+        let boardWidth = gameBoardWidth; //Math.max(5, configNumPlayers + 5);
         gameToDecorate = gameToDecorate.setup(boardWidth).nextPhase();
         possibleActions = ['setupVillagesAndRoads'];
       }
