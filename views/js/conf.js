@@ -15,7 +15,7 @@
   // Asynchronously update the game status every 5 seconds
   poll(() => 
     new Promise(() => {
-      fetch('http://localhost:3000/status').then(response => {
+      fetch(window.location.href+'status').then(response => {
         return response.json();
       }).then(data => {
         // Update displayed game name
@@ -121,7 +121,7 @@
     gameName = nameDiv.innerHTML.trim();
 
     // POST server to have game start
-    fetch('http://localhost:3000/start', { // TODO: Parameterize this (env var)
+    fetch(window.location.href+'start', { // TODO: Parameterize this (env var)
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
