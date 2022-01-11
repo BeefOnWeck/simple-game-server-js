@@ -58,7 +58,8 @@ const io = new socketio(httpServer, {
   cors: {
     origin: process.env.CLIENT_ORIGIN,
     methods: ["GET"]
-  }
+  },
+  transports: ['websocket']
 });
 
 // Listen for incoming HTTP and WS requests
