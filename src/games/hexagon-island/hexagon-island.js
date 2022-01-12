@@ -549,6 +549,10 @@ export const game0 = {
       else return acc;
     }, null);
 
+    if (theWinner != null) {
+      updatedGame = updatedGame.nextPhase();
+    }
+
     return {
       ...updatedGame,
       theWinner: theWinner

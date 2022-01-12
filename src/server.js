@@ -125,9 +125,11 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
               game.getGameStatus(player.id)
             );
           });
-          io.to(game.activePlayerId).emit('it-is-your-turn',
-            game.possibleActions
-          );
+          if (game.phase != 'end') {
+            io.to(game.activePlayerId).emit('it-is-your-turn',
+              game.possibleActions
+            );
+          }
         } catch (e) {
           callback({status: e.message});
         }
