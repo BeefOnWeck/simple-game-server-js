@@ -305,7 +305,7 @@ export const game0 = {
   makeBet(playerId, betAmount, game = this) {
 
     // TODO: Bet cannot be larger than what the player has
-    if (game.possibleActions != 'make-initial-bet') {
+    if (!game.possibleActions.includes('make-initial-bet')) {
       throw new Error('It is not the time for making bets.')
     }
 
