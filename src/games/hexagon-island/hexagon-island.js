@@ -196,9 +196,14 @@ export const game0 = {
       throw new Error('Roads have to be built next to other roads or buildings you own.');
     }
 
-    // TODO: Throw error if invalid parameters
-    roads[roadIndex].playerId = playerId;
+    // TODO: Test this error
+    if (Number.isInteger(roadIndex) && roadIndex >=0 && roadIndex < roads.length) {
+      roads[roadIndex].playerId = playerId;
+    } else {
+      throw new Error('Cannot build road; invalid road index.');
+    }
 
+    // TODO: Test to make sure resources are not deducted if there is an error above this
     if (requirePayment) {
       updatedGame = updatedGame.deductResources(playerId,['block','timber']);
     }
@@ -269,14 +274,20 @@ export const game0 = {
       );
     });
 
+    // TODO: Test this error
     if (updatedGame.phase == 'play' && adjacentRoads.length == 0) {
       throw new Error('Must place building next to a road you own.');
     }
 
-    // TODO: Throw error if invalid parameters
-    nodes[nodeIndex].playerId = playerId;
-    nodes[nodeIndex].buildingType = buildingType;
-
+    // TODO: Test this error
+    if (Number.isInteger(nodeIndex) && nodeIndex >=0 && nodeIndex < nodes.length) {
+      nodes[nodeIndex].playerId = playerId;
+      nodes[nodeIndex].buildingType = buildingType;
+    } else {
+      throw new Error('Cannot place building; invalid node index.')
+    }
+    
+    // TODO: Test to make sure resources are not deducted if there is an error above this
     if (requirePayment) {
       if (buildingType == 'village') {
         updatedGame = updatedGame.deductResources(playerId,['block','timber','fiber','cereal']);
