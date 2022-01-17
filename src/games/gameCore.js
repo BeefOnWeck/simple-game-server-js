@@ -208,6 +208,26 @@ export const gameCore = {
     };
   },
 
+  // TODO: Test this
+  reconnectPlayer(username, id, game = this) {
+
+    let updatedPlayers = game.players.reduce((acc, p) => {
+      return [
+        ...acc,
+        {
+          ...p,
+          id: p.name == username ? id : p.id
+        }
+      ];
+    }, []);
+
+    return {
+      ...game,
+      players: updatedPlayers
+    };
+
+  },
+
   /**
    * Set the active player by socket ID.
    * This is not needed if you are using `nextPlayer()`.

@@ -84,7 +84,7 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
       // Add them to the game
       try {
         game = game.addPlayer(username, socket.id);
-        callback({status: 'You have been added'});
+        callback({status: 'You have been added.'});
       } catch (e) {
         callback({status: e.message});
       }
@@ -112,6 +112,15 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
       callback({status: 'Game has not booted yet'});
     }
 
+  });
+
+  socket.on('reconnect-user-name', (username, callback) => {
+    try {
+      game = game.reconnectPlayer(username, socket.id);
+      callback({status: 'You have been reconnected.'});
+    } catch (e) {
+      callback({status: e.message});
+    }
   });
 
   // When a player sends their action(s)
