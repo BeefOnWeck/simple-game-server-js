@@ -170,10 +170,6 @@ export const game0 = {
       throw new Error('It is not your turn.');
     }
 
-    if (requirePayment) {
-      updatedGame = updatedGame.deductResources(playerId,['block','timber']);
-    }
-
     let roads = updatedGame.state.roads;
     let nodes = updatedGame.state.nodes;
 
@@ -203,6 +199,10 @@ export const game0 = {
     // TODO: Throw error if invalid parameters
     roads[roadIndex].playerId = playerId;
 
+    if (requirePayment) {
+      updatedGame = updatedGame.deductResources(playerId,['block','timber']);
+    }
+
     return {
       ...updatedGame,
       state: {
@@ -228,17 +228,10 @@ export const game0 = {
     let updatedGame = {...game};
 
     let nodes = updatedGame.state.nodes;
+    let roads = updatedGame.state.roads;
 
     if (updatedGame.activePlayerId && playerId != updatedGame.activePlayerId) {
       throw new Error('It is not your turn.');
-    }
-
-    if (requirePayment) {
-      if (buildingType == 'village') {
-        updatedGame = updatedGame.deductResources(playerId,['block','timber','fiber','cereal']);
-      } else if (buildingType == 'burgh') {
-        updatedGame = updatedGame.deductResources(playerId,['rock','rock','rock','cereal','cereal']);
-      }
     }
 
     if (buildingType == 'village' && nodes[nodeIndex]?.buildingType == 'village') {
@@ -246,7 +239,6 @@ export const game0 = {
     }
 
     // Finding adjacent nodes
-    let roads = updatedGame.state.roads;
     let adjacentNodes = roads.filter(r => {
       // returns true for roads that include nodeIndex
       return (r.inds[0] == nodeIndex) || (r.inds[1] == nodeIndex);
@@ -256,7 +248,7 @@ export const game0 = {
       return rv;
     });
 
-    // Check if there are buildings in adjacent spaces
+    // Check if there are buildings on adjacent nodes
     let adjacentBuilding = false;
     adjacentNodes.forEach(n => {
       if (nodes[n]?.buildingType != null) adjacentBuilding = true;
@@ -266,9 +258,32 @@ export const game0 = {
       throw new Error('Cannot place a building there; you must respect the two-space rule.')
     }
 
+    // Is there an adjacent road owned by this player?
+    let adjacentRoads = roads.filter(r => {
+      return (
+        (
+          r.inds[0] == nodeIndex
+          || r.inds[1] == nodeIndex
+        ) 
+        && r.playerId == playerId
+      );
+    });
+
+    if (updatedGame.phase == 'play' && adjacentRoads.length == 0) {
+      throw new Error('Must place building next to a road you own.');
+    }
+
     // TODO: Throw error if invalid parameters
     nodes[nodeIndex].playerId = playerId;
     nodes[nodeIndex].buildingType = buildingType;
+
+    if (requirePayment) {
+      if (buildingType == 'village') {
+        updatedGame = updatedGame.deductResources(playerId,['block','timber','fiber','cereal']);
+      } else if (buildingType == 'burgh') {
+        updatedGame = updatedGame.deductResources(playerId,['rock','rock','rock','cereal','cereal']);
+      }
+    }
 
     return {
       ...updatedGame,
