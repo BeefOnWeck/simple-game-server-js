@@ -211,8 +211,8 @@ export const gameCore = {
   // TODO: Test this
   reconnectPlayer(username, id, game = this) {
 
-    let updatedGame = {...game};
     let matchingPlayerId = null;
+    let activePlayerId = game.activePlayerId;
 
     let updatedPlayers = game.players.reduce((acc, p) => {
       const weFoundAMatch = p.name == username;
@@ -228,18 +228,20 @@ export const gameCore = {
       ];
     }, []);
 
+    let returnObject = {
+      ...game,
+      players: updatedPlayers
+    }
+
     if (matchingPlayerId) {
-      if (matchingPlayerId == updatedGame.activePlayerId) {
-        updatedGame = updatedGame.setActivePlayer(id);
+      if (matchingPlayerId == activePlayerId) {
+        returnObject = returnObject.setActivePlayer(id);
       }
     } else {
       throw new Error('Cannot reconnect; no matching user.');
     }
 
-    return {
-      ...updatedGame,
-      players: updatedPlayers
-    };
+    return returnObject;
 
   },
 
