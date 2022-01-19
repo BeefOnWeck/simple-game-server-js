@@ -209,10 +209,14 @@ export const gameCore = {
   },
 
   // TODO: Test this
+  // TODO: Comment this
   reconnectPlayer(username, id, game = this) {
 
     let matchingPlayerId = null;
     let activePlayerId = game.activePlayerId;
+
+    // Games can define a decorator to augment/overide player reconnection
+    const decorators = game.decorators['reconnectPlayer'] ?? function(){};
 
     let updatedPlayers = game.players.reduce((acc, p) => {
       const weFoundAMatch = p.name == username;
@@ -241,7 +245,10 @@ export const gameCore = {
       throw new Error('Cannot reconnect; no matching user.');
     }
 
-    return returnObject;
+    return {
+      ...returnObject,
+      ...decorators(matchingPlayerId, id, returnObject)
+    };
 
   },
 

@@ -698,6 +698,40 @@ export const game0 = {
       };
     },
 
+    reconnectPlayer(oldId, newId, gameToDecorate) {
+
+      // Update playerId (oldId->newId) in roads array.
+      let updatedRoads = gameToDecorate.state.roads.map(r => {
+        return {
+          ...r,
+          playerId: r.playerId == oldId ? newId : r.playerId
+        };
+      });
+
+      // Update playerId (oldId->newId) in nodes array.
+      let updatedNoads = gameToDecorate.state.nodes.map(n => {
+        return {
+          ...n,
+          playerId: n.playerId == oldId ? newId : n.playerId
+        };
+      });
+
+      // Update playerId (oldId->newId) in playerResources object.
+      let playerResources = gameToDecorate.state.playerResources;
+      const {[oldId]: resourcesToReOwn, ...others} = playerResources;
+      let updatedPlayerResources = {[newId]: resourcesToReOwn, ...others};
+
+      return {
+        ...gameToDecorate,
+        state: {
+          ...gameToDecorate.state,
+          roads: updatedRoads,
+          nodes: updatedNoads,
+          playerResources: updatedPlayerResources
+        }
+      }
+    },
+
     /**
      * Hexagon Island specific `getGameStatus()` logic.
      * @param {string} playerId The ID of the player that this status is for
@@ -763,7 +797,7 @@ export const game0 = {
           // Final step of setup is to assign players resources based upon where they 
           // have built their villages.
           playerResources = players.reduce((acc,p) => {
-            // For each player figure out what resources they should get
+            // For each player, figure out what resources they should get.
             const resourcesToAdd = gameToDecorate.state.nodes
               .map((n,ind) => { return {id: n.playerId, ind: ind} })
               .filter(n => n.id == p.id)
