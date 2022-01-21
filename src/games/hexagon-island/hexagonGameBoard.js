@@ -43,10 +43,10 @@ function assignResourcesAndRolls(centroids) {
 
   // Determine number of hexagons per resource type
   let numBlock = Math.round(blockRatio * numCentroids);
-  let numRock = Math.round(rockRatio * numCentroids);
+  let numRock = Math.floor(rockRatio * numCentroids);
   let numTimber = Math.round(timberRatio * numCentroids);
-  let numCereal = Math.round(cerealRatio * numCentroids);
-  let numFiber = Math.round(fiberRatio * numCentroids);
+  let numCereal = Math.floor(cerealRatio * numCentroids);
+  let numFiber = Math.floor(fiberRatio * numCentroids);
   //let numDesert = numCentroids - numBlock - numRock - numTimber - numCereal - numFiber;
 
   // Form [randomly-shuffled] resources array
@@ -102,6 +102,7 @@ function assignResourcesAndRolls(centroids) {
   numbers.fill('10', numTwo + numThree + numFour + numFive + numSix + numEight + numNine);
   numbers.fill('11', numTwo + numThree + numFour + numFive + numSix + numEight + numNine + numTen);
   numbers.fill('12', numTwo + numThree + numFour + numFive + numSix + numEight + numNine + numTen + numEleven);
+  console.log(numbers);
   numbers.push('');
   numbers = shuffle(numbers);
 
