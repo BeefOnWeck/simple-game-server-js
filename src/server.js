@@ -118,6 +118,11 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
     try {
       game = game.reconnectPlayer(username, socket.id);
       callback({status: 'You have been reconnected.'});
+      game.players.forEach(player => {
+        io.to(player.id).emit('game-state',
+          game.getGameStatus(player.id)
+        );
+      });
     } catch (e) {
       callback({status: e.message});
     }
