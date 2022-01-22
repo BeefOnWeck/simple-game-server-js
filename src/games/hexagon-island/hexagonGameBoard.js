@@ -102,7 +102,6 @@ function assignResourcesAndRolls(centroids) {
   numbers.fill('10', numTwo + numThree + numFour + numFive + numSix + numEight + numNine);
   numbers.fill('11', numTwo + numThree + numFour + numFive + numSix + numEight + numNine + numTen);
   numbers.fill('12', numTwo + numThree + numFour + numFive + numSix + numEight + numNine + numTen + numEleven);
-  console.log(numbers);
   numbers.push('');
   numbers = shuffle(numbers);
 
