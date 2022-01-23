@@ -3,6 +3,18 @@ import { setupGameBoard } from './hexagonGameBoard.js';
 
 /** Array of possible player colors */
 let colorArray = [
+  '#DC143C', // crimson
+  '#4169E1', // royalblue
+  '#FFD700', // gold
+  '#32CD32', // limegreen
+  '#9370DB', // mediumpurple
+  '#40E0D0', // turquoise
+  '#ffb6c1', // lightpink
+  '#4169E1', // royalblue
+  '#ffffe0', // lightyellow
+  '#90ee90', // lightgreen
+  '#e0ffff', // lightcyan
+  '#d3d3d3', // lightgrey
   '#8b0000', // darkred
   '#00008b', // darkblue
   '#006400', // darkgreen
@@ -15,12 +27,6 @@ let colorArray = [
   '#556b2f', // darkolivegreen
   '#e9967a', // darksalmon
   '#9400d3', // darkviolet
-  '#add8e6', // lightblue
-  '#e0ffff', // lightcyan
-  '#90ee90', // lightgreen
-  '#d3d3d3', // lightgrey
-  '#ffb6c1', // lightpink
-  '#ffffe0', // lightyellow
 ];
 
 /** @typedef {object} game */
