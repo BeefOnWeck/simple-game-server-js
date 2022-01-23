@@ -259,12 +259,12 @@ describe('Hexagon Island', function() {
       {
         name: 'name1',
         id: 'id1',
-        color: '#8b0000'
+        color: '#DC143C'
       },
       {
         name: 'name2',
         id: 'id2',
-        color: '#00008b'
+        color: '#4169E1'
       }
     ]);
   });
@@ -616,8 +616,14 @@ describe('Hexagon Island', function() {
     }).processAction({
       'buildStuff': {
         pid: 'id1',
-        nodes: [22],
+        nodes: [],
         roads: [43, 44]
+      }
+    }).processAction({
+      'buildStuff': {
+        pid: 'id1',
+        nodes: [22],
+        roads: []
       }
     }).processAction({
       'endTurn': {}
@@ -628,8 +634,14 @@ describe('Hexagon Island', function() {
     }).processAction({
       'buildStuff': {
         pid: 'id2',
-        nodes: [7],
+        nodes: [],
         roads: [6, 7]
+      }
+    }).processAction({
+      'buildStuff': {
+        pid: 'id2',
+        nodes: [7],
+        roads: []
       }
     }).processAction({
       'endTurn': {}
@@ -783,8 +795,14 @@ describe('Hexagon Island', function() {
     }).processAction({
       'buildStuff': {
         pid: 'id1',
-        nodes: [22],
+        nodes: [],
         roads: [43, 44]
+      }
+    }).processAction({
+      'buildStuff': {
+        pid: 'id1',
+        nodes: [22],
+        roads: []
       }
     });
 
