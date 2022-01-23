@@ -884,10 +884,17 @@ export const game0 = {
         const oneNode = actionValue.nodes;
         const oneRoad = actionValue.roads;
         if (oneNode?.length == 1 && oneRoad?.length == 1) {
-          return gameToDecorate
-            .makeBuilding(oneNode[0], pid, 'village', false)
-            .buildRoad(oneRoad[0], pid, false)
-            .nextPlayer();
+          let thisRoad = gameToDecorate.state.roads[oneRoad];
+          let [node1,node2] = thisRoad.inds;
+          const buildAndRoadAreAdjacent = (node1 == oneNode) || (node2 == oneNode);
+          if (buildAndRoadAreAdjacent) {
+            return gameToDecorate
+              .makeBuilding(oneNode[0], pid, 'village', false)
+              .buildRoad(oneRoad[0], pid, false)
+              .nextPlayer();
+          } else {
+            throw new Error('Selected building and road must be adjacent.');
+          }
         } else {
           throw new Error('Must select one building and one road during setup.');
         }
