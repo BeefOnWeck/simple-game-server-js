@@ -176,6 +176,15 @@ export const game0 = {
       throw new Error('It is not your turn.');
     }
 
+    if (requirePayment) {
+      // TODO: Make this a game property
+      const requiredResources = ['block','timber'];
+      const canPayTheBill = updatedGame.creditCheck(playerId,requiredResources);
+      if (canPayTheBill == false) {
+        throw new Error('Not enough resources to build.')
+      }
+    }
+
     let roads = updatedGame.state.roads;
     let nodes = updatedGame.state.nodes;
 
@@ -243,6 +252,20 @@ export const game0 = {
 
     if (updatedGame.activePlayerId && playerId != updatedGame.activePlayerId) {
       throw new Error('It is not your turn.');
+    }
+
+    if (requirePayment) {
+      // TODO: Make this a game property
+      let requiredResources = [];
+      if (buildingType == 'village') {
+        requiredResources = ['block','timber','fiber','cereal'];
+      } else if (buildingType == 'burgh') {
+        requiredResources = ['rock','rock','rock','cereal','cereal'];
+      }
+      const canPayTheBill = updatedGame.creditCheck(playerId,requiredResources);
+      if (canPayTheBill == false) {
+        throw new Error('Not enough resources to build.')
+      }
     }
 
     if (buildingType == 'village' && nodes[nodeIndex]?.buildingType == 'village') {
@@ -383,6 +406,45 @@ export const game0 = {
         playerResources: playerResources
       }
     };
+
+  },
+
+  /**
+   * 
+   * @param {*} playerId 
+   * @param {*} resourceTypes 
+   * @param {*} game 
+   * @returns {boolean}
+   */
+  creditCheck(playerId, resourceTypes=[], game = this) {
+    // TODO: Test this
+
+    if (Array.isArray(resourceTypes) == false) {
+      resourceTypes = [resourceTypes];
+    }
+
+    const requiredResources = resourceTypes.reduce((acc,rt) => {
+      acc[rt] += 1;
+      return acc;
+    }, {
+      block: 0,
+      timber: 0,
+      fiber: 0,
+      cereal: 0,
+      rock: 0
+    });
+
+    const playerResources = game.state.playerResources;
+
+    let canPayTheBill = true;
+
+    if (playerId in playerResources) {
+      for (const rR in requiredResources) {
+        if (playerResources[playerId][rR] < requiredResources[rR]) canPayTheBill = false;
+      }
+    } // TODO: Else
+
+    return canPayTheBill;
 
   },
 

@@ -146,6 +146,12 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
           }
         } catch (e) {
           callback({status: e.message});
+          // TODO: Turn this into a function
+          game.players.forEach(player => {
+            io.to(player.id).emit('game-state',
+              game.getGameStatus(player.id)
+            );
+          });
         }
       } else {
         callback({status: 'It is not your turn'});
