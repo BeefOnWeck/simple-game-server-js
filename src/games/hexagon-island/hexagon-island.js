@@ -926,6 +926,10 @@ export const game0 = {
       let actionName = Object.keys(action)[0];
       let actionValue = action[actionName];
 
+      if (gameToDecorate.possibleActions.includes(actionName) == false) {
+        throw new Error('That is not an allowed action right now.')
+      }
+
       if (actionName == 'rollDice') {
         return gameToDecorate
           .rollDice()
