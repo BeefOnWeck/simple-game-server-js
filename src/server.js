@@ -134,29 +134,20 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
       if (socket.id === game.activePlayerId) {
         try {
           game = game.processAction(actions);
-          game.players.forEach(player => {
-            io.to(player.id).emit('game-state',
-              game.getGameStatus(player.id)
-            );
-          });
-          if (game.phase != 'end') {
-            io.to(game.activePlayerId).emit('it-is-your-turn',
-              game.possibleActions
-            );
-          }
         } catch (e) {
           callback({status: e.message});
-          // TODO: Turn this into a function
-          game.players.forEach(player => {
-            io.to(player.id).emit('game-state',
-              game.getGameStatus(player.id)
-            );
-          });
-          if (game.phase != 'end') {
-            io.to(game.activePlayerId).emit('it-is-your-turn',
-              game.possibleActions
-            );
-          }
+        }
+        // Send game status to all players
+        game.players.forEach(player => {
+          io.to(player.id).emit('game-state',
+            game.getGameStatus(player.id)
+          );
+        });
+        // Tell the active player it is their turn
+        if (game.phase != 'end') {
+          io.to(game.activePlayerId).emit('it-is-your-turn',
+            game.possibleActions
+          );
         }
       } else {
         callback({status: 'It is not your turn'});

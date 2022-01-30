@@ -558,21 +558,16 @@ export const game0 = {
     ],
     rollDice: [
       'trade',
-      'useDevCard',
       'buildStuff',
-      'buyDevCard',
       'endTurn'
     ],
     moveBrigand: [
       'trade',
-      'useDevCard',
       'buildStuff',
-      'buyDevCard',
       'endTurn'
     ],
     trade: [
       'trade',
-      'useDevCard',
       'buildStuff',
       'endTurn'
     ],
@@ -582,7 +577,8 @@ export const game0 = {
       'endTurn'
     ],
     buildStuff: [
-      'buyDevCard',
+      'trade',
+      'buildStuff',
       'endTurn'
     ],
     buyDevCard: [
@@ -940,6 +936,11 @@ export const game0 = {
         const pid = actionValue.pid;
         const nodeIndices = actionValue.nodes;
         const roadIndices = actionValue.roads;
+
+        if (nodeIndices.length == 0 && roadIndices.length == 0) {
+          throw new Error('Must select something to build.')
+        }
+
         nodeIndices.forEach(n => {
           gameToDecorate = gameToDecorate.makeBuilding(n, pid, 'village');
         });
