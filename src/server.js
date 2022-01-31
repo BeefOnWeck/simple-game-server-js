@@ -159,8 +159,8 @@ io.on('connection', socket => { // TODO: Reject if we already have all the playe
 
   // When a player ends their turn
   socket.on('end-my-turn', (_, callback) => {
-    if (game.phase === 'setup' || game.phase === 'play') {
-      if (socket.id === game.activePlayerId) {
+    if (game.phase == 'play') {
+      if (socket.id == game.activePlayerId) {
         try {
           game = game.nextPlayer();
           game.players.forEach(player => {
