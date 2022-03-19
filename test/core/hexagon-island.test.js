@@ -14,7 +14,7 @@ describe('Hexagon Island', function() {
       hexagons: [],
       numbers: [],
       roads: [],
-      rollResult: 0,
+      rollResult: [0,0],
       playerResources: {},
       brigandIndex: null
     });
@@ -50,7 +50,7 @@ describe('Hexagon Island', function() {
       hexagons: [],
       numbers: [],
       roads: [],
-      rollResult: 0,
+      rollResult: [0,0],
       playerResources: {},
       brigandIndex: null
     });    
@@ -132,9 +132,11 @@ describe('Hexagon Island', function() {
 
     game.possibleActions = ['rollDice'];
     
-    game.state.rollResult.should.equal(0);
+    game.state.rollResult[0].should.equal(0);
+    game.state.rollResult[1].should.equal(0);
     game = game.rollDice();
-    game.state.rollResult.should.not.equal(0);
+    game.state.rollResult[0].should.not.equal(0);
+    game.state.rollResult[1].should.not.equal(0);
 
   });
 
@@ -182,7 +184,8 @@ describe('Hexagon Island', function() {
     // For each trial:
     for (let i = 0; i < N; i++) {
       game = game.rollDice();
-      histogram[game.state.rollResult-2].count++;
+      let rollSum = game.state.rollResult.reduce((pv,cv) => pv+cv, 0);
+      histogram[rollSum-2].count++;
     }
 
     // Now loop over all histogram bins and check for outliers
@@ -414,10 +417,10 @@ describe('Hexagon Island', function() {
     game = game.addPlayer('name1','id1');
 
     game.makeBuilding.bind(game, 0, 'id1', 'village')
-      .should.throw(Error, 'Cannot deduct resource.');
+      .should.throw(Error, 'Not enough resources to build.');
     
     game.buildRoad.bind(game, 1, 'id1')
-      .should.throw(Error, 'Cannot deduct resource.'); 
+      .should.throw(Error, 'Not enough resources to build.'); 
 
   });
 
@@ -457,6 +460,7 @@ describe('Hexagon Island', function() {
 
     game = game.addPlayer('name1','id1');
     
+    // Put a village on every node
     game.state.nodes.map(n => {
       n.playerId = 'id1';
       n.buildingType = 'village';
@@ -469,7 +473,7 @@ describe('Hexagon Island', function() {
       'rollDice': {}
     });
 
-    const diceResult = game.state.rollResult;
+    const diceResult = game.state.rollResult.reduce((pv,cv) => pv+cv, 0);
 
     const rolledResources = game.state.hexagons.filter(h => {
       return h.number == diceResult;
@@ -477,6 +481,7 @@ describe('Hexagon Island', function() {
       return h.resource;
     });
 
+    // Should get 6 resources for each hexagon that is rolled
     const numBlock = rolledResources.filter(r => r == 'block').length * 6;
     const numTimber = rolledResources.filter(r => r == 'timber').length * 6;
     const numFiber = rolledResources.filter(r => r == 'fiber').length * 6;
@@ -569,6 +574,7 @@ describe('Hexagon Island', function() {
 
   });
 
+  // NOTE: This test will sometimes fail if a '7' is rolled.
   it('Should correctly handle turns during the play phase', function() {
     let game = selectGame('Hexagon Island', {configNumPlayers: 2});
     game = game.addPlayer('name1','id1')
@@ -840,7 +846,7 @@ describe('Hexagon Island', function() {
 
       const diceResult = hex.number;
       if (diceResult) {
-        game.state.rollResult = diceResult;
+        game.state.rollResult = [diceResult-1,1];
         game = game.resolveRoll();
 
         const rolledResources = game.state.hexagons.filter((h,i) => {
@@ -879,7 +885,7 @@ describe('Hexagon Island', function() {
     game = game.addPlayer('name1','id1');
 
     game.possibleActions = ['rollDice'];
-    game.state.rollResult = 7;
+    game.state.rollResult = [3,4];
     game = game.resolveRoll();
 
     game.possibleActions.should.deep.equal(['moveBrigand']);
@@ -894,22 +900,22 @@ describe('Hexagon Island', function() {
 
     game.possibleActions.should.deep.equal([
       'trade',
-      'useDevCard',
       'buildStuff',
-      'buyDevCard',
       'endTurn'
     ]);
 
   });
 
-  // TODO: Can buy cards (also need deck in initial state)
+  // TODO: Test Trade 3:1
 
   // TODO: Longest road bonus
 
+  
+
+  // TODO: Cities
+
   // TODO: Largest militia bonus
 
-  // TODO: Trade resources
 
-  // TODO: Ports
 
 });

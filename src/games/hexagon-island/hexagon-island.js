@@ -69,7 +69,7 @@ export const game0 = {
       hexagons: [],
       numbers: [],
       roads: [],
-      rollResult: 0,
+      rollResult: [0,0],
       playerResources: {},
       brigandIndex: null
     },
@@ -126,13 +126,11 @@ export const game0 = {
     const dieResult1 = Math.floor(Math.random() * 6) + 1;
     const dieResult2 = Math.floor(Math.random() * 6) + 1;
 
-    const rollResult = dieResult1 + dieResult2;
-
     return {
       ...updatedGame,
       state: {
         ...updatedGame.state,
-        rollResult: rollResult
+        rollResult: [dieResult1,dieResult2]
       }
     };
 
@@ -512,15 +510,15 @@ export const game0 = {
     // NOTE: game = this (the object calling this method)
     let updatedGame = {...game};
 
-    const rollResult = updatedGame.state.rollResult;
+    const rollSum = updatedGame.state.rollResult.reduce((pv,cv) => pv+cv, 0);
 
-    if (rollResult == 7) {
+    if (rollSum == 7) {
       updatedGame.possibleActions = ['moveBrigand'];
     }
 
     const rolledHexagons = updatedGame.state.hexagons.reduce((acc, h, ind) => {
       // If this hexagon's number matches the roll and the brigand isn't here...
-      if (h.number == rollResult && ind != updatedGame.state.brigandIndex) {
+      if (h.number == rollSum && ind != updatedGame.state.brigandIndex) {
         // ... add it to the list.
         acc = [
           ...acc,
@@ -697,7 +695,7 @@ export const game0 = {
           hexagons: [],
           numbers: [],
           roads: [],
-          rollResult: 0,
+          rollResult: [0,0],
           playerResources: {},
           brigandIndex: null
         }
