@@ -907,14 +907,98 @@ describe('Hexagon Island', function() {
   });
 
   // TODO: Test Trade 3:1
+  it('Should correctly handle resource trades', function() {
+    let game = selectGame('Hexagon Island', {configNumPlayers: 2});
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2');
+
+    // TODO: Pull this out into a function so we're not repeating it everywhere
+    game = game.processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id1',
+        nodes: [43],
+        roads: [57]
+      }
+    }).processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id2',
+        nodes: [15],
+        roads: [18]
+      }
+    }).processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id2',
+        nodes: [1],
+        roads: [1]
+      }
+    }).processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id1',
+        nodes: [33],
+        roads: [58]
+      }
+    });
+
+    game = game.processAction({
+      'rollDice': {
+        pid: 'id1'
+      }
+    });
+
+    // Remove all resources so we can test from a clean slate
+    game.state.playerResources = {
+      id1: {
+        block: 0,
+        timber: 0,
+        fiber: 0,
+        cereal: 0,
+        rock: 0
+      },
+      id2: {
+        block: 0,
+        timber: 0,
+        fiber: 0,
+        cereal: 0,
+        rock: 0
+      }
+    }
+
+    game = game.assignResources('id1', ['block','block','block']);
+
+    game = game.processAction({
+      'trade': {
+        pid: 'id1',
+        have: 'block',
+        want: 'rock'
+      }
+    });
+
+    game.state.playerResources.should.deep.equal({
+      id1: {
+        block: 0,
+        timber: 0,
+        fiber: 0,
+        cereal: 0,
+        rock: 1
+      },
+      id2: {
+        block: 0,
+        timber: 0,
+        fiber: 0,
+        cereal: 0,
+        rock: 0
+      }
+    });
+
+  });
 
   // TODO: Longest road bonus
 
-  
+  // TODO: Buy a ninja
 
   // TODO: Cities
 
-  // TODO: Largest militia bonus
+  // TODO: Most ninjas bonus
 
 
 
