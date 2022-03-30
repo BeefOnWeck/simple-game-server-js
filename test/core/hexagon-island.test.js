@@ -619,7 +619,12 @@ describe('Hexagon Island', function() {
       'rollDice': {
         pid: 'id1'
       }
-    }).processAction({
+    });
+
+    // In case we roll a 7
+    game.possibleActions = ['buildStuff'];
+    
+    game = game.processAction({
       'buildStuff': {
         pid: 'id1',
         nodes: [],
@@ -637,7 +642,12 @@ describe('Hexagon Island', function() {
       'rollDice': {
         pid: 'id2'
       }
-    }).processAction({
+    });
+    
+    // In case we roll a 7
+    game.possibleActions = ['buildStuff'];
+
+    game = game.processAction({
       'buildStuff': {
         pid: 'id2',
         nodes: [],
@@ -798,7 +808,12 @@ describe('Hexagon Island', function() {
       'rollDice': {
         pid: 'id1'
       }
-    }).processAction({
+    });
+    
+    // In case we roll a 7
+    game.possibleActions = ['buildStuff'];
+
+    game = game.processAction({
       'buildStuff': {
         pid: 'id1',
         nodes: [],
@@ -945,6 +960,9 @@ describe('Hexagon Island', function() {
       }
     });
 
+    // In case we roll a 7
+    game.possibleActions = ['trade'];
+
     // Remove all resources so we can test from a clean slate
     game.state.playerResources = {
       id1: {
@@ -988,6 +1006,42 @@ describe('Hexagon Island', function() {
         cereal: 0,
         rock: 0
       }
+    });
+
+  });
+
+  it('Should find the longest road for each player', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(5);
+
+    // First have to make an adjacent building for player1
+    game = game.makeBuilding(5, 'player1', 'village', false);
+
+    // Make roads for player1
+    game = game.buildRoad(0,'player1', false)
+      .buildRoad(18,'player1', false)
+      .buildRoad(21,'player1', false)
+      .buildRoad(22,'player1', false)
+      .buildRoad(23,'player1', false)
+      .buildRoad(6, 'player1', false)
+      .buildRoad(38,'player1', false)
+      .buildRoad(39,'player1', false)
+      .buildRoad(55,'player1', false)
+      .buildRoad(56,'player1', false);
+
+    // First have to make an adjacent building for player2
+    game = game.makeBuilding(10, 'player2', 'village', false);
+
+    // Make roads for player2
+    game = game.buildRoad(26,'player2', false)
+      .buildRoad(27,'player2', false);
+
+    const roadLengths = game.getRoadLengths();
+
+    roadLengths.should.deep.equal({
+      player1: 7,
+      player2: 2
     });
 
   });
