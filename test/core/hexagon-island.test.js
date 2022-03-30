@@ -1013,35 +1013,39 @@ describe('Hexagon Island', function() {
   it('Should find the longest road for each player', function() {
 
     let game = selectGame('Hexagon Island');
-    game = game.setup(5);
+    game = game.setup(5)
+      .addPlayer('name1','id1')
+      .addPlayer('name2','id2');
 
-    // First have to make an adjacent building for player1
-    game = game.makeBuilding(5, 'player1', 'village', false);
+    // First have to make an adjacent building for id1
+    game = game.makeBuilding(5, 'id1', 'village', false);
 
-    // Make roads for player1
-    game = game.buildRoad(0,'player1', false)
-      .buildRoad(18,'player1', false)
-      .buildRoad(21,'player1', false)
-      .buildRoad(22,'player1', false)
-      .buildRoad(23,'player1', false)
-      .buildRoad(6, 'player1', false)
-      .buildRoad(38,'player1', false)
-      .buildRoad(39,'player1', false)
-      .buildRoad(55,'player1', false)
-      .buildRoad(56,'player1', false);
+    // Make roads for id1
+    game = game.buildRoad(0,'id1', false)
+      .buildRoad(18,'id1', false)
+      .buildRoad(21,'id1', false)
+      .buildRoad(22,'id1', false)
+      .buildRoad(23,'id1', false)
+      .buildRoad(38,'id1', false)
+      .buildRoad(39,'id1', false)
+      .buildRoad(55,'id1', false)
+      .buildRoad(56,'id1', false);
 
-    // First have to make an adjacent building for player2
-    game = game.makeBuilding(10, 'player2', 'village', false);
+    game = game.setActivePlayer('id2');
 
-    // Make roads for player2
-    game = game.buildRoad(26,'player2', false)
-      .buildRoad(27,'player2', false);
+    // First have to make an adjacent building for id2
+    game = game.makeBuilding(10, 'id2', 'village', false);
+
+    // Make roads for id2
+    game = game.buildRoad(26,'id2', false)
+      .buildRoad(27,'id2', false)
+      .buildRoad(25,'id2', false);
 
     const roadLengths = game.getRoadLengths();
 
     roadLengths.should.deep.equal({
-      player1: 7,
-      player2: 2
+      id1: 7,
+      id2: 2
     });
 
   });

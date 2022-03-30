@@ -668,6 +668,81 @@ export const game0 = {
     }
   },
 
+  /**
+   * 
+   */
+   getRoadLengths(game=this) {
+
+    const playerIds = game.players.map(p => p.id);
+
+    const playerRoads = playerIds.reduce((acc,pid) => {
+      return [
+        ...acc,
+        {
+          pid: pid,
+          roads: game.state.roads.filter(r => r.playerId == pid).map(r => r.inds)
+        }
+      ]
+    },[]);
+
+    const playerRoadLengths = playerRoads.reduce((acc,pr) => {
+      return {
+        ...acc,
+        [pr.pid]: game.findMaxRoadLength(pr.roads)
+      }
+    },{});
+
+    return playerRoadLengths;
+
+  },
+
+  /**
+   * 
+   * @param {*} roads 
+   * @param {*} game 
+   * @returns 
+   */
+  findMaxRoadLength(roads, game=this) {
+    let maxRoadLength = 0;
+    roads.forEach(road => {
+      const otherRoads = roads.filter(otr => otr[0] != road[0] || otr[1] != road[1]);
+      const roadLength = game.measureRoadSegment(road, otherRoads);
+      maxRoadLength = roadLength > maxRoadLength ? roadLength : maxRoadLength;
+    });
+    return maxRoadLength;
+  },
+
+  /**
+   * TODO: This doesn't need to be in game... it should be in a utility file
+   * @param {*} roads 
+   * @param {*} game 
+   * @returns 
+   */
+   measureRoadSegment(road, otherRoads, game=this) {
+
+    let roadLength = 1;
+    let maxConnectingLength = 0;
+    
+    const connectingRoads = otherRoads.filter(otr => {
+      return otr[0] == road[1] || 
+        otr[1] == road[0] ||
+        otr[0] == road[0] ||
+        otr[1] == road[1];
+    });
+    connectingRoads.forEach(cr => {
+      const otherOtherRoads = otherRoads.filter(oor => {
+        return oor[0] != cr[0] || oor[1] != cr[1]; // TODO: This also must check to ensure it doesn't connect with road
+      });
+      const segmentLength = game.measureRoadSegment(cr, otherOtherRoads);
+      console.log(road, otherRoads);
+      console.log(cr, otherOtherRoads);
+      console.log(segmentLength)
+      maxConnectingLength = segmentLength > maxConnectingLength ? segmentLength : maxConnectingLength;
+    });
+
+    return roadLength + maxConnectingLength;
+  },
+
   /** 
    * Decorators allow methods defined in gameCore to be modified.
    * NOTE: These are called from gameCore.
