@@ -720,27 +720,37 @@ export const game0 = {
    */
    measureRoadSegment(road, otherRoads, game=this) {
 
-    let roadLength = 1;
     let maxConnectingLength = 0;
-    
-    const connectingRoads = otherRoads.filter(otr => {
-      return otr[0] == road[1] || 
-        otr[1] == road[0] ||
-        otr[0] == road[0] ||
-        otr[1] == road[1];
-    });
+
+    const connectingRoads = otherRoads.reduce((acc,otr) => {
+      let overlap;
+      if (otr[0] == road[0] || otr[0] == road[1]) overlap = otr[0];
+      else if (otr[1] == road[0] || otr[1] == road[1]) overlap = otr[1];
+      else overlap = null;
+
+      if (overlap != null) {
+        return [
+          ...acc,
+          { road: otr, overlap }
+        ];
+      }
+      else return acc;
+    },[]);
+
     connectingRoads.forEach(cr => {
       const otherOtherRoads = otherRoads.filter(oor => {
-        return oor[0] != cr[0] || oor[1] != cr[1]; // TODO: This also must check to ensure it doesn't connect with road
+        return oor[0] != cr.overlap &&
+          oor[1] != cr.overlap &&
+          (
+            oor[0] != cr.road[0] || 
+            oor[1] != cr.road[1]
+          );
       });
-      const segmentLength = game.measureRoadSegment(cr, otherOtherRoads);
-      console.log(road, otherRoads);
-      console.log(cr, otherOtherRoads);
-      console.log(segmentLength)
+      const segmentLength = game.measureRoadSegment(cr.road, otherOtherRoads);
       maxConnectingLength = segmentLength > maxConnectingLength ? segmentLength : maxConnectingLength;
     });
 
-    return roadLength + maxConnectingLength;
+    return maxConnectingLength + 1; // and one for the road
   },
 
   /** 
