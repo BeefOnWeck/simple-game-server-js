@@ -2,6 +2,41 @@
 import { shuffle } from '../blackjack/standardDeck52.js';
 
 /**
+ * Sets up the hexagon island gameboard and adds it to the game state.
+ * @param {Number} numCentroidsAcross Width of island at center
+ * @param {game} game 
+ * @returns {game}
+ */
+export function setup(numCentroidsAcross = 5, game = this) {
+    
+  // NOTE: game = this (the object calling this method)
+  let updatedGame = {...game};
+
+  const centroidSpacing = 100;
+
+  const { centroids, nodes, hexagons, numbers, roads } = 
+    setupGameBoard(centroidSpacing, numCentroidsAcross);
+
+  const brigandIndex = hexagons
+    .map((h,i) => ({ind: i, resource: h.resource}))
+    .filter(h => h.resource === 'desert')
+    .map(h => h.ind)[0];
+
+  return {
+    ...updatedGame,
+    state: {
+      ...updatedGame.state,
+      centroids: centroids,
+      nodes: nodes,
+      hexagons: hexagons,
+      numbers: numbers,
+      roads: roads,
+      brigandIndex: brigandIndex
+    }
+  }
+};
+
+/**
  * Computes the centroids for all hexagons on the island.
  * @param {number} centroidSpacing - Arbitrary spacing unit
  * @param {number} numCentroidsAcross - Width of island at center
@@ -216,7 +251,7 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources, numbers) 
  * @param {Number} numCentroidsAcross Width of island at center
  * @returns {Array.<Array>} Arrays for centroids, nodes (vertices), hexagons, numbers, and roads.
  */
-export function setupGameBoard(centroidSpacing = 1, numCentroidsAcross = 5) {
+function setupGameBoard(centroidSpacing = 1, numCentroidsAcross = 5) {
 
   let centroids = computeHexGridCentroids(centroidSpacing, numCentroidsAcross);
   let {resources, numbers} = assignResourcesAndRolls(centroids);
