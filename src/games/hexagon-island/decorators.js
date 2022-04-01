@@ -1,4 +1,5 @@
 import { colorArray } from './colorArray.js';
+import { findNeighboringHexagons } from './resolutions.js';
 
 /** 
  * Games are responsible for resetting state and any other 
@@ -195,7 +196,7 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
           .map((n,ind) => { return {id: n.playerId, ind: ind} })
           .filter(n => n.id == p.id)
           .reduce((r,n) => {
-            const neighborHexs = gameToDecorate.findNeighboringHexagons(n.ind);
+            const neighborHexs = findNeighboringHexagons(n.ind, gameToDecorate);
             neighborHexs.forEach(h => {
               r.push(gameToDecorate.state.hexagons[h].resource);
             });

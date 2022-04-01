@@ -1,5 +1,7 @@
 import chai from 'chai';
 import { selectGame } from '../../src/games/gameSelector.js';
+import { findNeighboringHexagons, findNeighboringNodes } from '../../src/games/hexagon-island/resolutions.js';
+import { getRoadLengths } from '../../src/games/hexagon-island/roads.js';
 
 chai.should();
 
@@ -430,12 +432,12 @@ describe('Hexagon Island', function() {
     game = game.setup(3);
 
     let hexagonIndex = 0;
-    let nodeIndicies = game.findNeighboringNodes(hexagonIndex);
+    let nodeIndicies = findNeighboringNodes(hexagonIndex,game);
 
     nodeIndicies.should.deep.equal([0,1,2,3,4,5]);
 
     hexagonIndex = 1;
-    nodeIndicies = game.findNeighboringNodes(hexagonIndex);
+    nodeIndicies = findNeighboringNodes(hexagonIndex,game);
 
     nodeIndicies.should.deep.equal([1,2,6,7,8,9]);
 
@@ -447,7 +449,7 @@ describe('Hexagon Island', function() {
     game = game.setup(3);
 
     let nodeIndex = 0;
-    let hexagonIndices = game.findNeighboringHexagons(nodeIndex);
+    let hexagonIndices = findNeighboringHexagons(nodeIndex,game);
 
     hexagonIndices.should.deep.equal([0,2,3]);
 
@@ -1041,7 +1043,7 @@ describe('Hexagon Island', function() {
       .buildRoad(27,'id2', false)
       .buildRoad(25,'id2', false);
 
-    const roadLengths = game.getRoadLengths();
+    const roadLengths = getRoadLengths(game);
 
     roadLengths.should.deep.equal({
       id1: 7,

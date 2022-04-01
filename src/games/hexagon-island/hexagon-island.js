@@ -1,15 +1,8 @@
 import { gameCore } from '../gameCore.js';
 import { setup } from './gameBoard.js';
 import { rollDice, buildRoad, makeBuilding, moveBrigand } from './actions.js';
-import { assignResources, deductResources, creditCheck } from './resources.js';
-import { 
-  findNeighboringNodes, 
-  findNeighboringHexagons, 
-  resolveRoll, 
-  updatePossibleActions, 
-  findTheWinner,
-  getRoadLengths
-} from './resolutions.js';
+import { assignResources, deductResources } from './resources.js';
+import { resolveRoll, updatePossibleActions, findTheWinner } from './resolutions.js';
 import { reset, addPlayer, reconnectPlayer, nextPlayer, processAction } from './decorators.js';
 
 /** @typedef {object} game */
@@ -69,15 +62,11 @@ export const game0 = {
   // resources
   assignResources,
   deductResources,
-  creditCheck,
 
   // resolutions
-  findNeighboringNodes,
-  findNeighboringHexagons,
   resolveRoll,
   updatePossibleActions,
   findTheWinner,
-  getRoadLengths,
 
   /** 
    * Decorators allow methods defined in gameCore to be modified.

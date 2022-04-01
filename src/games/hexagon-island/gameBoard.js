@@ -37,6 +37,50 @@ export function setup(numCentroidsAcross = 5, game = this) {
 };
 
 /**
+ * Builds the hexagon island game board.
+ * @param {Number} centroidSpacing Arbitrary spacing unit
+ * @param {Number} numCentroidsAcross Width of island at center
+ * @returns {Array.<Array>} Arrays for centroids, nodes (vertices), hexagons, numbers, and roads.
+ */
+ function setupGameBoard(centroidSpacing = 1, numCentroidsAcross = 5) {
+
+  let centroids = computeHexGridCentroids(centroidSpacing, numCentroidsAcross);
+  let {resources, numbers} = assignResourcesAndRolls(centroids);
+  let {nodes, hexagons, roads} = computeNodesAndRoads(centroids, centroidSpacing, resources, numbers);
+  
+  // Add a number to each centroid
+  centroids.forEach((cent, index) => {
+    cent.number = numbers[index];
+  });
+
+  // Make room for the player ID
+  roads = roads.map(r => {
+    return {
+      inds: r,
+      playerId: null
+    };
+  });
+
+  // Make room for the player ID and building type
+  nodes = nodes.map(n => {
+    return {
+      ...n,
+      playerId: null,
+      buildingType: null
+    };
+  });
+
+  return {
+    centroids: centroids,
+    nodes: nodes,
+    hexagons: hexagons,
+    numbers: numbers,
+    roads: roads
+    // lines: lines
+  };
+}
+
+/**
  * Computes the centroids for all hexagons on the island.
  * @param {number} centroidSpacing - Arbitrary spacing unit
  * @param {number} numCentroidsAcross - Width of island at center
@@ -243,48 +287,4 @@ function computeNodesAndRoads(centroids, centroidSpacing=1, resources, numbers) 
   },[]);
 
   return {nodes, hexagons, roads}; //, lines};
-}
-
-/**
- * Builds the hexagon island game board.
- * @param {Number} centroidSpacing Arbitrary spacing unit
- * @param {Number} numCentroidsAcross Width of island at center
- * @returns {Array.<Array>} Arrays for centroids, nodes (vertices), hexagons, numbers, and roads.
- */
-function setupGameBoard(centroidSpacing = 1, numCentroidsAcross = 5) {
-
-  let centroids = computeHexGridCentroids(centroidSpacing, numCentroidsAcross);
-  let {resources, numbers} = assignResourcesAndRolls(centroids);
-  let {nodes, hexagons, roads} = computeNodesAndRoads(centroids, centroidSpacing, resources, numbers);
-  
-  // Add a number to each centroid
-  centroids.forEach((cent, index) => {
-    cent.number = numbers[index];
-  });
-
-  // Make room for the player ID
-  roads = roads.map(r => {
-    return {
-      inds: r,
-      playerId: null
-    };
-  });
-
-  // Make room for the player ID and building type
-  nodes = nodes.map(n => {
-    return {
-      ...n,
-      playerId: null,
-      buildingType: null
-    };
-  });
-
-  return {
-    centroids: centroids,
-    nodes: nodes,
-    hexagons: hexagons,
-    numbers: numbers,
-    roads: roads
-    // lines: lines
-  };
 }

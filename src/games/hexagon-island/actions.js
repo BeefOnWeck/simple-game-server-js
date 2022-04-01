@@ -1,9 +1,11 @@
+import { creditCheck, deductResources } from './resources.js';
+
 /**
  * Roll two dice, combine the numbers, and add the result to the game state.
  * @param {game} game 
  * @returns {game}
  */
-export function rollDice(game = this) { // TODO: Move to actions.js
+export function rollDice(game = this) {
     
   // NOTE: game = this (the object calling this method)
   let updatedGame = {...game};
@@ -33,7 +35,7 @@ export function rollDice(game = this) { // TODO: Move to actions.js
  * @param {game} game 
  * @returns {game}
  */
-export function buildRoad(roadIndex, playerId, requirePayment = true, game = this) { // TODO: Move to actions.js
+export function buildRoad(roadIndex, playerId, requirePayment = true, game = this) {
     
   // NOTE: game = this (the object calling this method)
   let updatedGame = {...game};
@@ -45,7 +47,7 @@ export function buildRoad(roadIndex, playerId, requirePayment = true, game = thi
   if (requirePayment) {
     // TODO: Make this a game property
     const requiredResources = ['block','timber'];
-    const canPayTheBill = updatedGame.creditCheck(playerId,requiredResources);
+    const canPayTheBill = creditCheck(playerId,requiredResources,updatedGame);
     if (canPayTheBill == false) {
       throw new Error('Not enough resources to build.')
     }
@@ -86,7 +88,7 @@ export function buildRoad(roadIndex, playerId, requirePayment = true, game = thi
 
   // TODO: Test to make sure resources are not deducted if there is an error above this
   if (requirePayment) {
-    updatedGame = updatedGame.deductResources(playerId,['block','timber']);
+    updatedGame = deductResources(playerId,['block','timber'],updatedGame);
   }
 
   return {
@@ -108,7 +110,7 @@ export function buildRoad(roadIndex, playerId, requirePayment = true, game = thi
  * @param {game} game 
  * @returns {game}
  */
-export function makeBuilding(nodeIndex, playerId, buildingType, requirePayment = true, game = this) { // TODO: Move to actions.js
+export function makeBuilding(nodeIndex, playerId, buildingType, requirePayment = true, game = this) {
 
   // NOTE: game = this (the object calling this method)
   let updatedGame = {...game};
@@ -128,7 +130,7 @@ export function makeBuilding(nodeIndex, playerId, buildingType, requirePayment =
     } else if (buildingType == 'burgh') {
       requiredResources = ['rock','rock','rock','cereal','cereal'];
     }
-    const canPayTheBill = updatedGame.creditCheck(playerId,requiredResources);
+    const canPayTheBill = creditCheck(playerId,requiredResources,updatedGame);
     if (canPayTheBill == false) {
       throw new Error('Not enough resources to build.')
     }
@@ -185,9 +187,9 @@ export function makeBuilding(nodeIndex, playerId, buildingType, requirePayment =
   // TODO: Test to make sure resources are not deducted if there is an error above this
   if (requirePayment) {
     if (buildingType == 'village') {
-      updatedGame = updatedGame.deductResources(playerId,['block','timber','fiber','cereal']);
+      updatedGame = deductResources(playerId,['block','timber','fiber','cereal'],updatedGame);
     } else if (buildingType == 'burgh') {
-      updatedGame = updatedGame.deductResources(playerId,['rock','rock','rock','cereal','cereal']);
+      updatedGame = deductResources(playerId,['rock','rock','rock','cereal','cereal'],updatedGame);
     }
   }
 
