@@ -3,7 +3,7 @@ import { setup } from './gameBoard.js';
 import { rollDice, buildRoad, makeBuilding, moveBrigand } from './actions.js';
 import { assignResources, deductResources } from './resources.js';
 import { resolveRoll, updatePossibleActions, findTheWinner } from './resolutions.js';
-import { reset, addPlayer, reconnectPlayer, nextPlayer, processAction } from './decorators.js';
+import { reset, addPlayer, reconnectPlayer, getGameStatus, nextPlayer, processAction } from './decorators.js';
 
 /** @typedef {object} game */
 
@@ -77,6 +77,7 @@ export const game0 = {
     reset, 
     addPlayer, 
     reconnectPlayer, 
+    getGameStatus,
     nextPlayer, 
     processAction
    }
