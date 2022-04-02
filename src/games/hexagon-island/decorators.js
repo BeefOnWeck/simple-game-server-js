@@ -1,5 +1,9 @@
 import { colorArray } from './colorArray.js';
+import { setup } from './gameBoard.js';
 import { findNeighboringHexagons } from './resolutions.js';
+import { rollDice, makeBuilding, buildRoad, moveBrigand } from './actions.js';
+import { resolveRoll, updatePossibleActions, findTheWinner } from './resolutions.js';
+import { assignResources, deductResources } from './resources.js';
 
 /** 
  * Games are responsible for resetting state and any other 
@@ -69,7 +73,7 @@ export function reset(gameToDecorate) {
   // If yes, setup the board and start the setup phase.
   if (gameToDecorate.numPlayers == configNumPlayers) {
     let boardWidth = gameBoardWidth; //Math.max(5, configNumPlayers + 5);
-    gameToDecorate = gameToDecorate.setup(boardWidth).nextPhase();
+    gameToDecorate = setup(boardWidth, gameToDecorate).nextPhase();
     possibleActions = ['setupVillagesAndRoads'];
   }
 
@@ -257,10 +261,10 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
   }
 
   if (actionName == 'rollDice') {
-    return gameToDecorate
-      .rollDice()
-      .resolveRoll()
-      .updatePossibleActions();
+    gameToDecorate = rollDice(gameToDecorate);
+    gameToDecorate = resolveRoll(gameToDecorate);
+    gameToDecorate = updatePossibleActions(gameToDecorate);
+    return gameToDecorate;
   } else if (actionName == 'buildStuff') {
 
     const pid = actionValue.pid;
@@ -272,15 +276,15 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
     }
 
     nodeIndices.forEach(n => {
-      gameToDecorate = gameToDecorate.makeBuilding(n, pid, 'village');
+      gameToDecorate = makeBuilding(n, pid, 'village', true, gameToDecorate);
     });
     roadIndices.forEach(r => {
-      gameToDecorate = gameToDecorate.buildRoad(r, pid);
+      gameToDecorate = buildRoad(r, pid, true, gameToDecorate);
     });
 
-    return gameToDecorate
-      .findTheWinner()
-      .updatePossibleActions();
+    gameToDecorate = findTheWinner(gameToDecorate);
+    gameToDecorate = updatePossibleActions(gameToDecorate);
+    return gameToDecorate;
 
   } else if (actionName == 'setupVillagesAndRoads') {
     const pid = actionValue.pid;
@@ -291,10 +295,10 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
       let [node1,node2] = thisRoad.inds;
       const buildAndRoadAreAdjacent = (node1 == oneNode) || (node2 == oneNode);
       if (buildAndRoadAreAdjacent) {
-        return gameToDecorate
-          .makeBuilding(oneNode[0], pid, 'village', false)
-          .buildRoad(oneRoad[0], pid, false)
-          .nextPlayer();
+        gameToDecorate = makeBuilding(oneNode[0], pid, 'village', false, gameToDecorate);
+        gameToDecorate = buildRoad(oneRoad[0], pid, false, gameToDecorate);
+        gameToDecorate = gameToDecorate.nextPlayer();
+        return gameToDecorate;
       } else {
         throw new Error('Selected building and road must be adjacent.');
       }
@@ -303,20 +307,19 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
     }
   } else if (actionName == 'moveBrigand') {
     const hexagonIndex = actionValue.hexInd;
-    return gameToDecorate
-      .moveBrigand(hexagonIndex)
-      .updatePossibleActions();
+    gameToDecorate = moveBrigand(hexagonIndex, gameToDecorate);
+    gameToDecorate = updatePossibleActions(gameToDecorate);
+    return gameToDecorate;
   } else if (actionName == 'trade') {
     const pid = actionValue.pid;
     const resourceToGive = actionValue.have;
     const resourceToGet = actionValue.want;
-    gameToDecorate = gameToDecorate
-      .deductResources(pid,[resourceToGive, resourceToGive, resourceToGive])
-      .assignResources(pid, [resourceToGet]);
-    return gameToDecorate.updatePossibleActions();
+    gameToDecorate = deductResources(pid,[resourceToGive, resourceToGive, resourceToGive], gameToDecorate);
+    gameToDecorate = assignResources(pid, [resourceToGet], gameToDecorate);
+    gameToDecorate = updatePossibleActions(gameToDecorate);
+    return gameToDecorate;
   } else if (actionName == 'endTurn') {
-    return gameToDecorate
-      .nextPlayer();
+    return gameToDecorate.nextPlayer();
   } else {
     // TODO: Throw error on unsupported action
   }
