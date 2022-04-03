@@ -1012,7 +1012,7 @@ describe('Hexagon Island', function() {
 
   });
 
-  it('Should find the longest road for each player', function() {
+  it('Should find the longest road for each player and set hasTheLongestRoad', function() {
 
     let game = selectGame('Hexagon Island');
     game = game.setup(5)
@@ -1050,9 +1050,48 @@ describe('Hexagon Island', function() {
       id2: 2
     });
 
+    game = game.findTheLongestRoad();
+
+    game.hasTheLongestRoad.should.equal('id1');
+
   });
 
-  // TODO: Longest road bonus
+  it('Longest road tie-breakers go to the incumbent', function() {
+
+    let game = selectGame('Hexagon Island');
+    game = game.setup(5)
+      .addPlayer('name1','id1')
+      .addPlayer('name2','id2');
+
+    // First have to make an adjacent building for id1
+    game = game.makeBuilding(5, 'id1', 'village', false);
+
+    // Make roads for id1
+    game = game.buildRoad(0,'id1', false)
+      .buildRoad(18,'id1', false);
+
+    game = game.setActivePlayer('id2');
+
+    // First have to make an adjacent building for id2
+    game = game.makeBuilding(10, 'id2', 'village', false);
+
+    // Make roads for id2
+    game = game.buildRoad(26,'id2', false)
+      .buildRoad(27,'id2', false)
+      .buildRoad(28,'id2', false);
+    game = game.findTheLongestRoad();
+    game.hasTheLongestRoad.should.equal('id2');
+
+    game = game.setActivePlayer('id1');
+    game = game.buildRoad(21,'id1', false);
+    game = game.findTheLongestRoad();
+    game.hasTheLongestRoad.should.equal('id2');
+
+    game = game.buildRoad(22,'id1', false);
+    game = game.findTheLongestRoad();
+    game.hasTheLongestRoad.should.equal('id1');
+
+  });
 
   // TODO: Buy a ninja
 

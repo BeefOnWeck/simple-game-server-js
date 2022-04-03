@@ -2,7 +2,7 @@ import { gameCore } from '../gameCore.js';
 import { setup } from './gameBoard.js';
 import { rollDice, buildRoad, makeBuilding, moveBrigand } from './actions.js';
 import { assignResources, deductResources } from './resources.js';
-import { resolveRoll, updatePossibleActions, findTheWinner } from './resolutions.js';
+import { resolveRoll, updatePossibleActions, findTheWinner, findTheLongestRoad } from './resolutions.js';
 import { reset, addPlayer, reconnectPlayer, getGameStatus, nextPlayer, processAction } from './decorators.js';
 
 /** @typedef {object} game */
@@ -34,6 +34,11 @@ export const game0 = {
    * @type {string}
    */
   theWinner: null,
+
+  /**
+   * 
+   */
+  hasTheLongestRoad: null,
 
   /** 
    * Game-specific state information.
@@ -67,6 +72,7 @@ export const game0 = {
   resolveRoll,
   updatePossibleActions,
   findTheWinner,
+  findTheLongestRoad,
 
   /** 
    * Decorators allow methods defined in gameCore to be modified.

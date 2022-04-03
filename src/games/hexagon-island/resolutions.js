@@ -1,4 +1,5 @@
 import { assignResources } from './resources.js';
+import { getRoadLengths } from './roads.js';
 
 /**
  * Given a hexagon, find the indices for the surrounding nodes (vertices).
@@ -200,4 +201,39 @@ export function findTheWinner(game=this) {
 
 };
 
-// TODO: Find longest road
+/**
+ * 
+ * @param {*} game 
+ * @returns 
+ */
+export function findTheLongestRoad(game=this) {
+
+  // NOTE: game = this (the object calling this method)
+  let updatedGame = {...game};
+
+  let hasTheLongestRoad = null;
+
+  const roadLengths = getRoadLengths(updatedGame);
+
+  // Find the player with the longest road
+  const roadLengthArray = Object.entries(roadLengths);
+  const eligibleRoads = roadLengthArray.filter(r => r[1] >= 3);
+  if (eligibleRoads.length > 0) {
+    hasTheLongestRoad = eligibleRoads.sort((a,b) => a[1] >= b[1] ? -1 : 1)[0][0];
+  }
+
+  // If there was already a player with the longest road and the player we found is different, 
+  // then make sure the new player has at least one more road to break the tie and steal the title.
+  const titleHolder = updatedGame.hasTheLongestRoad;
+  if (
+    titleHolder != null &&
+    titleHolder != hasTheLongestRoad &&
+    roadLengths[titleHolder] == roadLengths[hasTheLongestRoad]
+  ) hasTheLongestRoad = titleHolder;
+
+  return {
+    ...updatedGame,
+    hasTheLongestRoad: hasTheLongestRoad
+  };
+
+}

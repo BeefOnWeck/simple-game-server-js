@@ -17,6 +17,7 @@ export function reset(gameToDecorate) {
       gameBoardWidth: 5
     },
     theWinner: null,
+    hasTheLongestRoad: null,
     state: {
       ...gameToDecorate.state,
       centroids: [],
