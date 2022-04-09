@@ -5,7 +5,7 @@
   "description": "A simple multi-player, turned-based game server written in JavaScript.",
   "main": "./src/server.js",
   "scripts": {
-    "start": "node --experimental-modules src/server.js",
+    "start": "node src/server.js",
     "test": "mocha --recursive",
     "coverage": "c8 --all npm run test",
     "lint": "./node_modules/.bin/eslint src"

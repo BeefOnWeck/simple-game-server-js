@@ -14,9 +14,7 @@ export const selectGame = function(name, config = {}) {
   let newGame = games.filter(g => g.meta.name === name)[0].reset();
   // Apply any configuration
   newGame = newGame.configureGame(config);
-  // TODO: Add a boot() function which will allow dynamic aspects of the game 
-  // to be constructred. For instance, a gameboard whose size depends upon 
-  // the number of players defined in configuration.
+
   return newGame;
 }
 
@@ -27,3 +25,9 @@ export const getMeta = function() {
 export const getConfig = function() {
   return games.map(g => ({name: g.meta.name, conf: g.config}));
 }
+
+export const bindToGame = function(gameToBind) {
+  const getGame = () => gameToBind;
+  const setGame = (newGame) => gameToBind = newGame;
+  return [getGame,setGame];
+};
