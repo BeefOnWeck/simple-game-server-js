@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import process from 'process';
 import dotenv from 'dotenv';
 import { selectGame, getMeta, getConfig, bindToGame } from './games/gameSelector.js';
-import { joinHandler, rejoinHandler, actionHandler, endTurnHandler } from './socketHandlers.js';
+import { bindHandlers } from './socketHandlers.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 dotenv.config();
@@ -70,13 +70,10 @@ httpServer.listen(port);
 console.log('Listening on port', port);
 
 // Bind socket.io event handlers to the io server and the game state hooks.
-const join = joinHandler(io, getGame, setGame);
-const rejoin = rejoinHandler(io, getGame, setGame);
-const action = actionHandler(io, getGame, setGame);
-const endTurn = endTurnHandler(io, getGame, setGame);
+const [join, rejoin, action, endTurn] = bindHandlers(io, getGame, setGame);
 
 // When a player's client makes the socket.io connection
-io.on('connection', socket => { // TODO: Reject if we already have all the players
+io.on('connection', socket => {
   console.log('Player connected!', socket.id);
 
   // Link socket.io event handlers to specific incoming message types
