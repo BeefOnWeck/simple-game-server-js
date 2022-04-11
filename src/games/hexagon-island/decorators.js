@@ -2,7 +2,7 @@ import { colorArray } from './colorArray.js';
 import { setup } from './gameBoard.js';
 import { findNeighboringHexagons } from './resolutions.js';
 import { rollDice, makeBuilding, buildRoad, moveBrigand } from './actions.js';
-import { resolveRoll, updatePossibleActions, findTheWinner } from './resolutions.js';
+import { resolveRoll, updatePossibleActions, findTheWinner, findTheLongestRoad } from './resolutions.js';
 import { assignResources, deductResources } from './resources.js';
 
 /** 
@@ -283,6 +283,7 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
       gameToDecorate = buildRoad(r, pid, true, gameToDecorate);
     });
 
+    gameToDecorate = findTheLongestRoad(gameToDecorate);
     gameToDecorate = findTheWinner(gameToDecorate);
     gameToDecorate = updatePossibleActions(gameToDecorate);
     return gameToDecorate;

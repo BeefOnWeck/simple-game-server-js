@@ -1058,9 +1058,13 @@ describe('Hexagon Island', function() {
 
   it('Longest road tie-breakers go to the incumbent', function() {
 
-    let game = selectGame('Hexagon Island');
-    game = game.setup(5)
-      .addPlayer('name1','id1')
+    let game = selectGame('Hexagon Island', {
+      configNumPlayers: 2,
+      scoreToWin: 3,
+      boardGameWidth: 5
+    });
+
+    game = game.addPlayer('name1','id1')
       .addPlayer('name2','id2');
 
     // First have to make an adjacent building for id1
@@ -1082,14 +1086,23 @@ describe('Hexagon Island', function() {
     game = game.findTheLongestRoad();
     game.hasTheLongestRoad.should.equal('id2');
 
+    // Build more roads for id1
     game = game.setActivePlayer('id1');
     game = game.buildRoad(21,'id1', false);
     game = game.findTheLongestRoad();
     game.hasTheLongestRoad.should.equal('id2');
 
+    // And then build one more for id1
     game = game.buildRoad(22,'id1', false);
     game = game.findTheLongestRoad();
     game.hasTheLongestRoad.should.equal('id1');
+
+    // Make another building and id1 should be the winner
+    game = game.findTheWinner();
+    chai.assert(game.theWinner == null);
+    game = game.makeBuilding(43,'id1',false);
+    game = game.findTheWinner();
+    chai.assert(game.theWinner == 'id1');
 
   });
 

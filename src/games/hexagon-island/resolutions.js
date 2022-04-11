@@ -185,7 +185,8 @@ export function findTheWinner(game=this) {
   const theWinner = updatedGame.players.reduce((acc,p) => {
     // The score for this player based upon their buildings and roads
     const buildingScore = updatedGame.state.nodes.filter(n => n.playerId == p.id).length;
-    const score = buildingScore; // TODO: Add bonuses (e.g., longest road)
+    const longestRoadBonus = updatedGame.hasTheLongestRoad == p.id ? 1 : 0;
+    const score = buildingScore + longestRoadBonus;
     if (score >= updatedGame.config.scoreToWin) return p.id;
     else return acc;
   }, null);
