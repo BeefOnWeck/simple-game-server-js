@@ -214,6 +214,7 @@ export const gameCore = {
 
     let matchingPlayerId = null;
     let activePlayerId = game.activePlayerId;
+    let firstPlayerId = game.firstPlayerId;
 
     // Games can define a decorator to augment/overide player reconnection
     const decorators = game.decorators['reconnectPlayer'] ?? function(){};
@@ -238,9 +239,8 @@ export const gameCore = {
     }
 
     if (matchingPlayerId) {
-      if (matchingPlayerId == activePlayerId) {
-        returnObject = returnObject.setActivePlayer(id);
-      }
+      if (activePlayerId == matchingPlayerId) returnObject.activePlayerId = id;
+      if (firstPlayerId == matchingPlayerId) returnObject.firstPlayerId = id;
     } else {
       throw new Error('Cannot reconnect; no matching user.');
     }
