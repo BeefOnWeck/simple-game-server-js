@@ -17,7 +17,6 @@ export const bindHandlers = (io, getGame, setGame) => {
 
     let game = getGame();
     socket.username = username ?? '';
-    console.log('username', username);
 
     if (game.phase && game.phase == 'boot') {
       // Add them to the game
