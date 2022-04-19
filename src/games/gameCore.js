@@ -208,8 +208,13 @@ export const gameCore = {
     };
   },
 
-  // TODO: Test this
-  // TODO: Comment this
+  /**
+   * 
+   * @param {*} username 
+   * @param {*} id 
+   * @param {*} game 
+   * @returns 
+   */
   reconnectPlayer(username, id, game = this) {
 
     let matchingPlayerId = null;

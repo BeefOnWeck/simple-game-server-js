@@ -120,8 +120,17 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
   const {[oldId]: resourcesToReOwn, ...others} = playerResources;
   let updatedPlayerResources = {[newId]: resourcesToReOwn, ...others};
 
+  const theWinner = gameToDecorate.theWinner == oldId ? 
+    newId : 
+    gameToDecorate.theWinner;
+  const hasTheLongestRoad = gameToDecorate.hasTheLongestRoad == oldId ? 
+    newId :
+    gameToDecorate.hasTheLongestRoad;
+
   return {
     ...gameToDecorate,
+    theWinner: theWinner,
+    hasTheLongestRoad: hasTheLongestRoad,
     state: {
       ...gameToDecorate.state,
       roads: updatedRoads,
@@ -144,6 +153,7 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
 
   return {
     theWinner: gameToDecorate.theWinner ?? null,
+    longestRoad: gameToDecorate.hasTheLongestRoad ?? null,
     state: {
       ...gameToDecorate.state,
       playerResources: prunedPlayerResources
