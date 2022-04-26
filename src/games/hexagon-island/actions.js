@@ -203,12 +203,12 @@ export function makeBuilding(nodeIndex, playerId, buildingType, requirePayment =
 };
 
 /**
- * Moves the brigand to the specified index.
+ * Moves the scorpion to the specified index.
  * @param {number} index 
  * @param {game} game 
  * @returns 
  */
-export function moveBrigand(index, game=this) {
+export function moveScorpion(index, game=this) {
   const updatedGame = {...game};
 
   // TODO: Check that the new index fits
@@ -217,7 +217,38 @@ export function moveBrigand(index, game=this) {
     ...updatedGame,
     state: {
       ...updatedGame.state,
-      brigandIndex: index
+      scorpionIndex: index
     }
   }
 };
+
+/**
+ * 
+ * @param {*} playerId 
+ * @param {*} game 
+ */
+export function buyBug(playerId, requirePayment = true, game=this) {
+  let updatedGame = {...game};
+
+  let updatedBugs = updatedGame.state.bugs;
+
+  if (requirePayment) {
+    const requiredResources = ['rock','cereal','fiber'];
+    const canPayTheBill = creditCheck(playerId, requiredResources, updatedGame);
+    if (canPayTheBill == false) {
+      throw new Error('Not enough resources to buy bug.')
+    } else {
+      updatedGame = deductResources(playerId, ['rock','cereal','fiber'], updatedGame);
+      updatedBugs[playerId]++;
+    }
+  }
+
+  return {
+    ...updatedGame,
+    state: {
+      ...updatedGame.state,
+      bugs: updatedBugs
+    }
+  };
+
+}

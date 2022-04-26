@@ -18,7 +18,8 @@ describe('Hexagon Island', function() {
       roads: [],
       rollResult: [0,0],
       playerResources: {},
-      brigandIndex: null
+      bugs: {},
+      scorpionIndex: null
     });
   });
 
@@ -54,7 +55,8 @@ describe('Hexagon Island', function() {
       roads: [],
       rollResult: [0,0],
       playerResources: {},
-      brigandIndex: null
+      bugs: {},
+      scorpionIndex: null
     });    
 
   });
@@ -833,7 +835,7 @@ describe('Hexagon Island', function() {
 
   });
 
-  it('Should block resources from whichever hexagon contains the brigand.', function() {
+  it('Should block resources from whichever hexagon contains the scorpion.', function() {
 
     let game = selectGame('Hexagon Island');
     game = game.setup(5);
@@ -846,7 +848,7 @@ describe('Hexagon Island', function() {
       a[i].buildingType = 'village';
     });
 
-    // Loop over all hexagons, move the brigand to each one, 
+    // Loop over all hexagons, move the scorpion to each one, 
     // and then verify that the appropriate resource is blocked.
     game.state.hexagons.forEach((hex,ind) => {
       game.state.playerResources = {
@@ -859,7 +861,7 @@ describe('Hexagon Island', function() {
         }
       };
 
-      game = game.moveBrigand(ind);
+      game = game.moveScorpion(ind);
 
       const diceResult = hex.number;
       if (diceResult) {
@@ -867,7 +869,7 @@ describe('Hexagon Island', function() {
         game = game.resolveRoll();
 
         const rolledResources = game.state.hexagons.filter((h,i) => {
-          return h.number == diceResult && i != game.state.brigandIndex;
+          return h.number == diceResult && i != game.state.scorpionIndex;
         }).map(h => {
           return h.resource;
         });
@@ -894,7 +896,7 @@ describe('Hexagon Island', function() {
 
   });
 
-  it('Should have the brigand move every time a 7 is rolled', function() {
+  it('Should have the scorpion move every time a 7 is rolled', function() {
 
     let game = selectGame('Hexagon Island');
     game = game.setup(5);
@@ -905,25 +907,25 @@ describe('Hexagon Island', function() {
     game.state.rollResult = [3,4];
     game = game.resolveRoll();
 
-    game.possibleActions.should.deep.equal(['moveBrigand']);
+    game.possibleActions.should.deep.equal(['moveScorpion']);
 
     game = game.processAction({
-      'moveBrigand': {
+      'moveScorpion': {
         'hexInd': 16
       }
     });
 
-    game.state.brigandIndex.should.equal(16);
+    game.state.scorpionIndex.should.equal(16);
 
     game.possibleActions.should.deep.equal([
       'trade',
       'buildStuff',
-      'endTurn'
+      'endTurn',
+      'buyBug'
     ]);
 
   });
 
-  // TODO: Test Trade 3:1
   it('Should correctly handle resource trades', function() {
     let game = selectGame('Hexagon Island', {configNumPlayers: 2});
     game = game.addPlayer('name1','id1')
@@ -1013,7 +1015,6 @@ describe('Hexagon Island', function() {
   });
 
   it('Should find the longest road for each player and set hasTheLongestRoad', function() {
-
     let game = selectGame('Hexagon Island');
     game = game.setup(5)
       .addPlayer('name1','id1')
@@ -1057,7 +1058,6 @@ describe('Hexagon Island', function() {
   });
 
   it('Longest road tie-breakers go to the incumbent', function() {
-
     let game = selectGame('Hexagon Island', {
       configNumPlayers: 2,
       scoreToWin: 3,
@@ -1106,7 +1106,68 @@ describe('Hexagon Island', function() {
 
   });
 
-  // TODO: Buy a ninja
+  it('Should allow players to buy bugs', function(){
+    let game = selectGame('Hexagon Island', {configNumPlayers: 2});
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2');
+
+    // TODO: Pull this out into a function so we're not repeating it everywhere
+    game = game.processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id1',
+        nodes: [43],
+        roads: [57]
+      }
+    }).processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id2',
+        nodes: [15],
+        roads: [18]
+      }
+    }).processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id2',
+        nodes: [1],
+        roads: [1]
+      }
+    }).processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id1',
+        nodes: [33],
+        roads: [58]
+      }
+    });
+
+    // Cheat here so the first player can buy a bug
+    game = game.assignResources('id1', ['fiber','cereal','rock']);
+
+    // Have to start your turn by rolling the dice
+    game = game.processAction({
+      'rollDice': {
+        pid: 'id1'
+      }
+    });
+
+    // Buying a bug should be in the list of allowable actions
+    game.possibleActions.should.deep.equal([
+      'trade',
+      'buildStuff',
+      'endTurn',
+      'buyBug'
+    ]);
+
+    game = game.processAction({
+      'buyBug': {
+        pid: 'id1'
+      }
+    });
+
+    game.state.bugs.should.deep.equal({
+      id1: 1,
+      id2: 0
+    });
+
+  });
 
   // TODO: Cities
 

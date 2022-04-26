@@ -1,7 +1,7 @@
 import { colorArray } from './colorArray.js';
 import { setup } from './gameBoard.js';
 import { findNeighboringHexagons } from './resolutions.js';
-import { rollDice, makeBuilding, buildRoad, moveBrigand } from './actions.js';
+import { rollDice, makeBuilding, buildRoad, moveScorpion, buyBug } from './actions.js';
 import { resolveRoll, updatePossibleActions, findTheWinner, findTheLongestRoad } from './resolutions.js';
 import { assignResources, deductResources } from './resources.js';
 
@@ -27,7 +27,8 @@ export function reset(gameToDecorate) {
       roads: [],
       rollResult: [0,0],
       playerResources: {},
-      brigandIndex: null
+      bugs: {},
+      scorpionIndex: null
     }
   }
 };
@@ -68,6 +69,13 @@ export function reset(gameToDecorate) {
     }
   }, {});
 
+  let playerBugs = updatedPlayerList.reduce((acc,cv) => {
+    return {
+      ...acc,
+      [cv.id]: 0
+    }
+  }, {});
+
   let possibleActions = gameToDecorate.possibleActions;
 
   // Do we have the configured number of players yet?
@@ -85,7 +93,8 @@ export function reset(gameToDecorate) {
     players: updatedPlayerList,
     state: {
       ...gameToDecorate.state,
-      playerResources: playerResources
+      playerResources: playerResources,
+      bugs: playerBugs
     }
   };
 };
@@ -268,7 +277,7 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
   let actionValue = action[actionName];
 
   if (gameToDecorate.possibleActions.includes(actionName) == false) {
-    throw new Error('That is not an allowed action right now.')
+    throw new Error('That is not an allowed action right now.');
   }
 
   if (actionName == 'rollDice') {
@@ -317,9 +326,9 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
     } else {
       throw new Error('Must select one building and one road during setup.');
     }
-  } else if (actionName == 'moveBrigand') {
+  } else if (actionName == 'moveScorpion') {
     const hexagonIndex = actionValue.hexInd;
-    gameToDecorate = moveBrigand(hexagonIndex, gameToDecorate);
+    gameToDecorate = moveScorpion(hexagonIndex, gameToDecorate);
     gameToDecorate = updatePossibleActions(gameToDecorate);
     return gameToDecorate;
   } else if (actionName == 'trade') {
@@ -330,10 +339,15 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
     gameToDecorate = assignResources(pid, [resourceToGet], gameToDecorate);
     gameToDecorate = updatePossibleActions(gameToDecorate);
     return gameToDecorate;
+  } else if (actionName == 'buyBug') {
+    const pid = actionValue.pid;
+    gameToDecorate = buyBug(pid, true, gameToDecorate);
+    gameToDecorate = updatePossibleActions(gameToDecorate);
+    return gameToDecorate;
   } else if (actionName == 'endTurn') {
     return gameToDecorate.nextPlayer();
   } else {
-    // TODO: Throw error on unsupported action
+    throw new Error('That is not a supported action.');
   }
 
 };

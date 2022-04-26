@@ -17,7 +17,7 @@ export function setup(numCentroidsAcross = 5, game = this) {
   const { centroids, nodes, hexagons, numbers, roads } = 
     setupGameBoard(centroidSpacing, numCentroidsAcross);
 
-  const brigandIndex = hexagons
+  const scorpionIndex = hexagons
     .map((h,i) => ({ind: i, resource: h.resource}))
     .filter(h => h.resource === 'desert')
     .map(h => h.ind)[0];
@@ -31,7 +31,7 @@ export function setup(numCentroidsAcross = 5, game = this) {
       hexagons: hexagons,
       numbers: numbers,
       roads: roads,
-      brigandIndex: brigandIndex
+      scorpionIndex: scorpionIndex
     }
   }
 };

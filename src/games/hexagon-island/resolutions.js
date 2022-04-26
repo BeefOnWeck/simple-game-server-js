@@ -67,12 +67,12 @@ export function resolveRoll(game = this) {
   const rollSum = updatedGame.state.rollResult.reduce((pv,cv) => pv+cv, 0);
 
   if (rollSum == 7) {
-    updatedGame.possibleActions = ['moveBrigand'];
+    updatedGame.possibleActions = ['moveScorpion'];
   }
 
   const rolledHexagons = updatedGame.state.hexagons.reduce((acc, h, ind) => {
-    // If this hexagon's number matches the roll and the brigand isn't here...
-    if (h.number == rollSum && ind != updatedGame.state.brigandIndex) {
+    // If this hexagon's number matches the roll and the scorpion isn't here...
+    if (h.number == rollSum && ind != updatedGame.state.scorpionIndex) {
       // ... add it to the list.
       acc = [
         ...acc,
@@ -111,27 +111,29 @@ const actionStateTransition = {
   rollDice: [
     'trade',
     'buildStuff',
-    'endTurn'
+    'endTurn',
+    'buyBug'
   ],
-  moveBrigand: [
+  moveScorpion: [
     'trade',
     'buildStuff',
-    'endTurn'
+    'endTurn',
+    'buyBug'
   ],
   trade: [
     'trade',
     'buildStuff',
-    'endTurn'
+    'endTurn',
+    'buyBug'
   ],
-  useDevCard: [
-    'trade',
-    'buildStuff',
-    'endTurn'
+  buyBug: [
+    'moveScorpion'
   ],
   buildStuff: [
     'trade',
     'buildStuff',
-    'endTurn'
+    'endTurn',
+    'buyBug'
   ],
   buyDevCard: [
     'buildStuff',
@@ -156,11 +158,11 @@ export function updatePossibleActions(game=this) {
   let currentActionName = Object.keys(currentAction)[0];
   let possibleActions = updatedGame.possibleActions;
 
-  // Using De Morgan's Law, update possibleActions only if a moveBrigand action 
+  // Using De Morgan's Law, update possibleActions only if a moveScorpion action 
   // has been triggered but not acted upon yet.
   if (
-    currentActionName == 'moveBrigand' || 
-    possibleActions.includes('moveBrigand') == false
+    currentActionName == 'moveScorpion' || 
+    possibleActions.includes('moveScorpion') == false
   ) {
     possibleActions = actionStateTransition[currentActionName];
   }

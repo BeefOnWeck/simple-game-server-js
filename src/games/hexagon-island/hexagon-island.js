@@ -1,6 +1,6 @@
 import { gameCore } from '../gameCore.js';
 import { setup } from './gameBoard.js';
-import { rollDice, buildRoad, makeBuilding, moveBrigand } from './actions.js';
+import { rollDice, buildRoad, makeBuilding, moveScorpion, buyBug } from './actions.js';
 import { assignResources, deductResources } from './resources.js';
 import { resolveRoll, updatePossibleActions, findTheWinner, findTheLongestRoad } from './resolutions.js';
 import { reset, addPlayer, reconnectPlayer, getGameStatus, nextPlayer, processAction } from './decorators.js';
@@ -52,7 +52,8 @@ export const game0 = {
     roads: [],
     rollResult: [0,0],
     playerResources: {},
-    brigandIndex: null
+    bugs: {},
+    scorpionIndex: null
   },
 
   // gameboard setup
@@ -62,7 +63,8 @@ export const game0 = {
   rollDice,
   buildRoad,
   makeBuilding,
-  moveBrigand,
+  moveScorpion,
+  buyBug,
 
   // resources
   assignResources,
