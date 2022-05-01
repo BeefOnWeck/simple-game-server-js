@@ -2,7 +2,7 @@ import { colorArray } from './colorArray.js';
 import { setup } from './gameBoard.js';
 import { findNeighboringHexagons } from './resolutions.js';
 import { rollDice, makeBuilding, buildRoad, moveScorpion, buyBug } from './actions.js';
-import { resolveRoll, updatePossibleActions, findTheWinner, findTheLongestRoad } from './resolutions.js';
+import { resolveRoll, updatePossibleActions, findTheWinner, findTheLongestRoad, findTheMostBugs } from './resolutions.js';
 import { assignResources, deductResources } from './resources.js';
 
 /** 
@@ -18,6 +18,7 @@ export function reset(gameToDecorate) {
     },
     theWinner: null,
     hasTheLongestRoad: null,
+    hasTheMostBugs: null,
     state: {
       ...gameToDecorate.state,
       centroids: [],
@@ -144,10 +145,16 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
     newId :
     gameToDecorate.hasTheLongestRoad;
 
+  // Update who has the most bugs
+  const hasTheMostBugs = gameToDecorate.hasTheMostBugs == oldId ? 
+    newId :
+    gameToDecorate.hasTheMostBugs;
+
   return {
     ...gameToDecorate,
     theWinner: theWinner,
     hasTheLongestRoad: hasTheLongestRoad,
+    hasTheMostBugs: hasTheMostBugs,
     state: {
       ...gameToDecorate.state,
       roads: updatedRoads,
@@ -176,6 +183,7 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
   return {
     theWinner: gameToDecorate.theWinner ?? null,
     longestRoad: gameToDecorate.hasTheLongestRoad ?? null,
+    mostBugs: gameToDecorate.hasTheMostBugs ?? null,
     state: {
       ...gameToDecorate.state,
       playerResources: prunedPlayerResources,
@@ -356,6 +364,8 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
   } else if (actionName == 'buyBug') {
     const pid = actionValue.pid;
     gameToDecorate = buyBug(pid, true, gameToDecorate);
+    gameToDecorate = findTheMostBugs(gameToDecorate);
+    gameToDecorate = findTheWinner(gameToDecorate);
     gameToDecorate = updatePossibleActions(gameToDecorate);
     return gameToDecorate;
   } else if (actionName == 'endTurn') {

@@ -40,6 +40,11 @@ export const game0 = {
    */
   hasTheLongestRoad: null,
 
+  /**
+   * 
+   */
+  hasTheMostBugs: null,
+
   /** 
    * Game-specific state information.
    * Changes via player actions.

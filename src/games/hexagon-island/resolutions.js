@@ -188,6 +188,7 @@ export function findTheWinner(game=this) {
     // The score for this player based upon their buildings and roads
     const buildingScore = updatedGame.state.nodes.filter(n => n.playerId == p.id).length;
     const longestRoadBonus = updatedGame.hasTheLongestRoad == p.id ? 1 : 0;
+    const mostBugsBonus = updatedGame.hasTheMostBugs == p.id ? 1 : 0;
     const score = buildingScore + longestRoadBonus;
     if (score >= updatedGame.config.scoreToWin) return p.id;
     else return acc;
@@ -237,6 +238,40 @@ export function findTheLongestRoad(game=this) {
   return {
     ...updatedGame,
     hasTheLongestRoad: hasTheLongestRoad
+  };
+
+}
+
+/**
+ * 
+ * @param {*} game 
+ * @returns 
+ */
+ export function findTheMostBugs(game=this) {
+
+  // NOTE: game = this (the object calling this method)
+  let updatedGame = {...game};
+
+  let hasTheMostBugs = null;
+
+  // Find the player with the most bugs
+  const bugs = updatedGame.state.bugs;
+  const bugArray = Object.entries(bugs);
+  const eligibleBugs = bugArray.filter(r => r[1] >= 3);
+  if (eligibleBugs.length > 0) {
+    hasTheMostBugs = eligibleBugs.sort((a,b) => a[1] >= b[1] ? -1 : 1)[0][0];
+  }
+
+  const titleHolder = updatedGame.hasTheMostBugs;
+  if (
+    titleHolder != null &&
+    titleHolder != hasTheMostBugs &&
+    bugs[titleHolder] == bugs[hasTheMostBugs]
+  ) hasTheMostBugs = titleHolder;
+
+  return {
+    ...updatedGame,
+    hasTheMostBugs: hasTheMostBugs
   };
 
 }

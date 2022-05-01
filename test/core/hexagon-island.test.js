@@ -1148,6 +1148,14 @@ describe('Hexagon Island', function() {
       }
     });
 
+    if (game.possibleActions.includes('moveScorpion')) {
+      game = game.processAction({
+        'moveScorpion': {
+          hexInd: 0
+        }
+      });
+    }
+
     // Buying a bug should be in the list of allowable actions
     game.possibleActions.should.deep.equal([
       'trade',
@@ -1165,6 +1173,222 @@ describe('Hexagon Island', function() {
     game.state.bugs.should.deep.equal({
       id1: 1,
       id2: 0
+    });
+
+    game.possibleActions.should.deep.equal([
+      'moveScorpion'
+    ]);
+
+    game = game.processAction({
+      'moveScorpion': {
+        hexInd: 0
+      }
+    }).processAction({
+      'endTurn': {
+        pid: 'id1'
+      }
+    });
+
+    // Cheat here so the second player can buy a bug
+    game = game.assignResources('id2', ['fiber','cereal','rock']);
+
+    // Have to start your turn by rolling the dice
+    game = game.processAction({
+      'rollDice': {
+        pid: 'id2'
+      }
+    });
+    
+    if (game.possibleActions.includes('moveScorpion')) {
+      game = game.processAction({
+        'moveScorpion': {
+          hexInd: 0
+        }
+      });
+    }
+
+    game = game.processAction({
+      'buyBug': {
+        pid: 'id2'
+      }
+    });
+
+    game.state.bugs.should.deep.equal({
+      id1: 1,
+      id2: 1
+    });
+
+  });
+
+  it('Should find the player with the most bugs and set hasTheMostBugs', function(){
+    let game = selectGame('Hexagon Island', {configNumPlayers: 2});
+    game = game.addPlayer('name1','id1')
+      .addPlayer('name2','id2');
+
+    // TODO: Pull this out into a function so we're not repeating it everywhere
+    game = game.processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id1',
+        nodes: [43],
+        roads: [57]
+      }
+    }).processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id2',
+        nodes: [15],
+        roads: [18]
+      }
+    }).processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id2',
+        nodes: [1],
+        roads: [1]
+      }
+    }).processAction({
+      'setupVillagesAndRoads': {
+        pid: 'id1',
+        nodes: [33],
+        roads: [58]
+      }
+    });
+
+    // Cheat here so the first player can buy a bug
+    game = game.assignResources('id1', ['fiber','cereal','rock'])
+    .assignResources('id1', ['fiber','cereal','rock'])
+    .assignResources('id1', ['fiber','cereal','rock']);
+
+
+    // Have to start your turn by rolling the dice
+    game = game.processAction({
+      'rollDice': {
+        pid: 'id1'
+      }
+    });
+
+    if (game.possibleActions.includes('moveScorpion')) {
+      game = game.processAction({
+        'moveScorpion': {
+          hexInd: 0
+        }
+      });
+    }
+
+    // Buying a bug should be in the list of allowable actions
+    game.possibleActions.should.deep.equal([
+      'trade',
+      'buildStuff',
+      'endTurn',
+      'buyBug'
+    ]);
+
+    game = game.processAction({
+      'buyBug': {
+        pid: 'id1'
+      }
+    }).processAction({
+      'moveScorpion': {
+        hexInd: 0
+      }
+    }).processAction({
+      'buyBug': {
+        pid: 'id1'
+      }
+    }).processAction({
+      'moveScorpion': {
+        hexInd: 0
+      }
+    }).processAction({
+      'buyBug': {
+        pid: 'id1'
+      }
+    }).processAction({
+      'moveScorpion': {
+        hexInd: 0
+      }
+    });
+
+    game.state.bugs.should.deep.equal({
+      id1: 3,
+      id2: 0
+    });
+
+    game.hasTheMostBugs.should.equal('id1');
+
+    game = game.processAction({
+      'endTurn': {
+        pid: 'id1'
+      }
+    });
+
+    // Cheat here so the second player can buy a bug
+    game = game.assignResources('id2', ['fiber','cereal','rock'])
+    .assignResources('id2', ['fiber','cereal','rock'])
+    .assignResources('id2', ['fiber','cereal','rock'])
+    .assignResources('id2', ['fiber','cereal','rock']);
+
+    // Have to start your turn by rolling the dice
+    game = game.processAction({
+      'rollDice': {
+        pid: 'id2'
+      }
+    });
+    
+    if (game.possibleActions.includes('moveScorpion')) {
+      game = game.processAction({
+        'moveScorpion': {
+          hexInd: 0
+        }
+      });
+    }
+
+    game = game.processAction({
+      'buyBug': {
+        pid: 'id2'
+      }
+    }).processAction({
+      'moveScorpion': {
+        hexInd: 0
+      }
+    }).processAction({
+      'buyBug': {
+        pid: 'id2'
+      }
+    }).processAction({
+      'moveScorpion': {
+        hexInd: 0
+      }
+    }).processAction({
+      'buyBug': {
+        pid: 'id2'
+      }
+    }).processAction({
+      'moveScorpion': {
+        hexInd: 0
+      }
+    });
+
+    game.hasTheMostBugs.should.equal('id1');
+
+    game.state.bugs.should.deep.equal({
+      id1: 3,
+      id2: 3
+    });
+
+    game = game.processAction({
+      'buyBug': {
+        pid: 'id2'
+      }
+    }).processAction({
+      'moveScorpion': {
+        hexInd: 0
+      }
+    });
+
+    game.hasTheMostBugs.should.equal('id2');
+
+    game.state.bugs.should.deep.equal({
+      id1: 3,
+      id2: 4
     });
 
   });
