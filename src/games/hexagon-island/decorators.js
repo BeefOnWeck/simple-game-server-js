@@ -129,9 +129,17 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
   const {[oldId]: resourcesToReOwn, ...others} = playerResources;
   let updatedPlayerResources = {[newId]: resourcesToReOwn, ...others};
 
+  // Update playerId (oldId->newId) in bugs object.
+  let bugs = gameToDecorate.state.bugs;
+  const {[oldId]: bugsToReOwn, ...otherBugs} = bugs;
+  let updatedBugs = {[newId]: bugsToReOwn, ...otherBugs};
+
+  // Update the winner
   const theWinner = gameToDecorate.theWinner == oldId ? 
     newId : 
     gameToDecorate.theWinner;
+
+  // Update who has the longest road
   const hasTheLongestRoad = gameToDecorate.hasTheLongestRoad == oldId ? 
     newId :
     gameToDecorate.hasTheLongestRoad;
@@ -144,7 +152,8 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
       ...gameToDecorate.state,
       roads: updatedRoads,
       nodes: updatedNoads,
-      playerResources: updatedPlayerResources
+      playerResources: updatedPlayerResources,
+      bugs: updatedBugs
     }
   }
 };
@@ -157,15 +166,20 @@ export function reconnectPlayer(oldId, newId, gameToDecorate) {
  */
  export function getGameStatus(playerId, gameToDecorate) {
 
+  console.log('getGameStatus: ', playerId);
+
   // Each player only needs to see their own list of resources
   let prunedPlayerResources = gameToDecorate.state.playerResources[playerId];
+
+  let prundedBugs = gameToDecorate.state.bugs[playerId];
 
   return {
     theWinner: gameToDecorate.theWinner ?? null,
     longestRoad: gameToDecorate.hasTheLongestRoad ?? null,
     state: {
       ...gameToDecorate.state,
-      playerResources: prunedPlayerResources
+      playerResources: prunedPlayerResources,
+      bugs: prundedBugs
     }
   };
 };
